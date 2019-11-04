@@ -1,0 +1,10 @@
+{application, rebar3_format, [
+    {description, "A rebar plugin for code formatting"},
+    {vsn, "0.0.1"},
+    {registered, []},
+    {applications, [kernel, stdlib]},
+    {env, []},
+    {modules, []},
+    {licenses, ["BSD-3-Clause"]},
+    {links, [{"github", "https://github.com/SemanticSugar/rebar3_format"}]}
+]}.
