@@ -49,7 +49,7 @@ cases(_) ->     ok.
 
 
 another() ->
-  one(bites/0), the(),
+  one(fun bites/0), the(),
 dust().
 
 one(F)->F().

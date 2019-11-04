@@ -1,4 +1,4 @@
-{application, rebar3_format, [
+{application, test_app, [
     {description, "A test app for the rebar3 format plugin"},
     {vsn, "0.0.1"},
     {registered, []},

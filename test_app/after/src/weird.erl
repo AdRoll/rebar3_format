@@ -26,7 +26,7 @@ cases(V) when is_list(V) ->
     end;
 cases(_) -> ok.
 
-another() -> one(bites / 0), the(), dust().
+another() -> one(fun bites/0), the(), dust().
 
 one(F) -> F().
 
