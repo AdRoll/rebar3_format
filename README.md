@@ -20,9 +20,18 @@ Then just call your plugin directly in an existing application:
 
 ## Configuration
 
-The plugin supports the following configuration options in `rebar.config`:
+The plugin supports the following configuration options in the `format` section of `rebar.config`:
 
-**TODO:** Add Configuration
+* `includes`(`[file:name()]`):
+    - List of paths where to find hrl files
+* `macros`(`epp:macros()`):
+    - List of predefined macros
+* `encoding`(`none | epp:source_encoding()`):
+    - Encoding to use when writing files
+* `paper`(`pos_integer()`):
+    - Specifies the preferred maximum number of characters on any line, including indentation. The default value is `100`.
+* `ribbon`(`pos_integer(`):
+    - Specifies the preferred maximum number of characters on any line, not counting indentation. The default value is `80`.
 
 ## Test
 

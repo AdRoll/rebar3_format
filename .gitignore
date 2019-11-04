@@ -1,3 +1,4 @@
+rebar3.crashdump
 .rebar3
 _*
 .eunit

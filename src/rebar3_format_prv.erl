@@ -14,7 +14,7 @@ init(State) ->
             files,
             $f,
             "files",
-            {string, "src/**/*"},
+            {string, "src/**/*.?rl"},
             "List of files and folders to be formatted"
         }]},
         {short_desc, "A rebar plugin for code formatting"},
@@ -32,15 +32,15 @@ do(State) ->
     case format(Files, Opts) of
         ok ->
             {ok, State};
-        {error, _} ->
-            {error, "Formating failed"}
+        {error, Error} ->
+            {error, format_error(Error)}
     end.
 
--spec format_error(any()) ->  iolist().
-format_error({enoent, File}) ->
-    ["File doesn't exist: ", File];
+-spec format_error(any()) ->  iodata().
+format_error({_, erl_parse, Error}) ->
+    io_lib:format("Formatting error: ~s. Try running with DEBUG=1 for more information", [Error]);
 format_error(Reason) ->
-    io_lib:format("~p", [Reason]).
+    ["Unknown Formatting Error: ", io_lib:format("~p", [Reason])].
 
 -spec get_files(rebar_state:t()) -> [file:filename_all()].
 get_files(State) ->
@@ -48,12 +48,12 @@ get_files(State) ->
     {files, Wildcard} = lists:keyfind(files, 1, Args),
     filelib:wildcard(Wildcard).
 
--spec get_opts(rebar_state:t()) -> map().
+-spec get_opts(rebar_state:t()) -> rebar3_formatter:opts().
 get_opts(State) ->
     maps:from_list(rebar_state:get(State, format, [])).
 
 %% @todo Actually format the files
--spec format([file:filename_all()], map()) -> ok | {error, term()}.
+-spec format([file:filename_all()], rebar3_formatter:opts()) -> ok | {error, term()}.
 format(Files, Opts) ->
     try lists:foreach(fun(File) -> rebar3_formatter:format(File, Opts) end, Files)
     catch
