@@ -18,7 +18,13 @@ Then just call your plugin directly in an existing application:
 
     $ rebar3 format
 
-Also you can save the formatted files in a different directory passing it as a parameter:
+This will format every Erlang file under `/src` by default. You can specify the directory/file to format as following:
+
+    $ rebar3 format --files src/my_subdir/*.erl
+    $ rebar3 format --files src/other_subdir/my_file.erl
+    $ rebar3 format --files test/**/*.erl
+
+To save the formatted files in a different directory you have to pass it as a parameter:
 
     $ rebar3 format --output formatted/
 
