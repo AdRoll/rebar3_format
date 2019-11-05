@@ -1,17 +1,15 @@
-.PHONY: test
-REBAR?=./rebar3
+.PHONY: test run diff compile clean
 
-test:
-	@rsync -avq --exclude='after' --exclude='_build' --exclude='_checkouts' test_app/ test_app/after
-	@mkdir -p test_app/after/_checkouts/rebar3_format
-	@rsync -avq --exclude='test_app' . test_app/after/_checkouts/rebar3_format
-	@cd test_app/after && $(REBAR) format
+test: run diff
 
-diff: test
-	@git --no-pager diff --no-index -- test_app/src test_app/after/src
+run:
+	@cd test_app && rebar3 format --output formatted
+
+diff:
+	@git --no-pager diff --no-index -- test_app/after test_app/formatted
 
 compile:
 	@rebar3 compile && cd test_app && rebar3 compile
 
 clean:
-	@rm -rf _build test_app/_build test_app/after
+	@rm -rf _build test_app/_build test_app/formatted
