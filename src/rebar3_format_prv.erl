@@ -74,7 +74,6 @@ get_output_dir(State) ->
 get_opts(State) ->
     maps:from_list(rebar_state:get(State, format, [])).
 
-%% @todo Actually format the files
 -spec format(
     [file:filename_all()], rebar3_formatter:opts()
 ) -> ok | {error, term()}.
