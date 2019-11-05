@@ -11,12 +11,13 @@
 }.
 -export_type [opts/0].
 
--spec format(opts(), file:filename_all()) -> ok.
+-spec format(file:filename_all(), opts()) -> ok.
 format(File, Opts) ->
     rebar_api:debug("Formatting ~p with ~p", [File, Opts]),
     AST = get_ast(File, Opts),
-    Comments = get_comments(File, Opts),
-    format(File, AST, Comments, Opts).
+    Comments = get_comments(File),
+    FileOpts = maps:merge(Opts, get_per_file_opts(AST)),
+    format(File, AST, Comments, FileOpts).
 
 get_ast(File, Opts) ->
     Includes = maps:get(includes, Opts, []),
@@ -33,8 +34,11 @@ get_ast(File, Opts) ->
         {error, OpenError} -> erlang:error(OpenError)
     end.
 
-get_comments(File, _Opts) ->
+get_comments(File) ->
     erl_comment_scan:file(File).
+
+get_per_file_opts(AST) ->
+    maps:from_list([Opt || {attribute, _, format, Opts} <- AST, Opt <- Opts]).
 
 format(File, AST, Comments, Opts) ->
     Hook = fun format_hook/3,

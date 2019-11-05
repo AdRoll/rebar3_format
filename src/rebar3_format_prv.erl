@@ -47,7 +47,7 @@ do(State) ->
     end.
 
 -spec format_error(any()) ->  iodata().
-format_error({_, erl_parse, Error}) ->
+format_error({erl_parse, Error}) ->
     io_lib:format(
         "Formatting error: ~s."
         "Try running with DEBUG=1 for more information",
@@ -83,5 +83,6 @@ format(Files, Opts) ->
         Files
     )
     catch
-        _:Error -> {error, Error}
+        _:{_, erl_parse, Error} ->
+            {error, {erl_parse, Error}}
     end.

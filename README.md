@@ -27,15 +27,28 @@ Also you can save the formatted files in a different directory passing it as a p
 The plugin supports the following configuration options in the `format` section of `rebar.config`:
 
 * `includes`(`[file:name()]`):
-    - List of paths where to find hrl files
+    - List of paths where to find hrl files.
+    - The default value is `[]`.
 * `macros`(`epp:macros()`):
-    - List of predefined macros
+    - List of predefined macros.
+    - The default value is `[]`.
 * `encoding`(`none | epp:source_encoding()`):
-    - Encoding to use when writing files
+    - Encoding to use when writing files.
+    - The default value is `none`.
 * `paper`(`pos_integer()`):
-    - Specifies the preferred maximum number of characters on any line, including indentation. The default value is `100`.
+    - Specifies the preferred maximum number of characters on any line, including indentation.
+    - The default value is `100`.
 * `ribbon`(`pos_integer(`):
-    - Specifies the preferred maximum number of characters on any line, not counting indentation. The default value is `80`.
+    - Specifies the preferred maximum number of characters on any line, not counting indentation.
+    - The default value is `80`.
+
+### Per-File Configuration
+
+You can tweak any of the options above for a particular file, using the `format` attribute in it, like this:
+
+```erlang
+-format([{paper, 80}]).
+```
 
 ## Test
 
