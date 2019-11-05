@@ -1,4 +1,4 @@
--module(weird).
+-module(weird).   % This is a comment!
 
 -export([ugly/2, nospaces/1, newlines/1, cases/1]).
 
@@ -15,10 +15,14 @@ nospaces(_) -> it, is, ok.
 -spec newlines(Num :: integer()) -> list().
 
 newlines(Num) ->
-    List = [{X, Y} || X <- lists:seq(1, Num), Y <- [a, b]],
+    List = [{X, Y}
+	    || X <- lists:seq(1, Num),
+	       % Weird comment here!
+	       Y <- [a, b]],
     io:format("~p~n", [List]),
     List.
 
+%% @doc No specs!
 cases(V) when is_list(V) ->
     case V of
       [] -> ok;

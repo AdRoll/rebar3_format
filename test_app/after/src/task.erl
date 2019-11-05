@@ -10,8 +10,10 @@
 
 -export([name/1, mfa/1]).
 
+%% @doc Stops the given task.
 -callback stop(Name :: atom()) -> ok | {error, reason()}.
 
+%% @doc Starts the specified task.
 -callback start(task_spec()) -> any().
 
 -spec name(Spec :: task_spec()) -> atom().

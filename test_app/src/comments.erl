@@ -1,14 +1,26 @@
--module(comments).   % module attribute
--export([fact/1]).   % module attribute
--some(thing).        % module attribute
+-module(comments).   % module attribute comment
+-export([fact/1]).   % export attribute comment
+-some(thing).        % some attribute comment
 
 % Regular comment
 -export([
   dummy_fn/1,
-  % Plz keep me!
-  heredoc/0
+  % Plz keep me! << this comment will be misplaced
+  multiline/0
 ]).
 
+-record(small, {
+    f1, % The first field
+    f2  % The second field
+}).
+
+-record(large, {
+    large_field_1, % The first field
+    large_field_2, % The second field
+    large_field_3, % The third field
+    large_field_4,
+    large_field_5  % The previous one didn't have a comment but this one has a very long one (really really long)
+}).
 
 %% @doc This will all be part of the first paragraph.
 %% It can stretch over several lines and contain <em>any XHTML markup</em>.
@@ -31,11 +43,11 @@ dummy_fn(A) ->
 % This is
 % a multiline
 % comment
-heredoc() ->
-  X="""
+multiline() ->
+  X="
 This is
 a multiline
-heredoc
-""",
+string
+",
 {ok, X}.
 
