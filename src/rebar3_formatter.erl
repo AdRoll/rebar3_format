@@ -40,10 +40,18 @@ format(File, AST, Opts) ->
             OutputDir -> filename:join(filename:absname(OutputDir), File)
         end,
     ok = filelib:ensure_dir(FinalFile),
-    FormatOpts = [{paper, Paper}, {ribbon, Ribbon}, {encoding, Encoding}],
+    FormatOpts = [
+        {hook, Hook},
+        {user, User},
+        {paper, Paper},
+        {ribbon, Ribbon},
+        {encoding, Encoding}
+    ],
     FilteredAST = lists:filter(fun is_original/1, AST),
     rebar_api:debug("~s looks like:~n~p", [File, FilteredAST]),
-    Formatted = erl_prettypr:format(erl_syntax:form_list(FilteredAST), FormatOpts),
+    Formatted =
+        erl_prettypr:format(
+            erl_syntax:form_list(FilteredAST), FormatOpts),
     rebar_api:debug("~s NOW looks like:~n~p", [File, Formatted]),
     file:write_file(FinalFile, Formatted).
 

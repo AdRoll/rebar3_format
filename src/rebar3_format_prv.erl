@@ -48,7 +48,11 @@ do(State) ->
 
 -spec format_error(any()) ->  iodata().
 format_error({_, erl_parse, Error}) ->
-    io_lib:format("Formatting error: ~s. Try running with DEBUG=1 for more information", [Error]);
+    io_lib:format(
+        "Formatting error: ~s."
+        "Try running with DEBUG=1 for more information",
+        [Error]
+    );
 format_error(Reason) ->
     ["Unknown Formatting Error: ", io_lib:format("~p", [Reason])].
 
@@ -71,9 +75,14 @@ get_opts(State) ->
     maps:from_list(rebar_state:get(State, format, [])).
 
 %% @todo Actually format the files
--spec format([file:filename_all()], rebar3_formatter:opts()) -> ok | {error, term()}.
+-spec format(
+    [file:filename_all()], rebar3_formatter:opts()
+) -> ok | {error, term()}.
 format(Files, Opts) ->
-    try lists:foreach(fun(File) -> rebar3_formatter:format(File, Opts) end, Files)
+    try lists:foreach(
+        fun(File) -> rebar3_formatter:format(File, Opts) end,
+        Files
+    )
     catch
         _:Error -> {error, Error}
     end.
