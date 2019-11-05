@@ -3,6 +3,8 @@ REBAR?=./rebar3
 
 test:
 	@rsync -avq --exclude='after' --exclude='_build' --exclude='_checkouts' test_app/ test_app/after
+	@mkdir -p test_app/after/_checkouts/rebar3_format
+	@rsync -avq --exclude='test_app' . test_app/after/_checkouts/rebar3_format
 	@cd test_app/after && $(REBAR) format
 
 diff: test
