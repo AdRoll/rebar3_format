@@ -34,12 +34,18 @@ format(File, AST, Opts) ->
     Paper = maps:get(paper, Opts, 100),
     Ribbon = maps:get(ribbon, Opts, 80),
     Encoding = maps:get(encoding, Opts, latin1),
+    FinalFile = 
+        case maps:get(output_dir, Opts) of
+            undefined -> File;
+            OutputDir -> filename:join(filename:absname(OutputDir), File)
+        end,
+    ok = filelib:ensure_dir(FinalFile),
     FormatOpts = [{paper, Paper}, {ribbon, Ribbon}, {encoding, Encoding}],
     FilteredAST = lists:filter(fun is_original/1, AST),
     rebar_api:debug("~s looks like:~n~p", [File, FilteredAST]),
     Formatted = erl_prettypr:format(erl_syntax:form_list(FilteredAST), FormatOpts),
     rebar_api:debug("~s NOW looks like:~n~p", [File, Formatted]),
-    file:write_file(File, Formatted).
+    file:write_file(FinalFile, Formatted).
 
 is_original({attribute, 1, file, _}) -> false;
 is_original({attribute, [{generated, true} | _], _, _}) -> false;

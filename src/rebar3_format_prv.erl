@@ -10,13 +10,22 @@ init(State) ->
         {bare, true},
         {deps, [app_discovery]},
         {example, "rebar3 format [file(s)]"},
-        {opts, [{
-            files,
-            $f,
-            "files",
-            {string, "src/**/*.?rl"},
-            "List of files and folders to be formatted"
-        }]},
+        {opts, [
+            {
+                files,
+                $f,
+                "files",
+                {string, "src/**/*.?rl"},
+                "List of files and directories to be formatted"
+            },
+            {
+                output,
+                $o,
+                "output",
+                string,
+                "Output directory for the formatted files"
+            }
+        ]},
         {short_desc, "A rebar plugin for code formatting"},
         {desc, ""}
     ]),
@@ -27,7 +36,8 @@ init(State) ->
 do(State) ->
     Files = get_files(State),
     rebar_api:debug("Found ~p files: ~p", [length(Files), Files]),
-    Opts = get_opts(State),
+    OutputDirOpt = get_output_dir(State),
+    Opts = maps:put(output_dir, OutputDirOpt, get_opts(State)),
     rebar_api:debug("Formatter options: ~p", [Opts]),
     case format(Files, Opts) of
         ok ->
@@ -47,6 +57,14 @@ get_files(State) ->
     {Args, _} = rebar_state:command_parsed_args(State),
     {files, Wildcard} = lists:keyfind(files, 1, Args),
     filelib:wildcard(Wildcard).
+
+-spec get_output_dir(rebar_state:t()) -> undefined | string().
+get_output_dir(State) ->
+    {Args, _} = rebar_state:command_parsed_args(State),
+    case lists:keyfind(output, 1, Args) of
+        {output, OutputDir} -> OutputDir;
+        false -> undefined
+    end.
 
 -spec get_opts(rebar_state:t()) -> rebar3_formatter:opts().
 get_opts(State) ->

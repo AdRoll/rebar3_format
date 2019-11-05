@@ -18,6 +18,10 @@ Then just call your plugin directly in an existing application:
 
     $ rebar3 format
 
+Also you can save the formatted files in a different directory passing it as a parameter:
+
+    $ rebar3 format --output formatted/
+
 ## Configuration
 
 The plugin supports the following configuration options in the `format` section of `rebar.config`:
