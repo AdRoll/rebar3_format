@@ -636,7 +636,7 @@ lay_2(Node, Ctxt) ->
             Ctxt1 = reset_prec(Ctxt),
             D1 = lay(erl_syntax:named_fun_expr_name(Node), Ctxt1),
             D = lay_clauses(erl_syntax:named_fun_expr_clauses(Node),
-                            {function,D1}, Ctxt1),
+                            {function, D1}, Ctxt1),
             sep([follow(text("fun"), D, Ctxt1#ctxt.sub_indent),
                  text("end")]);
 
@@ -1258,7 +1258,7 @@ dodge_macros(Type) ->
                     macro ->
                         Var = erl_syntax:macro_name(T),
                         VarName0 = erl_syntax:variable_name(Var),
-                        VarName = list_to_atom("?"++atom_to_list(VarName0)),
+                        VarName = list_to_atom("?" ++ atom_to_list(VarName0)),
                         Atom = erl_syntax:atom(VarName),
                         Atom;
                     _ -> T
@@ -1401,7 +1401,7 @@ lay_error_info({L, M, T}=T0, Ctxt) when is_integer(L), is_atom(M) ->
     case catch M:format_error(T) of
 	S when is_list(S) ->
 	    if L > 0 ->
-		    beside(text(io_lib:format("~w: ",[L])), text(S));
+		    beside(text(io_lib:format("~w: ", [L])), text(S));
 	       true ->
 		    text(S)
 	    end;
