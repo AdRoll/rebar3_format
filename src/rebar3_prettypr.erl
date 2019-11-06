@@ -364,27 +364,27 @@ lay(Node, Ctxt) ->
     case erl_syntax:get_ann(Node) of
   [] ->
       %% Hooks are not called if there are no annotations.
-      lay_1(Node, Ctxt);
+      lay_with_comments(Node, Ctxt);
   _As ->
       case Ctxt#ctxt.hook of
     ?NOHOOK ->
-        lay_1(Node, Ctxt);
+        lay_with_comments(Node, Ctxt);
     Hook ->
-        Hook(Node, Ctxt, fun lay_1/2)
+        Hook(Node, Ctxt, fun lay_with_comments/2)
       end
     end.
 
 %% This handles attached comments:
 
-lay_1(Node, Ctxt) ->
+lay_with_comments(Node, Ctxt) ->
     case erl_syntax:has_comments(Node) of
   true ->
-      D1 = lay_2(Node, Ctxt),
+      D1 = lay_no_comments(Node, Ctxt),
       D2 = lay_postcomments(erl_syntax:get_postcomments(Node),
           D1),
       lay_precomments(erl_syntax:get_precomments(Node), D2);
   false ->
-      lay_2(Node, Ctxt)
+      lay_no_comments(Node, Ctxt)
     end.
 
 %% For pre-comments, all padding is ignored.
@@ -444,7 +444,7 @@ add_comment_prefix(S) ->
 
 %% This part ignores annotations and comments:
 
-lay_2(Node, Ctxt) ->
+lay_no_comments(Node, Ctxt) ->
     case erl_syntax:type(Node) of
   %% We list literals and other common cases first.
 
@@ -1283,62 +1283,62 @@ lay_string(S, Ctxt) ->
     %% S includes leading/trailing double-quote characters. The segment
     %% width is 2/3 of the ribbon width - this seems to work well.
     W = (Ctxt#ctxt.ribbon * 2) div 3,
-    lay_string_1(S, length(S), W).
+    lay_string(S, length(S), W).
 
-lay_string_1(S, L, W) when L > W, W > 0 ->
+lay_string(S, L, W) when L > W, W > 0 ->
     %% Note that L is the minimum, not the exact, printed length.
     case split_string(S, W - 1, L) of
   {_S1, ""} ->
     text(S);
   {S1, S2} ->
     above(text(S1 ++ "\""),
-    lay_string_1([$" | S2], L - W + 1, W))  %" stupid emacs
+    lay_string([$" | S2], L - W + 1, W))  %" stupid emacs
   end;
-lay_string_1(S, _L, _W) ->
+lay_string(S, _L, _W) ->
     text(S).
 
 split_string(Xs, N, L) ->
-    split_string_1(Xs, N, L, []).
+    split_string_first(Xs, N, L, []).
 
 %% We only split strings at whitespace, if possible. We must make sure
 %% we do not split an escape sequence.
 
-split_string_1([$\s | Xs], N, L, As) when N =< 0, L >= 5 ->
+split_string_first([$\s | Xs], N, L, As) when N =< 0, L >= 5 ->
     {lists:reverse([$\s | As]), Xs};
-split_string_1([$\t | Xs], N, L, As) when N =< 0, L >= 5 ->
+split_string_first([$\t | Xs], N, L, As) when N =< 0, L >= 5 ->
     {lists:reverse([$t, $\\ | As]), Xs};
-split_string_1([$\n | Xs], N, L, As) when N =< 0, L >= 5 ->
+split_string_first([$\n | Xs], N, L, As) when N =< 0, L >= 5 ->
     {lists:reverse([$n, $\\ | As]), Xs};
-split_string_1([$\\ | Xs], N, L, As) ->
-    split_string_2(Xs, N - 1, L - 1, [$\\ | As]);
-split_string_1(Xs, N, L, As) when N =< -10, L >= 5 ->
+split_string_first([$\\ | Xs], N, L, As) ->
+    split_string_second(Xs, N - 1, L - 1, [$\\ | As]);
+split_string_first(Xs, N, L, As) when N =< -10, L >= 5 ->
     {lists:reverse(As), Xs};
-split_string_1([X | Xs], N, L, As) ->
-    split_string_1(Xs, N - 1, L - 1, [X | As]);
-split_string_1([], _N, _L, As) ->
+split_string_first([X | Xs], N, L, As) ->
+    split_string_first(Xs, N - 1, L - 1, [X | As]);
+split_string_first([], _N, _L, As) ->
     {lists:reverse(As), ""}.
 
-split_string_2([$^, X | Xs], N, L, As) ->
-    split_string_1(Xs, N - 2, L - 2, [X, $^ | As]);
-split_string_2([$x, ${ | Xs], N, L, As) ->
-    split_string_3(Xs, N - 2, L - 2, [${, $x | As]);
-split_string_2([X1, X2, X3 | Xs], N, L, As) when
+split_string_second([$^, X | Xs], N, L, As) ->
+    split_string_first(Xs, N - 2, L - 2, [X, $^ | As]);
+split_string_second([$x, ${ | Xs], N, L, As) ->
+    split_string_third(Xs, N - 2, L - 2, [${, $x | As]);
+split_string_second([X1, X2, X3 | Xs], N, L, As) when
   X1 >= $0, X1 =< $7, X2 >= $0, X2 =< $7, X3 >= $0, X3 =< $7 ->
-    split_string_1(Xs, N - 3, L - 3, [X3, X2, X1 | As]);
-split_string_2([X1, X2 | Xs], N, L, As) when
+    split_string_first(Xs, N - 3, L - 3, [X3, X2, X1 | As]);
+split_string_second([X1, X2 | Xs], N, L, As) when
   X1 >= $0, X1 =< $7, X2 >= $0, X2 =< $7 ->
-    split_string_1(Xs, N - 2, L - 2, [X2, X1 | As]);
-split_string_2([X | Xs], N, L, As) ->
-    split_string_1(Xs, N - 1, L - 1, [X | As]).
+    split_string_first(Xs, N - 2, L - 2, [X2, X1 | As]);
+split_string_second([X | Xs], N, L, As) ->
+    split_string_first(Xs, N - 1, L - 1, [X | As]).
 
-split_string_3([$} | Xs], N, L, As) ->
-    split_string_1(Xs, N - 1, L - 1, [$} | As]);
-split_string_3([X | Xs], N, L, As) when
+split_string_third([$} | Xs], N, L, As) ->
+    split_string_first(Xs, N - 1, L - 1, [$} | As]);
+split_string_third([X | Xs], N, L, As) when
   X >= $0, X =< $9; X >= $a, X =< $z; X >= $A, X =< $Z ->
-    split_string_3(Xs, N - 1, L -1, [X | As]);
-split_string_3([X | Xs], N, L, As) when
+    split_string_third(Xs, N - 1, L -1, [X | As]);
+split_string_third([X | Xs], N, L, As) when
   X >= $0, X =< $9 ->
-    split_string_1(Xs, N - 1, L -1, [X | As]).
+    split_string_first(Xs, N - 1, L -1, [X | As]).
 
 %% Note that there is nothing in `lay_clauses' that actually requires
 %% that the elements have type `clause'; it just sets up the proper
@@ -1396,7 +1396,7 @@ lay_bit_types([T | Ts], Ctxt) ->
     lay_bit_types(Ts, Ctxt))).
 
 lay_error_info({L, M, T}=T0, Ctxt) when is_integer(L), is_atom(M) ->
-    case catch M:format_error(T) of
+    case catch apply(M, format_error, [T]) of
   S when is_list(S) ->
       case L > 0 of
         true -> beside(text(io_lib:format("~w: ", [L])), text(S));
@@ -1464,32 +1464,32 @@ spaces(_) ->
     [].
 
 tidy_float([$., C | Cs]) ->
-    [$., C | tidy_float_1(Cs)];  % preserve first decimal digit
+    [$., C | tidy_float_first(Cs)];  % preserve first decimal digit
 tidy_float([$e | _] = Cs) ->
-    tidy_float_2(Cs);
+    tidy_float_second(Cs);
 tidy_float([C | Cs]) ->
     [C | tidy_float(Cs)];
 tidy_float([]) ->
     [].
 
-tidy_float_1([$0, $0, $0 | Cs]) ->
-    tidy_float_2(Cs);    % cut mantissa at three consecutive zeros.
-tidy_float_1([$e | _] = Cs) ->
-    tidy_float_2(Cs);
-tidy_float_1([C | Cs]) ->
-    [C | tidy_float_1(Cs)];
-tidy_float_1([]) ->
+tidy_float_first([$0, $0, $0 | Cs]) ->
+    tidy_float_second(Cs);    % cut mantissa at three consecutive zeros.
+tidy_float_first([$e | _] = Cs) ->
+    tidy_float_second(Cs);
+tidy_float_first([C | Cs]) ->
+    [C | tidy_float_first(Cs)];
+tidy_float_first([]) ->
     [].
 
-tidy_float_2([$e, $+, $0]) -> [];
-tidy_float_2([$e, $+, $0 | Cs]) -> tidy_float_2([$e, $+ | Cs]);
-tidy_float_2([$e, $+ | _] = Cs) -> Cs;
-tidy_float_2([$e, $-, $0]) -> [];
-tidy_float_2([$e, $-, $0 | Cs]) -> tidy_float_2([$e, $- | Cs]);
-tidy_float_2([$e, $- | _] = Cs) -> Cs;
-tidy_float_2([$e | Cs]) -> tidy_float_2([$e, $+ | Cs]);
-tidy_float_2([_C | Cs]) -> tidy_float_2(Cs);
-tidy_float_2([]) -> [].
+tidy_float_second([$e, $+, $0]) -> [];
+tidy_float_second([$e, $+, $0 | Cs]) -> tidy_float_second([$e, $+ | Cs]);
+tidy_float_second([$e, $+ | _] = Cs) -> Cs;
+tidy_float_second([$e, $-, $0]) -> [];
+tidy_float_second([$e, $-, $0 | Cs]) -> tidy_float_second([$e, $- | Cs]);
+tidy_float_second([$e, $- | _] = Cs) -> Cs;
+tidy_float_second([$e | Cs]) -> tidy_float_second([$e, $+ | Cs]);
+tidy_float_second([_C | Cs]) -> tidy_float_second(Cs);
+tidy_float_second([]) -> [].
 
 
 %% =====================================================================
