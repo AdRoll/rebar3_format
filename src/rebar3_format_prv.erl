@@ -46,7 +46,7 @@ do(State) ->
             {error, format_error(Error)}
     end.
 
--spec format_error(any()) ->  iodata().
+-spec format_error(any()) -> iolist().
 format_error({erl_parse, Error}) ->
     io_lib:format(
         "Formatting error: ~s."
@@ -54,7 +54,7 @@ format_error({erl_parse, Error}) ->
         [Error]
     );
 format_error(Reason) ->
-    ["Unknown Formatting Error: ", io_lib:format("~p", [Reason])].
+    io_lib:format("Unknown Formatting Error: ~p", [Reason]).
 
 -spec get_files(rebar_state:t()) -> [file:filename_all()].
 get_files(State) ->

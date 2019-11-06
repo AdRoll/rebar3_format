@@ -3,6 +3,7 @@
 -export([format/2]).
 
 -type opts() :: #{
+    output_dir => undefined | string(),
     includes => [file:name()],
     macros => epp:macros(),
     encoding => none | epp:source_encoding(),
