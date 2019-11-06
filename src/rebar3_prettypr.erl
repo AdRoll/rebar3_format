@@ -1360,24 +1360,20 @@ make_fun_clause(N, P, G, B, Ctxt) ->
     D = make_fun_clause_head(N, P, Ctxt),
     make_case_clause(D, G, B, Ctxt).
 
+make_fun_clause_head(N, P, Ctxt) when N =:= none ->
+    lay_parentheses(P, Ctxt);
 make_fun_clause_head(N, P, Ctxt) ->
-    D = lay_parentheses(P, Ctxt),
-    if N =:= none ->
-      D;
-    true ->
-      beside(N, D)
-    end.
+    beside(N, lay_parentheses(P, Ctxt)).
 
 make_case_clause(P, G, B, Ctxt) ->
     append_clause_body(B, append_guard(G, P, Ctxt), Ctxt).
 
 make_if_clause(_P, G, B, Ctxt) ->
     %% We ignore the patterns; they should be empty anyway.
-    G1 = if G =:= none ->
-      text("true");
-    true ->
-      G
-  end,
+    G1 = case G of
+      none -> text("true");
+      _ -> G
+    end,
     append_clause_body(B, G1, Ctxt).
 
 append_clause_body(B, D, Ctxt) ->
@@ -1402,10 +1398,9 @@ lay_bit_types([T | Ts], Ctxt) ->
 lay_error_info({L, M, T}=T0, Ctxt) when is_integer(L), is_atom(M) ->
     case catch M:format_error(T) of
   S when is_list(S) ->
-      if L > 0 ->
-        beside(text(io_lib:format("~w: ", [L])), text(S));
-      true ->
-        text(S)
+      case L > 0 of
+        true -> beside(text(io_lib:format("~w: ", [L])), text(S));
+        _ -> text(S)
       end;
   _ ->
       lay_concrete(T0, Ctxt)
