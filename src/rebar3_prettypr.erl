@@ -676,21 +676,7 @@ lay_2(Node, Ctxt) ->
                         [SpecTuple] = Args,
                         [FuncName, FuncTypes] =
                             erl_syntax:tuple_elements(SpecTuple),
-                        Name =
-                            case erl_syntax:type(FuncName) of
-                                tuple ->
-                                    case erl_syntax:tuple_elements(FuncName) of
-                                        [F0, _] ->
-                                            F0;
-                                        [M0, F0, _] ->
-                                            erl_syntax:module_qualifier(M0,
-                                                                        F0);
-                                        _ ->
-                                            FuncName
-                                    end;
-                                _ ->
-                                    FuncName
-                            end,
+                        Name = get_func_node(FuncName),
                         Types = dodge_macros(FuncTypes),
                         D1 = lay_clauses(erl_syntax:concrete(Types),
                                           spec, Ctxt1),
@@ -1214,9 +1200,10 @@ lay_2(Node, Ctxt) ->
             maybe_parentheses(Es, Prec, Ctxt);
 
         user_type_application ->
-            lay_type_application(erl_syntax:user_type_application_name(Node),
-                                 erl_syntax:user_type_application_arguments(Node),
-                                 Ctxt)
+            lay_type_application(
+                erl_syntax:user_type_application_name(Node),
+                erl_syntax:user_type_application_arguments(Node),
+                Ctxt)
 
     end.
 
@@ -1243,6 +1230,21 @@ is_subtype(Name, [Var, _]) ->
     (erl_syntax:is_atom(Name, is_subtype) andalso
      erl_syntax:type(Var) =:= variable);
 is_subtype(_, _) -> false.
+
+get_func_node(Node) ->
+  case erl_syntax:type(Node) of
+    tuple ->
+      case erl_syntax:tuple_elements(Node) of
+        [F0, _] ->
+          F0;
+        [M0, F0, _] ->
+          erl_syntax:module_qualifier(M0, F0);
+        _ ->
+          Node
+      end;
+    _ ->
+      Node
+  end.
 
 unfold_function_names(Ns) ->
     F = fun ({Atom, Arity}) ->
