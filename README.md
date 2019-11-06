@@ -44,7 +44,7 @@ The plugin supports the following configuration options in the `format` section 
 * `paper`(`pos_integer()`):
     - Specifies the preferred maximum number of characters on any line, including indentation.
     - The default value is `100`.
-* `ribbon`(`pos_integer(`):
+* `ribbon`(`pos_integer()`):
     - Specifies the preferred maximum number of characters on any line, not counting indentation.
     - The default value is `80`.
 
