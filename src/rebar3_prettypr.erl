@@ -447,36 +447,36 @@ add_comment_prefix(S) ->
 lay_2(Node, Ctxt) ->
     case erl_syntax:type(Node) of
 	%% We list literals and other common cases first.
-	
+
 	variable ->
-	    text(erl_syntax:variable_literal(Node));
-	
+      text(erl_syntax:variable_literal(Node));
+
 	atom ->
-	    text(erl_syntax:atom_literal(Node, Ctxt#ctxt.encoding));
-	
+      text(erl_syntax:atom_literal(Node, Ctxt#ctxt.encoding));
+
 	integer ->
-	    text(erl_syntax:integer_literal(Node));
+      text(erl_syntax:integer_literal(Node));
 
 	float ->
-	    text(tidy_float(erl_syntax:float_literal(Node)));
-	
+      text(tidy_float(erl_syntax:float_literal(Node)));
+
 	char ->
-	    text(erl_syntax:char_literal(Node, Ctxt#ctxt.encoding));
-	
+      text(erl_syntax:char_literal(Node, Ctxt#ctxt.encoding));
+
 	string ->
-	    lay_string(erl_syntax:string_literal(Node, Ctxt#ctxt.encoding), Ctxt);
+      lay_string(erl_syntax:string_literal(Node, Ctxt#ctxt.encoding), Ctxt);
 
 	nil ->
-	    text("[]");
+      text("[]");
 
 	tuple ->
-	    Es = seq(erl_syntax:tuple_elements(Node),
-		     floating(text(",")), reset_prec(Ctxt),
-		     fun lay/2),
-	    beside(floating(text("{")),
-		   beside(par(Es),
-			  floating(text("}"))));
-	
+      Es = seq(erl_syntax:tuple_elements(Node),
+        floating(text(",")), reset_prec(Ctxt),
+        fun lay/2),
+      beside(floating(text("{")),
+      beside(par(Es),
+      floating(text("}"))));
+
 	list ->
 	    Ctxt1 = reset_prec(Ctxt),
 	    Node1 = erl_syntax:compact_list(Node),
@@ -497,7 +497,7 @@ lay_2(Node, Ctxt) ->
 
 	operator ->
 	    floating(text(erl_syntax:operator_literal(Node)));
-	
+
 	infix_expr ->
 	    Operator = erl_syntax:infix_expr_operator(Node),
 	    {PrecL, Prec, PrecR} =
@@ -515,7 +515,7 @@ lay_2(Node, Ctxt) ->
 		     set_prec(Ctxt, PrecR)),
 	    D4 = par([D1, D2, D3], Ctxt#ctxt.sub_indent),
 	    maybe_parentheses(D4, Prec, Ctxt);
-	
+
 	prefix_expr ->
 	    Operator = erl_syntax:prefix_expr_operator(Node),
 	    {{Prec, PrecR}, Name} =
@@ -538,7 +538,7 @@ lay_2(Node, Ctxt) ->
 			 par([D1, D2], Ctxt#ctxt.sub_indent)
 		 end,
 	    maybe_parentheses(D3, Prec, Ctxt);
-	
+
 	application ->
 	    {PrecL, Prec} = func_prec(),
 	    D = lay(erl_syntax:application_operator(Node),
@@ -550,7 +550,7 @@ lay_2(Node, Ctxt) ->
 				  beside(par(As),
 					 floating(text(")"))))),
 	    maybe_parentheses(D1, Prec, Ctxt);
-	
+
 	match_expr ->
 	    {PrecL, Prec, PrecR} = inop_prec('='),
 	    D1 = lay(erl_syntax:match_expr_pattern(Node),
@@ -617,7 +617,7 @@ lay_2(Node, Ctxt) ->
 		     Ctxt1#ctxt.break_indent),
 		 nest(Ctxt1#ctxt.sub_indent, D2),
 		 text("end")]);
-	
+
 	if_expr ->
 	    Ctxt1 = reset_prec(Ctxt),
 	    D = lay_clauses(erl_syntax:if_expr_clauses(Node),
@@ -801,7 +801,7 @@ lay_2(Node, Ctxt) ->
 	    sep(seq(erl_syntax:disjunction_body(Node),
 		    floating(text(";")), reset_prec(Ctxt),
 		    fun lay/2));
-	    
+
 	error_marker ->
 	    E = erl_syntax:error_marker_info(Node),
 	    beside(text("** "),
@@ -810,7 +810,7 @@ lay_2(Node, Ctxt) ->
 
 	eof_marker ->
 	    empty();
-	
+
 	form_list ->
 	    Es = seq(erl_syntax:form_list_elements(Node), none,
 		     reset_prec(Ctxt), fun lay/2),
@@ -914,7 +914,7 @@ lay_2(Node, Ctxt) ->
 	    maybe_parentheses(beside(D1, D3), Prec, Ctxt);
 
 	record_expr ->
-	    {PrecL, Prec, _} = inop_prec('#'),	  
+	    {PrecL, Prec, _} = inop_prec('#'),
 	    Ctxt1 = reset_prec(Ctxt),
 	    D1 = lay(erl_syntax:record_expr_type(Node), Ctxt1),
 	    D2 = par(seq(erl_syntax:record_expr_fields(Node),
@@ -930,7 +930,7 @@ lay_2(Node, Ctxt) ->
 			 beside(lay(A, set_prec(Ctxt, PrecL)), D3)
 		 end,
 	    maybe_parentheses(D4, Prec, Ctxt);
-	
+
 	record_field ->
 	    Ctxt1 = reset_prec(Ctxt),
 	    D1 = lay(erl_syntax:record_field_name(Node), Ctxt1),
@@ -943,7 +943,7 @@ lay_2(Node, Ctxt) ->
 	    end;
 
 	record_index_expr ->
-	    {Prec, PrecR} = preop_prec('#'),	
+	    {Prec, PrecR} = preop_prec('#'),
 	    D1 = lay(erl_syntax:record_index_expr_type(Node),
 		     reset_prec(Ctxt)),
 	    D2 = lay(erl_syntax:record_index_expr_field(Node),
@@ -1323,7 +1323,7 @@ split_string_2([$x, ${ | Xs], N, L, As) ->
 split_string_2([X1, X2, X3 | Xs], N, L, As) when
   X1 >= $0, X1 =< $7, X2 >= $0, X2 =< $7, X3 >= $0, X3 =< $7 ->
     split_string_1(Xs, N - 3, L - 3, [X3, X2, X1 | As]);
-split_string_2([X1, X2 | Xs], N, L, As) when 
+split_string_2([X1, X2 | Xs], N, L, As) when
   X1 >= $0, X1 =< $7, X2 >= $0, X2 =< $7 ->
     split_string_1(Xs, N - 2, L - 2, [X2, X1 | As]);
 split_string_2([X | Xs], N, L, As) ->
