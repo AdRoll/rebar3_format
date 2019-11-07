@@ -1,4 +1,4 @@
-.PHONY: test compile clean dialyzer lint
+.PHONY: test compile clean dialyzer lint doc
 
 test: lint dialyzer
 	@rm -rf test_app/formatted
@@ -17,3 +17,6 @@ dialyzer:
 
 lint:
 	@rebar3 lint
+
+doc:
+	@rebar3 edoc

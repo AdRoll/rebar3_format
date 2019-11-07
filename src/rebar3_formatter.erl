@@ -1,17 +1,19 @@
+%% @doc Automatic formatter for Erlang modules
 -module(rebar3_formatter).
 
 -export([format/2]).
 
 -type opts() :: #{
     output_dir => undefined | string(),
-    includes => [file:name()],
-    macros => epp:macros(),
     encoding => none | epp:source_encoding(),
     paper => pos_integer(),
     ribbon => pos_integer()
 }.
 -export_type [opts/0].
 
+%% @doc Format a file.
+%%      Apply formatting rules to a file containing erlang code.
+%%      Use <code>Opts</code> to configure the formatter.
 -spec format(file:filename_all(), opts()) -> ok.
 format(File, Opts) ->
     rebar_api:debug("Formatting ~p with ~p", [File, Opts]),

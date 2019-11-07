@@ -1,7 +1,9 @@
+%%% @doc Plugin provider for rebar3
 -module(rebar3_format_prv).
 
 -export([init/1, do/1, format_error/1]).
 
+%% @private
 -spec init(rebar_state:t()) -> {ok, rebar_state:t()}.
 init(State) ->
     Provider = providers:create([
@@ -31,7 +33,7 @@ init(State) ->
     ]),
     {ok, rebar_state:add_provider(State, Provider)}.
 
-
+%% @private
 -spec do(rebar_state:t()) -> {ok, rebar_state:t()} | {error, string()}.
 do(State) ->
     Files = get_files(State),
@@ -46,6 +48,7 @@ do(State) ->
             {error, format_error(Error)}
     end.
 
+%% @private
 -spec format_error(any()) -> iolist().
 format_error({erl_parse, Error}) ->
     io_lib:format(
