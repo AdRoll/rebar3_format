@@ -32,12 +32,6 @@ To save the formatted files in a different directory you have to pass it as a pa
 
 The plugin supports the following configuration options in the `format` section of `rebar.config`:
 
-* `includes`(`[file:name()]`):
-    - List of paths where to find hrl files.
-    - The default value is `[]`.
-* `macros`(`epp:macros()`):
-    - List of predefined macros.
-    - The default value is `[]`.
 * `encoding`(`none | epp:source_encoding()`):
     - Encoding to use when writing files.
     - The default value is `none`.
