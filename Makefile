@@ -13,7 +13,7 @@ clean:
 	@rm -rf _build test_app/_build test_app/formatted
 
 dialyzer:
-	@rebar3 dialyzer || @rebar3 dialyzer
+	@rebar3 dialyzer || rebar3 dialyzer
 
 lint:
 	@rebar3 lint
