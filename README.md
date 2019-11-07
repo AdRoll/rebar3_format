@@ -60,3 +60,7 @@ The `after` results can be tought as the **expected output** behaviour.
 It should be no changes afterwards when running `make test`, unless the format rules got updated.
 
 You can run `make diff` to check diff between `test_app/src` and `test_app/after/src`.
+
+## Contribute
+
+To contribute to rebar3_format, please refer to [CONTRIBUTING](CONTRIBUTING.md).
