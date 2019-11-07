@@ -540,16 +540,10 @@ lay_no_comments(Node, Ctxt) ->
       maybe_parentheses(D3, Prec, Ctxt);
 
   application ->
-      {PrecL, Prec} = func_prec(),
-      D = lay(erl_syntax:application_operator(Node),
-        set_prec(Ctxt, PrecL)),
-      As = seq(erl_syntax:application_arguments(Node),
-          lay_text_float(","), reset_prec(Ctxt),
-          fun lay/2),
-      D1 = beside(D, beside(text("("),
-          beside(par(As),
-            lay_text_float(")")))),
-      maybe_parentheses(D1, Prec, Ctxt);
+      lay_type_application(
+        erl_syntax:application_operator(Node),
+        erl_syntax:application_arguments(Node),
+        Ctxt);
 
   match_expr ->
       {PrecL, Prec, PrecR} = inop_prec('='),
@@ -627,18 +621,16 @@ lay_no_comments(Node, Ctxt) ->
 
   fun_expr ->
       Ctxt1 = reset_prec(Ctxt),
-      D = lay_clauses(erl_syntax:fun_expr_clauses(Node),
+      Clauses = lay_clauses(erl_syntax:fun_expr_clauses(Node),
           fun_expr, Ctxt1),
-      sep([follow(text("fun"), D, Ctxt1#ctxt.sub_indent),
-      text("end")]);
+      lay_fun_sep(Clauses, Ctxt1);
 
-        named_fun_expr ->
-            Ctxt1 = reset_prec(Ctxt),
-            D1 = lay(erl_syntax:named_fun_expr_name(Node), Ctxt1),
-            D = lay_clauses(erl_syntax:named_fun_expr_clauses(Node),
-                            {function, D1}, Ctxt1),
-            sep([follow(text("fun"), D, Ctxt1#ctxt.sub_indent),
-                  text("end")]);
+  named_fun_expr ->
+      Ctxt1 = reset_prec(Ctxt),
+      D1 = lay(erl_syntax:named_fun_expr_name(Node), Ctxt1),
+      Clauses = lay_clauses(erl_syntax:named_fun_expr_clauses(Node),
+                      {function, D1}, Ctxt1),
+      lay_fun_sep(Clauses, Ctxt1);
 
   module_qualifier ->
       {PrecL, _Prec, PrecR} = inop_prec(':'),
@@ -900,7 +892,6 @@ lay_no_comments(Node, Ctxt) ->
       maybe_parentheses(beside(D1, D3), Prec, Ctxt);
 
   record_expr ->
-      {PrecL, Prec, _} = inop_prec('#'),
       Ctxt1 = reset_prec(Ctxt),
       D1 = lay(erl_syntax:record_expr_type(Node), Ctxt1),
       D2 = par(seq(erl_syntax:record_expr_fields(Node),
@@ -909,13 +900,8 @@ lay_no_comments(Node, Ctxt) ->
       D3 = beside(beside(lay_text_float("#"), D1),
       beside(text("{"),
               beside(D2, lay_text_float("}")))),
-      D4 = case erl_syntax:record_expr_argument(Node) of
-          none ->
-        D3;
-          A ->
-        beside(lay(A, set_prec(Ctxt, PrecL)), D3)
-      end,
-      maybe_parentheses(D4, Prec, Ctxt);
+      Arg = erl_syntax:record_expr_argument(Node),
+      lay_expr_argument(Arg, D3, Ctxt);
 
   record_field ->
       Ctxt1 = reset_prec(Ctxt),
@@ -938,31 +924,23 @@ lay_no_comments(Node, Ctxt) ->
       beside(lay_text_float("."), D2)),
       maybe_parentheses(D3, Prec, Ctxt);
 
-        map_expr ->
-            {PrecL, Prec, _} = inop_prec('#'),
-            Ctxt1 = reset_prec(Ctxt),
-            D1 = par(seq(erl_syntax:map_expr_fields(Node),
-                         lay_text_float(","), Ctxt1, fun lay/2)),
-            D2 = beside(text("#{"), beside(D1, lay_text_float("}"))),
-            D3 = case erl_syntax:map_expr_argument(Node) of
-                         none ->
-                             D2;
-                         A ->
-                             beside(lay(A, set_prec(Ctxt, PrecL)), D2)
-                 end,
-            maybe_parentheses(D3, Prec, Ctxt);
+  map_expr ->
+      Ctxt1 = reset_prec(Ctxt),
+      D1 = par(seq(erl_syntax:map_expr_fields(Node),
+                    lay_text_float(","), Ctxt1, fun lay/2)),
+      D2 = beside(text("#{"), beside(D1, lay_text_float("}"))),
+      Arg = erl_syntax:map_expr_argument(Node),
+      lay_expr_argument(Arg, D2, Ctxt);
 
-        map_field_assoc ->
-            Ctxt1 = reset_prec(Ctxt),
-            D1 = lay(erl_syntax:map_field_assoc_name(Node), Ctxt1),
-            D2 = lay(erl_syntax:map_field_assoc_value(Node), Ctxt1),
-            par([D1, lay_text_float("=>"), D2], Ctxt1#ctxt.break_indent);
+  map_field_assoc ->
+      Name = erl_syntax:map_field_assoc_name(Node),
+      Value = erl_syntax:map_field_assoc_value(Node),
+      lay_type_assoc(Name, Value, Ctxt);
 
-        map_field_exact ->
-            Ctxt1 = reset_prec(Ctxt),
-            D1 = lay(erl_syntax:map_field_exact_name(Node), Ctxt1),
-            D2 = lay(erl_syntax:map_field_exact_value(Node), Ctxt1),
-            par([D1, lay_text_float(":="), D2], Ctxt1#ctxt.break_indent);
+  map_field_exact ->
+      Name = erl_syntax:map_field_exact_name(Node),
+      Value = erl_syntax:map_field_exact_value(Node),
+      lay_type_exact(Name, Value, Ctxt);
 
   size_qualifier ->
       Ctxt1 = set_prec(Ctxt, max_prec()),
@@ -1032,8 +1010,7 @@ lay_no_comments(Node, Ctxt) ->
                      reset_prec(Ctxt)),
             D2 = lay(erl_syntax:annotated_type_body(Node),
                      set_prec(Ctxt, Prec)),
-            D3 = follow(beside(D1, lay_text_float(" ::")), D2,
-                               Ctxt#ctxt.break_indent),
+            D3 = lay_follow_beside_text_float(D1, D2, Ctxt),
             maybe_parentheses(D3, Prec, Ctxt);
 
         type_application ->
@@ -1117,8 +1094,7 @@ lay_no_comments(Node, Ctxt) ->
                     {PrecL, Prec, PrecR} = type_inop_prec('::'),
                     D1 = lay(Var, set_prec(Ctxt, PrecL)),
                     D2 = lay(Type, set_prec(Ctxt, PrecR)),
-                    D3 = follow(beside(D1, lay_text_float(" ::")), D2,
-                                Ctxt#ctxt.break_indent),
+                    D3 = lay_follow_beside_text_float(D1, D2, Ctxt),
                     maybe_parentheses(D3, Prec, Ctxt);
                 false ->
                     lay_type_application(Name, Args, Ctxt)
@@ -1146,10 +1122,9 @@ lay_no_comments(Node, Ctxt) ->
             lay_type_assoc(Name, Value, Ctxt);
 
         map_type_exact ->
-            Ctxt1 = reset_prec(Ctxt),
-            D1 = lay(erl_syntax:map_type_exact_name(Node), Ctxt1),
-            D2 = lay(erl_syntax:map_type_exact_value(Node), Ctxt1),
-            par([D1, lay_text_float(":="), D2], Ctxt1#ctxt.break_indent);
+            Name = erl_syntax:map_field_exact_name(Node),
+            Value = erl_syntax:map_field_exact_value(Node),
+            lay_type_exact(Name, Value, Ctxt);
 
         integer_range_type ->
             {PrecL, Prec, PrecR} = type_inop_prec('..'),
@@ -1271,6 +1246,24 @@ dodge_macros(Type) ->
 lay_text_float(Str) ->
     floating(text(Str)).
 
+lay_follow_beside_text_float(D1, D2, Ctxt) ->
+    follow(beside(D1, lay_text_float(" ::")),
+        D2, Ctxt#ctxt.break_indent).
+
+lay_fun_sep(Clauses, Ctxt) ->
+    sep([
+        follow(text("fun"), Clauses, Ctxt#ctxt.sub_indent),
+        text("end")
+    ]).
+
+lay_expr_argument(none, D, Ctxt) ->
+    {_, Prec, _} = inop_prec('#'),
+    maybe_parentheses(D, Prec, Ctxt);
+lay_expr_argument(Arg, D, Ctxt) ->
+    {PrecL, Prec, _} = inop_prec('#'),
+    D1 = beside(lay(Arg, set_prec(Ctxt, PrecL)), D),
+    maybe_parentheses(D1, Prec, Ctxt).
+
 lay_parentheses(D, _Ctxt) ->
     beside(lay_text_float("("), beside(D, lay_text_float(")"))).
 
@@ -1316,8 +1309,8 @@ split_string_first([$\\ | Xs], N, L, As) ->
     split_string_second(Xs, N - 1, L - 1, [$\\ | As]);
 split_string_first(Xs, N, L, As) when N =< -10, L >= 5 ->
     {lists:reverse(As), Xs};
-split_string_first([X | Xs], N, L, As) ->
-    split_string_first(Xs, N - 1, L - 1, [X | As]);
+split_string_first([_ | _] = S, N, L, As) ->
+    split_string_next(S, N, L, As);
 split_string_first([], _N, _L, As) ->
     {lists:reverse(As), ""}.
 
@@ -1331,17 +1324,22 @@ split_string_second([X1, X2, X3 | Xs], N, L, As) when
 split_string_second([X1, X2 | Xs], N, L, As) when
   X1 >= $0, X1 =< $7, X2 >= $0, X2 =< $7 ->
     split_string_first(Xs, N - 2, L - 2, [X2, X1 | As]);
-split_string_second([X | Xs], N, L, As) ->
-    split_string_first(Xs, N - 1, L - 1, [X | As]).
+split_string_second(S, N, L, As) ->
+    split_string_next(S, N, L, As).
 
 split_string_third([$} | Xs], N, L, As) ->
     split_string_first(Xs, N - 1, L - 1, [$} | As]);
 split_string_third([X | Xs], N, L, As) when
   X >= $0, X =< $9; X >= $a, X =< $z; X >= $A, X =< $Z ->
-    split_string_third(Xs, N - 1, L -1, [X | As]);
-split_string_third([X | Xs], N, L, As) when
+    split_string_third(Xs, N - 1, L - 1, [X | As]);
+split_string_third([X | _Xs] = S, N, L, As) when
   X >= $0, X =< $9 ->
-    split_string_first(Xs, N - 1, L -1, [X | As]).
+    split_string_next(S, N, L, As).
+
+split_string_next([X | Xs], N, L, As) ->
+    split_string_first(Xs, N - 1, L - 1, [X | As]);
+split_string_next([], N, L, As) ->
+    split_string_first([], N, L, As).
 
 %% Note that there is nothing in `lay_clauses' that actually requires
 %% that the elements have type `clause'; it just sets up the proper
@@ -1415,10 +1413,17 @@ lay_concrete(T, Ctxt) ->
     lay(erl_syntax:abstract(T), Ctxt).
 
 lay_type_assoc(Name, Value, Ctxt) ->
+    lay_type_par_text(Name, Value, "=>", Ctxt).
+
+lay_type_exact(Name, Value, Ctxt) ->
+    lay_type_par_text(Name, Value, ":=", Ctxt).
+
+lay_type_par_text(Name, Value, Text, Ctxt) ->
     Ctxt1 = reset_prec(Ctxt),
     D1 = lay(Name, Ctxt1),
     D2 = lay(Value, Ctxt1),
-    par([D1, lay_text_float("=>"), D2], Ctxt1#ctxt.break_indent).
+    par([D1, lay_text_float(Text), D2], Ctxt1#ctxt.break_indent).
+
 
 lay_type_application(Name, Arguments, Ctxt) ->
     {PrecL, Prec} = func_prec(), %
