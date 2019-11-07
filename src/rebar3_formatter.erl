@@ -60,7 +60,7 @@ format(File, AST, Comments, Opts) ->
     ExtendedAST = AST ++ [{eof, 0}],
     WithComments =
         erl_recomment:recomment_forms(
-            erl_syntax:form_list(FilteredAST), Comments),
+            erl_syntax:form_list(ExtendedAST), Comments),
     Formatted = rebar3_prettypr:format(WithComments, FormatOpts),
     rebar_api:debug("~s NOW looks like:~n~s", [File, Formatted]),
     file:write_file(FinalFile, Formatted).
