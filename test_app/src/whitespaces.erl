@@ -1,9 +1,9 @@
 -module ( whitespaces ).
 
--export ([ func/2 ] ).  
+-export ([ func/1 ] ).  
 
 
-func (E) ->  
+func (_E) ->  
     io:format("Hi there, 2*4 is: ~s~n",  [2*4] ).  
 
 
