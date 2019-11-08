@@ -79,7 +79,7 @@ get_opts(State) ->
 
 -spec format(
     [file:filename_all()], rebar3_formatter:opts()
-) -> ok | {error, term()}.
+) -> ok | {error, {atom(), string()}}.
 format(Files, Opts) ->
     try lists:foreach(
         fun(File) -> rebar3_formatter:format(File, Opts) end,
