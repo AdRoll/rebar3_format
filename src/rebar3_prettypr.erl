@@ -31,7 +31,7 @@
 
 -type hook() :: 'none'
               | fun((erl_syntax:syntaxTree(), _, _) -> prettypr:document()).
--type clause_t() :: 'case_expr' | 'fun_expr'
+-type clause_t() :: 'case_expr' | 'cond_expr' | 'fun_expr'
                   | 'if_expr' | 'receive_expr' | 'try_expr'
                   | {'function', prettypr:document()}
                   | 'spec'.
@@ -558,6 +558,8 @@ lay_no_comments(Node, Ctxt) ->
         make_fun_clause(N, D1, D2, D3, Ctxt);
     if_expr ->
         make_if_clause(D1, D2, D3, Ctxt);
+    cond_expr ->
+        make_if_clause(D1, D2, D3, Ctxt);
     case_expr ->
         make_case_clause(D1, D2, D3, Ctxt);
     receive_expr ->
@@ -596,6 +598,14 @@ lay_no_comments(Node, Ctxt) ->
           if_expr, Ctxt1),
       sep([follow(text("if"), D, Ctxt1#ctxt.sub_indent),
       text("end")]);
+
+  cond_expr ->
+      Ctxt1 = reset_prec(Ctxt),
+      D = lay_clauses(erl_syntax:cond_expr_clauses(Node),
+                      cond_expr, Ctxt1),
+      sep([text("cond"),
+          nest(Ctxt1#ctxt.sub_indent, D),
+          text("end")]);
 
   fun_expr ->
       Ctxt1 = reset_prec(Ctxt),
@@ -1100,8 +1110,8 @@ lay_no_comments(Node, Ctxt) ->
             lay_type_assoc(Name, Value, Ctxt);
 
         map_type_exact ->
-            Name = erl_syntax:map_field_exact_name(Node),
-            Value = erl_syntax:map_field_exact_value(Node),
+            Name = erl_syntax:map_type_exact_name(Node),
+            Value = erl_syntax:map_type_exact_value(Node),
             lay_type_exact(Name, Value, Ctxt);
 
         integer_range_type ->

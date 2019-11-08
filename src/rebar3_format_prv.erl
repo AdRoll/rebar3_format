@@ -1,7 +1,9 @@
+%%% @doc Plugin provider for rebar3
 -module(rebar3_format_prv).
 
 -export([init/1, do/1, format_error/1]).
 
+%% @private
 -spec init(rebar_state:t()) -> {ok, rebar_state:t()}.
 init(State) ->
     Provider = providers:create([
@@ -15,7 +17,7 @@ init(State) ->
                 files,
                 $f,
                 "files",
-                {string, "src/**/*.?rl"},
+                string,
                 "List of files and directories to be formatted"
             },
             {
@@ -31,14 +33,14 @@ init(State) ->
     ]),
     {ok, rebar_state:add_provider(State, Provider)}.
 
-
+%% @private
 -spec do(rebar_state:t()) -> {ok, rebar_state:t()} | {error, string()}.
 do(State) ->
-    Files = get_files(State),
-    rebar_api:debug("Found ~p files: ~p", [length(Files), Files]),
     OutputDirOpt = get_output_dir(State),
     Opts = maps:put(output_dir, OutputDirOpt, get_opts(State)),
     rebar_api:debug("Formatter options: ~p", [Opts]),
+    Files = get_files(Opts, State),
+    rebar_api:debug("Found ~p files: ~p", [length(Files), Files]),
     case format(Files, Opts) of
         ok ->
             {ok, State};
@@ -46,6 +48,7 @@ do(State) ->
             {error, format_error(Error)}
     end.
 
+%% @private
 -spec format_error(any()) -> iolist().
 format_error({erl_parse, Error}) ->
     io_lib:format(
@@ -56,11 +59,23 @@ format_error({erl_parse, Error}) ->
 format_error(Reason) ->
     io_lib:format("Unknown Formatting Error: ~p", [Reason]).
 
--spec get_files(rebar_state:t()) -> [file:filename_all()].
-get_files(State) ->
+-spec get_files(
+    rebar3_formatter:opts(), rebar_state:t()) -> [file:filename_all()].
+get_files(Opts, State) ->
     {Args, _} = rebar_state:command_parsed_args(State),
-    {files, Wildcard} = lists:keyfind(files, 1, Args),
-    filelib:wildcard(Wildcard).
+    Patterns =
+        case lists:keyfind(files, 1, Args) of
+            {files, Wildcard} ->
+                [Wildcard];
+            false ->
+                case Opts of
+                    #{files := Wildcards} ->
+                        Wildcards;
+                    _ ->
+                        ["src/**/*.?rl"]
+                end
+        end,
+    [File || Pattern <- Patterns, File <- filelib:wildcard(Pattern)].
 
 -spec get_output_dir(rebar_state:t()) -> undefined | string().
 get_output_dir(State) ->
@@ -76,7 +91,7 @@ get_opts(State) ->
 
 -spec format(
     [file:filename_all()], rebar3_formatter:opts()
-) -> ok | {error, term()}.
+) -> ok | {error, {atom(), string()}}.
 format(Files, Opts) ->
     try lists:foreach(
         fun(File) -> rebar3_formatter:format(File, Opts) end,

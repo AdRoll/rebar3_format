@@ -19,3 +19,4 @@ _tdeps
 logs
 _build
 test_app/formatted
+doc/
