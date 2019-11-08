@@ -4,6 +4,7 @@
 -export([format/2]).
 
 -type opts() :: #{
+    files => [file:filename_all()],
     output_dir => undefined | string(),
     encoding => none | epp:source_encoding(),
     paper => pos_integer(),

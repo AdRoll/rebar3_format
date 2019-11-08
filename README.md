@@ -32,6 +32,9 @@ To save the formatted files in a different directory you have to pass it as a pa
 
 The plugin supports the following configuration options in the `format` section of `rebar.config`:
 
+* `files` (`[file:filename_all()]`):
+    - List of wildcard patterns representing the files that will be formatted by default (i.e. when not using `--files` on command line).
+    - The default value is `["src/**/*.?rl"]`
 * `encoding`(`none | epp:source_encoding()`):
     - Encoding to use when writing files.
     - The default value is `none`.
