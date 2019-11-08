@@ -48,7 +48,7 @@ get_per_file_opts(File) ->
 format(File, AST, Comments, Opts) ->
     Paper = maps:get(paper, Opts, 100),
     Ribbon = maps:get(ribbon, Opts, 80),
-    Encoding = maps:get(encoding, Opts, latin1),
+    Encoding = maps:get(encoding, Opts, utf8),
     FinalFile =
         case maps:get(output_dir, Opts) of
             undefined -> File;
@@ -65,4 +65,4 @@ format(File, AST, Comments, Opts) ->
         erl_recomment:recomment_forms(
             erl_syntax:form_list(ExtendedAST), Comments),
     Formatted = rebar3_prettypr:format(WithComments, FormatOpts),
-    file:write_file(FinalFile, Formatted).
+    file:write_file(FinalFile, unicode:characters_to_binary(Formatted, Encoding)).
