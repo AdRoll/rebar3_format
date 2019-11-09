@@ -1,3 +1,3 @@
 -module (hrl).
 
--include("header.erl").
+-include("header.hrl").
