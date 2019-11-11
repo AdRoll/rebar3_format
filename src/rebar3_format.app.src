@@ -5,6 +5,6 @@
     {applications, [kernel, stdlib]},
     {env, []},
     {modules, []},
-    {licenses, ["BSD-3-Clause"]},
+    {licenses, ["MIT"]},
     {links, [{"github", "https://github.com/SemanticSugar/rebar3_format"}]}
 ]}.
