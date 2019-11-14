@@ -1,0 +1,15 @@
+language: erlang
+
+os:
+  - linux
+
+otp_release:
+   - 21.3
+
+notifications:
+  email: rtb-team+travis@adroll.com
+
+script:
+  - rebar3 --version
+  - erl -version
+  - make test
