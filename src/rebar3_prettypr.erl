@@ -10,7 +10,7 @@
 
 -module(rebar3_prettypr).
 
--export([format/1, format/2, best/1, best/2, layout/1, layout/2]).
+-export([format/2]).
 
 -import(prettypr,
         [text/1, nest/2, above/2, beside/2, sep/1, par/1, par/2, floating/3, floating/1,
@@ -43,14 +43,6 @@ set_prec(Ctxt, Prec) ->
 
 reset_prec(Ctxt) ->
     set_prec(Ctxt, 0).    % used internally
-
-%% =====================================================================
-%% @spec format(Tree::syntaxTree()) -> string()
-%% @equiv format(Tree, [])
-
--spec format(erl_syntax:syntaxTree()) -> string().
-
-format(Node) -> format(Node, []).
 
 %% =====================================================================
 %% @spec format(Tree::syntaxTree(), Options::[term()]) -> string()
@@ -86,7 +78,6 @@ format(Node) -> format(Node, []).
 %% @see erl_syntax
 %% @see format/1
 %% @see layout/2
-%% @see best/2
 
 -spec format(erl_syntax:syntaxTree(), [term()]) -> string().
 
@@ -94,44 +85,6 @@ format(Node, Options) ->
     W = proplists:get_value(paper, Options, ?PAPER),
     L = proplists:get_value(ribbon, Options, ?RIBBON),
     prettypr:format(layout(Node, Options), W, L).
-
-%% =====================================================================
-%% @spec best(Tree::syntaxTree()) -> empty | prettypr:document()
-%% @equiv best(Tree, [])
-
--spec best(erl_syntax:syntaxTree()) -> empty | prettypr:document().
-
-best(Node) -> best(Node, []).
-
-%% =====================================================================
-%% @spec best(Tree::syntaxTree(), Options::[term()]) ->
-%%           empty | prettypr:document()
-%%
-%% @doc Creates a fixed "best" abstract layout for a syntax tree. This
-%% is similar to the `layout/2' function, except that here, the final
-%% layout has been selected with respect to the given options. The atom
-%% `empty' is returned if no such layout could be produced. For
-%% information on the options, see the `format/2' function.
-%%
-%% @see best/1
-%% @see layout/2
-%% @see format/2
-%% @see prettypr:best/3
-
--spec best(erl_syntax:syntaxTree(), [term()]) -> empty | prettypr:document().
-
-best(Node, Options) ->
-    W = proplists:get_value(paper, Options, ?PAPER),
-    L = proplists:get_value(ribbon, Options, ?RIBBON),
-    prettypr:best(layout(Node, Options), W, L).
-
-%% =====================================================================
-%% @spec layout(Tree::syntaxTree()) -> prettypr:document()
-%% @equiv layout(Tree, [])
-
--spec layout(erl_syntax:syntaxTree()) -> prettypr:document().
-
-layout(Node) -> layout(Node, []).
 
 %% =====================================================================
 %% @spec layout(Tree::syntaxTree(), Options::[term()]) -> prettypr:document()
@@ -150,7 +103,6 @@ layout(Node) -> layout(Node, []).
 %%
 %% @see prettypr
 %% @see format/2
-%% @see layout/1
 
 -spec layout(erl_syntax:syntaxTree(), [term()]) -> prettypr:document().
 
