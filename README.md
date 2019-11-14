@@ -55,14 +55,10 @@ You can tweak any of the options above for a particular file, using the `format`
 
 ## Test
 
-To test the plugin just run `make test`.  
-It will copy `test_app` files into `test_app/after` and run `rebar3 format` inside it.  
-Add modules with any "tricky" formatting you want to `test_app/src`, and push them to github _including_ the `after` results.  
-
-The `after` results can be tought as the **expected output** behaviour.  
-It should be no changes afterwards when running `make test`, unless the format rules got updated.
-
-You can run `make diff` to check diff between `test_app/src` and `test_app/after/src`.
+To test the plugin just run `rebar3 test`.
+It will essentially run `rebar3 format` inside `test_app`.
+Add modules with any "tricky" formatting you want to `test_app/src`, and push them to github _including_ the `after` results.
+The `after` results can be tought as the **expected output** behaviour.
 
 ## Contribute
 
