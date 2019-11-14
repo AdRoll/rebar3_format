@@ -3,19 +3,17 @@
 
 -export([format/2]).
 
--type opts() :: #{
-    files => [file:filename_all()],
-    output_dir => undefined | string(),
-    encoding => none | epp:source_encoding(),
-    paper => pos_integer(),
-    ribbon => pos_integer()
-}.
--export_type [opts/0].
+-type opts() :: #{files => [file:filename_all()],
+                  output_dir => undefined | string(), encoding => none | epp:source_encoding(),
+                  paper => pos_integer(), ribbon => pos_integer()}.
+
+-export_type([opts/0]).
 
 %% @doc Format a file.
 %%      Apply formatting rules to a file containing erlang code.
 %%      Use <code>Opts</code> to configure the formatter.
 -spec format(file:filename_all(), opts()) -> ok.
+
 format(File, Opts) ->
     rebar_api:debug("Formatting ~p with ~p", [File, Opts]),
     AST = get_ast(File),
@@ -25,19 +23,16 @@ format(File, Opts) ->
 
 get_ast(File) ->
     case epp_dodger:parse_file(File) of
-        {ok, AST} ->
-            case [Error || {error, Error} <- AST] of
-                [] ->
-                    AST;
-                [Error|_] ->
-                    rebar_api:debug("Couldn't parse ~s: ~p", [File, Error]),
-                    erlang:error(Error)
-            end;
-        {error, OpenError} -> erlang:error(OpenError)
+      {ok, AST} ->
+          case [Error || {error, Error} <- AST] of
+            [] -> AST;
+            [Error | _] ->
+                rebar_api:debug("Couldn't parse ~s: ~p", [File, Error]), erlang:error(Error)
+          end;
+      {error, OpenError} -> erlang:error(OpenError)
     end.
 
-get_comments(File) ->
-    erl_comment_scan:file(File).
+get_comments(File) -> erl_comment_scan:file(File).
 
 %% @doc We need to use quick_parse_file/1 here because the returned format
 %%      is much more manageable than the one returned by parse_file/1
@@ -49,20 +44,15 @@ format(File, AST, Comments, Opts) ->
     Paper = maps:get(paper, Opts, 100),
     Ribbon = maps:get(ribbon, Opts, 80),
     Encoding = maps:get(encoding, Opts, utf8),
-    FinalFile =
-        case maps:get(output_dir, Opts) of
-            undefined -> File;
-            OutputDir -> filename:join(filename:absname(OutputDir), File)
-        end,
+    FinalFile = case maps:get(output_dir, Opts) of
+                  undefined -> File;
+                  OutputDir -> filename:join(filename:absname(OutputDir), File)
+                end,
     ok = filelib:ensure_dir(FinalFile),
-    FormatOpts = [
-        {paper, Paper},
-        {ribbon, Ribbon},
-        {encoding, Encoding}
-    ],
+    FormatOpts = [{paper, Paper}, {ribbon, Ribbon}, {encoding, Encoding}],
     ExtendedAST = AST ++ [{eof, 0}],
-    WithComments =
-        erl_recomment:recomment_forms(
-            erl_syntax:form_list(ExtendedAST), Comments),
+    WithComments = erl_recomment:recomment_forms(erl_syntax:form_list(ExtendedAST),
+                                                 Comments),
     Formatted = rebar3_prettypr:format(WithComments, FormatOpts),
     file:write_file(FinalFile, unicode:characters_to_binary(Formatted, Encoding)).
+
