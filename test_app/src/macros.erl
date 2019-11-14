@@ -1,8 +1,3 @@
-%%
-%% File:    syntax_tools_test.erl
-%% Author:  Björn-Egil Dahlberg
-%% Created: 2014-10-23
-%%
 -module(macros).
 
 -define(ADULT_AGE, 21).
