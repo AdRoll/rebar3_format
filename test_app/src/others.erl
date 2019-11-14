@@ -50,3 +50,21 @@ try_expr_after() ->
     after
         do:something({to, "clean up", <<"the">>, [filthy, filthy, mess], you, created, "if you can"})
     end.
+
+bit_types(X) ->
+    <<X:4/little-signed-integer-unit:8, (something:on(X)):32/big-unsigned-integer-unit:32>>.
+
+numbers() ->
+    {
+        1.00000000001,
+        1.0000001,
+        1.001,
+        16#FFFFFFFF,
+        2#101010101,
+        8#11111,
+        -1.0e+001,
+        0.5e-1,
+        12312.231234e12,
+        1.2e-0,
+        1.2e-000001
+    }.

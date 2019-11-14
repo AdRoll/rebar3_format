@@ -53,3 +53,11 @@ try_expr_after() ->
 		    "if you can"})
     end.
 
+bit_types(X) ->
+    <<X:4/little-signed-integer-unit:8,
+      (something:on(X)):32/big-unsigned-integer-unit:32>>.
+
+numbers() ->
+    {1.0, 1.0, 1.00099999999999988987, 4294967295, 341, 4681, -1.0e+1, 5.0e-2,
+     1.2312231234e+16, 1.19999999999999995559, 1.19999999999999995559e-1}.
+
