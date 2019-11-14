@@ -1,3 +1,8 @@
+%%
+%% File:    syntax_tools_test.erl
+%% Author:  Björn-Egil Dahlberg
+%% Created: 2014-10-23
+%%
 -module(macros).
 
 -define(ADULT_AGE, 21).
@@ -17,4 +22,11 @@ is_adult_test() ->
     ?assertNot(is_adult(?NEW_PERSON("test2", 12))),
     ?assert(is_adult(?SOMEONE)).
 
+-endif.
+
+-if(A_BOOLEAN_MACRO).
+another_hidden_function() ->
+        % string combining ?
+
+        is_hidden.
 -endif.
