@@ -19,3 +19,11 @@ is_adult_test() ->
 
 -endif.
 
+-if(A_BOOLEAN_MACRO).
+
+another_hidden_function() ->
+    % string combining ?
+    is_hidden.
+
+-endif.
+

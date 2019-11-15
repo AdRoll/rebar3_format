@@ -18,3 +18,10 @@ is_adult_test() ->
     ?assert(is_adult(?SOMEONE)).
 
 -endif.
+
+-if(A_BOOLEAN_MACRO).
+another_hidden_function() ->
+        % string combining ?
+
+        is_hidden.
+-endif.
