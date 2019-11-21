@@ -15,10 +15,10 @@
 -type ff1() :: ff(bin()) | foo:bar().
 
 -type ff2() :: {list(), [_], [integer()], nonempty_list(), [atom(), ...],
-		[ff1(), ...], [], []}.
+                [ff1(), ...], [], []}.
 
 -type bin() :: <<>> | <<_:(+4)>> | <<_:_*8>> | <<_:12, _:_*16>> | <<_:16>> |
-	       <<_:16, _:_*(+0)>>.
+               <<_:16, _:_*(+0)>>.
 
                                  % same as "<<_:16>>"
 
@@ -64,7 +64,7 @@
 -define(PAIR(A, B), {A, B}).
 
 -spec (?MODULE):f('?<macro> ('(PAIR, r0(), r0())) -> '?<macro> ('(PAIR, t(),
-								  t()).
+                                                                  t()).
 
 f({R, R}) ->
     _ = (?MODULE_STRING) ++ "hej",

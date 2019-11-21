@@ -37,9 +37,9 @@
 -define(macro_block(X), begin X end).
 
 -define(macro_if(X1, X2),
-	if X1 -> X2;
-	   true -> none
-	end).
+        if X1 -> X2;
+           true -> none
+        end).
 
 -ifdef(macro_def1).
 
@@ -80,12 +80,12 @@ foo2(A, B) ->
       ?macro_block("hello"), ?macro_block([$h, $e, $l, $l, $0]),
       ?macro_argument1((id(<<"hello">>))),
       ?macro_argument1(if A -> B;
-			  true -> 3.14
-		       end),
+                          true -> 3.14
+                       end),
       ?macro_argument1(case A of
-			 ok -> B;
-			 C -> C
-		       end),
+                         ok -> B;
+                         C -> C
+                       end),
       ?macro_argument1(receive M -> M after 100 -> 3 end),
       ?macro_argument1(try foo5(A) catch C:(?macro_simple5) -> {C, B} end),
       ?macro_argument2(A, B)],

@@ -10,15 +10,15 @@
   % Plz keep me! << this comment will be misplaced
 
 -record(small,
-	{f1, % The first field
-	 f2}).  % The second field
+        {f1, % The first field
+         f2}).  % The second field
 
 -record(large,
-	{large_field_1, % The first field
-	 large_field_2, % The second field
-	 large_field_3, % The third field
-	 large_field_4,
-	 large_field_5}).  % The previous one didn't have a comment but this one has a very long one (really really long)
+        {large_field_1, % The first field
+         large_field_2, % The second field
+         large_field_3, % The third field
+         large_field_4,
+         large_field_5}).  % The previous one didn't have a comment but this one has a very long one (really really long)
 
 %% @doc This will all be part of the first paragraph.
 %% It can stretch over several lines and contain <em>any XHTML markup</em>.

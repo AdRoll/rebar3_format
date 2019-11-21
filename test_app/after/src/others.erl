@@ -10,24 +10,24 @@ strange_infix_operators(A, B) -> bnot (-(A rem B)).
 
 named_fun_expr() ->
     fun This(is) -> a;
-	This(recursive) -> function;
-	This(called) -> This(is)
+        This(recursive) -> function;
+        This(called) -> This(is)
     end.
 
 catch_expr() ->
     catch this:train(with, all, its, arguments,
-		     {they, might, be, too, many, to, "handle"}).
+                     {they, might, be, too, many, to, "handle"}).
 
 comprehensions(Bin, List) ->
     BinToBin = << <<X:1>>
-		   || <<X:8/integer>> <= Bin, X > 0,
-		      with:a_very(complex, boolean_filter, on, X) >>,
+                   || <<X:8/integer>> <= Bin, X > 0,
+                      with:a_very(complex, boolean_filter, on, X) >>,
     BinToList = [X
-		 || <<X:8/integer>> <= Bin, X > 0, with:a_very(complex, boolean_filter, on, X)],
+                 || <<X:8/integer>> <= Bin, X > 0, with:a_very(complex, boolean_filter, on, X)],
     ListToBin = << <<X:1>>
-		    || X <- List, X > 0, with:a_very(complex, boolean_filter, on, X) >>,
+                    || X <- List, X > 0, with:a_very(complex, boolean_filter, on, X) >>,
     ListToList = [X
-		  || X <- List, X > 0, with:a_very(complex, boolean_filter, on, X)],
+                  || X <- List, X > 0, with:a_very(complex, boolean_filter, on, X)],
     {BinToBin, BinToList, ListToBin, ListToList}.
 
 parentheses() ->
@@ -50,7 +50,7 @@ try_expr_after() ->
     end,
     try with:no(catching) after
       do:something({to, "clean up", <<"the">>, [filthy, filthy, mess], you, created,
-		    "if you can"})
+                    "if you can"})
     end.
 
 bit_types(X) ->

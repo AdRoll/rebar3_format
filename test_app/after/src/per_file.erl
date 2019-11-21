@@ -3,7 +3,7 @@
 -export([this/0]).
 
 -format([{paper,
-	  20}]).
+          20}]).
 
 this() ->
     [file, should,
