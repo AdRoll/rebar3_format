@@ -5,7 +5,8 @@
 
 -type opts() :: #{files => [file:filename_all()],
                   output_dir => undefined | string(), encoding => none | epp:source_encoding(),
-                  paper => pos_integer(), ribbon => pos_integer()}.
+                  paper => pos_integer(), ribbon => pos_integer(), break_indent => pos_integer(),
+                  sub_indent => pos_integer()}.
 
 -export_type([opts/0]).
 
@@ -44,12 +45,15 @@ format(File, AST, Comments, Opts) ->
     Paper = maps:get(paper, Opts, 100),
     Ribbon = maps:get(ribbon, Opts, 80),
     Encoding = maps:get(encoding, Opts, utf8),
+    BreakIndent = maps:get(break_indent, Opts, 4),
+    SubIndent = maps:get(sub_indent, Opts, 2),
     FinalFile = case maps:get(output_dir, Opts) of
                   undefined -> File;
                   OutputDir -> filename:join(filename:absname(OutputDir), File)
                 end,
     ok = filelib:ensure_dir(FinalFile),
-    FormatOpts = [{paper, Paper}, {ribbon, Ribbon}, {encoding, Encoding}],
+    FormatOpts = [{paper, Paper}, {ribbon, Ribbon}, {encoding, Encoding},
+                  {break_indent, BreakIndent}, {sub_indent, SubIndent}],
     ExtendedAST = AST ++ [{eof, 0}],
     WithComments = erl_recomment:recomment_forms(erl_syntax:form_list(ExtendedAST),
                                                  Comments),

@@ -36,9 +36,9 @@ do(State) ->
 -spec format_error(any()) -> iolist().
 
 format_error({erl_parse, Error}) ->
-    io_lib:format("Formatting error: ~s.Try running with DEBUG=1 for more "
-                  "information",
-                  [Error]);
+    iolist_to_binary(io_lib:format("Formatting error: ~s.Try running with DEBUG=1 for more "
+                                   "information",
+                                   [Error]));
 format_error(Reason) -> io_lib:format("Unknown Formatting Error: ~p", [Reason]).
 
 -spec get_files(rebar3_formatter:opts(),
