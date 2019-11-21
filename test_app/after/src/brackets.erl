@@ -5,7 +5,7 @@
 -compile(export_all).
 
 many_arguments(One, Two, Three, Four, Five, Six,
-	       Seven) ->
+               Seven) ->
     {in, a, tuple, One, Two, Three, Four, Five,
      Six, Seven}.
 
@@ -27,17 +27,17 @@ long_tuple() ->
 
 nested() ->
     First = {a, long, long, tuple, with,
-	     [a, really, very, long, long, list,
-	      in, it],
-	     plus, other, things},
+             [a, really, very, long, long, list,
+              in, it],
+             plus, other, things},
     Then = [a, long, long, list, with,
-	    {a, really, very, long, long, tuple,
-	     in, it},
-	    plus, other, things],
+            {a, really, very, long, long, tuple,
+             in, it},
+            plus, other, things],
     finally:a_long_function_call(with, many,
-				 arguments, like,
-				 First, Then,
-				 and_more).
+                                 arguments, like,
+                                 First, Then,
+                                 and_more).
 
 with_comments() ->
     [lists, %% with
@@ -52,10 +52,10 @@ lc() ->
     [{list, comprehensions, should, work, Nicely,
       too}
      || Nicely
-	    <- even:for(those, who, come, from,
-			functions, with, many,
-			arguments),
-	or_have:filters(Nicely)].
+            <- even:for(those, who, come, from,
+                        functions, with, many,
+                        arguments),
+        or_have:filters(Nicely)].
 
 map() ->
     #{maps => should, also => behave,

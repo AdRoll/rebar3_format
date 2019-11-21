@@ -50,6 +50,10 @@ The plugin supports the following configuration options in the `format` section 
 * `sub_indent`(`pos_integer()`):
     - Specifies the preferred number of characters to use to indent a line that "follows" the current one (for instance, a long clause head or a long function application).
     - The default value is `2`.
+* `remove_tabs` (`boolean()`):
+    - Erlang's `prettypr` inserts a tab character each time it has to insert 8 spaces for indentation and that code is in a 100% unconfigurable/unreplaceable/unhookable function. If this setting is `true`, the formatter will turn those tabs into 8 spaces again.
+    - The default value is `true`.
+    - **NOTE:** We are aware that `true` is not the _actual OTP default_ but... **really?** Who wants their code indented with a mixture of tabs and spaces? 🙈
 
 ### Per-File Configuration
 
