@@ -26,14 +26,18 @@
 
 -define(RIBBON, 56).
 
+-define(BREAK_INDENT, 4).
+
+-define(SUB_INDENT, 2).
+
 -define(NOUSER, undefined).
 
--type clause_t() :: case_expr | fun_expr | if_expr | receive_expr |
-                    try_expr | {function, prettypr:document()} | spec.
+-type clause_t() :: case_expr | fun_expr | if_expr | receive_expr | try_expr |
+                    {function, prettypr:document()} | spec.
 
 -record(ctxt,
-        {prec = 0  :: integer(), sub_indent = 2  :: non_neg_integer(),
-         break_indent = 4  :: non_neg_integer(),
+        {prec = 0  :: integer(), sub_indent = ?SUB_INDENT  :: non_neg_integer(),
+         break_indent = ?BREAK_INDENT  :: non_neg_integer(),
          clause = undefined  :: clause_t() | undefined, paper = ?PAPER  :: integer(),
          ribbon = ?RIBBON  :: integer(), user = ?NOUSER  :: term(),
          encoding = epp:default_encoding()  :: epp:source_encoding()}).
@@ -70,6 +74,14 @@ reset_prec(Ctxt) ->
 %%   <dt>{ribbon, integer()}</dt>
 %%       <dd>Specifies the preferred maximum number of characters on any
 %%       line, not counting indentation. The default value is 65.</dd>
+%%
+%%   <dt>{break_indent, integer()}</dt>
+%%       <dd>Specifies the number of spaces to use for breaking indentation.
+%%       The default value is 4.</dd>
+%%
+%%   <dt>{sub_indent, integer()}</dt>
+%%       <dd>Specifies the number of spaces to use for breaking indentation.
+%%       The default value is 2.</dd>
 %%
 %%   <dt>{encoding, epp:source_encoding()}</dt>
 %%       <dd>Specifies the encoding of the generated file.</dd>
@@ -110,6 +122,8 @@ layout(Node, Options) ->
     lay(Node,
         #ctxt{paper = proplists:get_value(paper, Options, ?PAPER),
               ribbon = proplists:get_value(ribbon, Options, ?RIBBON),
+              break_indent = proplists:get_value(break_indent, Options, ?BREAK_INDENT),
+              sub_indent = proplists:get_value(sub_indent, Options, ?SUB_INDENT),
               encoding = proplists:get_value(encoding, Options, epp:default_encoding())}).
 
 lay(Node, Ctxt) ->
