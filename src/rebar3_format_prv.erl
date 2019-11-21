@@ -73,8 +73,15 @@ get_opts(State) -> maps:from_list(rebar_state:get(State, format, [])).
                                                                 {error, {atom(), string()}}.
 
 format(Files, Opts) ->
-    try lists:foreach(fun (File) -> rebar3_formatter:format(File, Opts) end, Files)
+    try lists:foreach(fun (File) ->
+                              rebar_api:debug("Formatting ~p with ~p", [File, Opts]),
+                              rebar3_formatter:format(File, Opts)
+                      end,
+                      Files)
     catch
-      _:{_, erl_parse, Error} -> {error, {erl_parse, Error}}
+      _:{cant_parse, File, {_, erl_parse, Error}} ->
+          rebar_api:debug("Couldn't parse ~s: ~p", [File, Error]),
+          {error, {erl_parse, Error}};
+      _:Error -> rebar_api:debug("Error parsing files: ~p", [Error]), {error, Error}
     end.
 

@@ -16,3 +16,4 @@ test_app(_Config) ->
       "" -> ok;
       Diff -> ct:pal("Differences:~n~s", [Diff]), ct:fail(Diff)
     end.
+

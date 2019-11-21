@@ -1,0 +1,11 @@
+#!/usr/bin/env escript
+%%! -pa _build/default/lib/rebar3_format/ebin
+
+%% @doc This escript formats the formatter using the formatter.
+%%      It's meant to be run as a post_hook for rebar3 compile.
+main([]) ->
+    Files =
+        [File || Path <- ["src/*.erl", "test/*.erl"],
+                 File <- filelib:wildcard(Path)],
+    Opts = #{output_dir => undefined},
+    lists:foreach(fun (File) -> rebar3_formatter:format(File, Opts) end, Files).

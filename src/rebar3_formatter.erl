@@ -16,7 +16,6 @@
 -spec format(file:filename_all(), opts()) -> ok.
 
 format(File, Opts) ->
-    rebar_api:debug("Formatting ~p with ~p", [File, Opts]),
     AST = get_ast(File),
     Comments = get_comments(File),
     FileOpts = maps:merge(Opts, get_per_file_opts(File)),
@@ -27,10 +26,9 @@ get_ast(File) ->
       {ok, AST} ->
           case [Error || {error, Error} <- AST] of
             [] -> AST;
-            [Error | _] ->
-                rebar_api:debug("Couldn't parse ~s: ~p", [File, Error]), erlang:error(Error)
+            [Error | _] -> erlang:error({cant_parse, File, Error})
           end;
-      {error, OpenError} -> erlang:error(OpenError)
+      {error, OpenError} -> erlang:error({cant_parse, File, OpenError})
     end.
 
 get_comments(File) -> erl_comment_scan:file(File).
