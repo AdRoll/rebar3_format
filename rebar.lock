@@ -1,4 +1,6 @@
-[{<<"katana_code">>,
-  {git,"git@github.com:inaka/katana-code.git",
-       {ref,"fbd26a1afbf0217757f2c732b8e041b77d204137"}},
-  0}].
+{"1.1.0",
+[{<<"katana_code">>,{pkg,<<"katana_code">>,<<"0.2.0">>},0}]}.
+[
+{pkg_hash,[
+ {<<"katana_code">>, <<"79172F34EDD5B4757842158A9AB942177D50BF9803B04F536966D3DBDD268A29">>}]}
+].
