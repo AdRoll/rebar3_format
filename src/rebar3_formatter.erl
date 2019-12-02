@@ -22,7 +22,7 @@ format(File, Opts) ->
     format(File, AST, Comments, FileOpts).
 
 get_ast(File) ->
-    case epp_dodger:parse_file(File) of
+    case ktn_dodger:parse_file(File) of
       {ok, AST} ->
           case [Error || {error, Error} <- AST] of
             [] -> AST;
