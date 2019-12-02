@@ -2,7 +2,7 @@
     {description, "A rebar plugin for code formatting"},
     {vsn, "0.0.2"},
     {registered, []},
-    {applications, [kernel, stdlib]},
+    {applications, [kernel, stdlib, katana_code]},
     {env, []},
     {modules, []},
     {licenses, ["MIT"]},
