@@ -1,1 +1,4 @@
-[].
+[{<<"katana_code">>,
+  {git,"git@github.com:inaka/katana-code.git",
+       {ref,"fbd26a1afbf0217757f2c732b8e041b77d204137"}},
+  0}].
