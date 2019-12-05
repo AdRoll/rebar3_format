@@ -11,7 +11,7 @@ A rebar plugin for code formatting
 Add the plugin to your rebar config:
 
 ```erlang
-{profiles, [rebar3_format]}
+{plugins, [rebar3_format]}
 ```
 
 Then just call your plugin directly in an existing application:
