@@ -46,9 +46,11 @@ format(File, AST, Comments, Opts) ->
     BreakIndent = maps:get(break_indent, Opts, 4),
     SubIndent = maps:get(sub_indent, Opts, 2),
     RemoveTabs = maps:get(remove_tabs, Opts, true),
-    FinalFile = case maps:get(output_dir, Opts) of
-                  undefined -> File;
-                  OutputDir -> filename:join(filename:absname(OutputDir), File)
+    FinalFile = try maps:get(output_dir, Opts) of
+                  OutputDir -> filename:join( filename:absname(OutputDir)
+                                            , filename:basename(File))
+                catch
+                    {badkey, _} -> File
                 end,
     ok = filelib:ensure_dir(FinalFile),
     FormatOpts = [{paper, Paper}, {ribbon, Ribbon}, {encoding, Encoding},
