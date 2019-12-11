@@ -82,6 +82,8 @@ format(Files, Opts) ->
       _:{cant_parse, File, {_, erl_parse, Error}} ->
           rebar_api:debug("Couldn't parse ~s: ~p", [File, Error]),
           {error, {erl_parse, Error}};
-      _:Error -> rebar_api:debug("Error parsing files: ~p", [Error]), {error, Error}
+      _:Error ->
+          rebar_api:debug("Error parsing files: ~p", [Error]),
+          {error, Error}
     end.
 

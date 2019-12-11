@@ -40,6 +40,7 @@
          break_indent = ?BREAK_INDENT  :: non_neg_integer(),
          clause = undefined  :: clause_t() | undefined, paper = ?PAPER  :: integer(),
          ribbon = ?RIBBON  :: integer(), user = ?NOUSER  :: term(),
+         empty_lines = []  :: [pos_integer()],
          encoding = epp:default_encoding()  :: epp:source_encoding()}).
 
 set_prec(Ctxt, Prec) ->
@@ -124,6 +125,7 @@ layout(Node, Options) ->
               ribbon = proplists:get_value(ribbon, Options, ?RIBBON),
               break_indent = proplists:get_value(break_indent, Options, ?BREAK_INDENT),
               sub_indent = proplists:get_value(sub_indent, Options, ?SUB_INDENT),
+              empty_lines = proplists:get_value(empty_lines, Options, []),
               encoding = proplists:get_value(encoding, Options, epp:default_encoding())}).
 
 lay(Node, Ctxt) ->
@@ -224,7 +226,8 @@ lay_no_comments(Node, Ctxt) ->
           Operator = erl_syntax:prefix_expr_operator(Node),
           {{Prec, PrecR}, Name} = case erl_syntax:type(Operator) of
                                     operator ->
-                                        N = erl_syntax:operator_name(Operator), {preop_prec(N), N};
+                                        N = erl_syntax:operator_name(Operator),
+                                        {preop_prec(N), N};
                                     _ -> {{0, 0}, any}
                                   end,
           D1 = lay(Operator, reset_prec(Ctxt)),
@@ -254,8 +257,7 @@ lay_no_comments(Node, Ctxt) ->
                  none -> none;
                  G -> lay(G, Ctxt1)
                end,
-          D3 = sep(seq(erl_syntax:clause_body(Node), lay_text_float(","), Ctxt1,
-                       fun lay/2)),
+          D3 = lay_clause_expressions(erl_syntax:clause_body(Node), Ctxt1, fun lay/2),
           case Ctxt#ctxt.clause of
             fun_expr -> make_fun_clause(D1, D2, D3, Ctxt);
             {function, N} -> make_fun_clause(N, D1, D2, D3, Ctxt);
@@ -732,7 +734,8 @@ lay_fun_sep(Clauses, Ctxt) ->
     sep([follow(text("fun"), Clauses, Ctxt#ctxt.sub_indent), text("end")]).
 
 lay_expr_argument(none, D, Ctxt) ->
-    {_, Prec, _} = inop_prec('#'), maybe_parentheses(D, Prec, Ctxt);
+    {_, Prec, _} = inop_prec('#'),
+    maybe_parentheses(D, Prec, Ctxt);
 lay_expr_argument(Arg, D, Ctxt) ->
     {PrecL, Prec, _} = inop_prec('#'),
     D1 = beside(lay(Arg, set_prec(Ctxt, PrecL)), D),
@@ -819,7 +822,8 @@ lay_clauses(Cs, Type, Ctxt) ->
 make_fun_clause(P, G, B, Ctxt) -> make_fun_clause(none, P, G, B, Ctxt).
 
 make_fun_clause(N, P, G, B, Ctxt) ->
-    D = make_fun_clause_head(N, P, Ctxt), make_case_clause(D, G, B, Ctxt).
+    D = make_fun_clause_head(N, P, Ctxt),
+    make_case_clause(D, G, B, Ctxt).
 
 make_fun_clause_head(N, P, Ctxt) when N =:= none -> lay_parentheses(P, Ctxt);
 make_fun_clause_head(N, P, Ctxt) -> beside(N, lay_parentheses(P, Ctxt)).
@@ -922,5 +926,20 @@ tidy_float_second([$e | Cs]) -> tidy_float_second([$e, $+ | Cs]);
 tidy_float_second([_C | Cs]) -> tidy_float_second(Cs);
 tidy_float_second([]) -> [].
 
+lay_clause_expressions([H], Ctxt, Fun) -> Fun(H, Ctxt);
+lay_clause_expressions([H | T], Ctxt, Fun) ->
+    Clause = beside(Fun(H, Ctxt), floating(text(","))),
+    Next = lay_clause_expressions(T, Ctxt, Fun),
+    case is_last_and_before_empty_line(H, T, Ctxt) of
+      true -> above(above(Clause, text("")), Next);
+      false -> above(Clause, Next)
+    end;
+lay_clause_expressions([], _, _) -> empty().
+
+is_last_and_before_empty_line(H, [], #ctxt{empty_lines = EmptyLines}) ->
+    lists:member(erl_syntax:get_pos(H) + 1, EmptyLines);
+is_last_and_before_empty_line(H, [H2 | _], #ctxt{empty_lines = EmptyLines}) ->
+    erl_syntax:get_pos(H2) - erl_syntax:get_pos(H) >= 2 andalso
+      lists:member(erl_syntax:get_pos(H) + 1, EmptyLines).
 
 %% =====================================================================
