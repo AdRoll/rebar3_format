@@ -6,7 +6,8 @@
 -type opts() :: #{files => [file:filename_all()],
                   output_dir => undefined | string(), encoding => none | epp:source_encoding(),
                   paper => pos_integer(), ribbon => pos_integer(), break_indent => pos_integer(),
-                  sub_indent => pos_integer(), remove_tabs => boolean()}.
+                  sub_indent => pos_integer(), remove_tabs => boolean(),
+                  inline_expressions => boolean(), preserve_empty_lines => boolean()}.
 
 -export_type([opts/0]).
 
@@ -46,17 +47,22 @@ format(File, AST, Comments, Opts) ->
     BreakIndent = maps:get(break_indent, Opts, 4),
     SubIndent = maps:get(sub_indent, Opts, 2),
     RemoveTabs = maps:get(remove_tabs, Opts, true),
+    InlineExpressions = maps:get(inline_expressions, Opts, true),
+    PreserveEmptyLines = maps:get(preserve_empty_lines, Opts, false),
     FinalFile = case maps:get(output_dir, Opts) of
                   undefined -> File;
                   OutputDir -> filename:join(filename:absname(OutputDir), File)
                 end,
     ok = filelib:ensure_dir(FinalFile),
     FormatOpts = [{paper, Paper}, {ribbon, Ribbon}, {encoding, Encoding},
-                  {break_indent, BreakIndent}, {sub_indent, SubIndent}],
+                  {break_indent, BreakIndent}, {sub_indent, SubIndent},
+                  {inline_expressions, InlineExpressions}],
     ExtendedAST = AST ++ [{eof, 0}],
     WithComments = erl_recomment:recomment_forms(erl_syntax:form_list(ExtendedAST),
                                                  Comments),
-    PreFormatted = rebar3_prettypr:format(WithComments, FormatOpts),
+    PreFormatted = rebar3_prettypr:format(WithComments,
+                                          empty_lines(InlineExpressions, PreserveEmptyLines, File),
+                                          FormatOpts),
     Formatted = maybe_remove_tabs(RemoveTabs,
                                   unicode:characters_to_binary(PreFormatted, Encoding)),
     file:write_file(FinalFile, Formatted).
@@ -64,4 +70,19 @@ format(File, AST, Comments, Opts) ->
 maybe_remove_tabs(false, Formatted) -> Formatted;
 maybe_remove_tabs(true, Formatted) ->
     binary:replace(Formatted, <<"\t">>, <<"        ">>, [global]).
+
+empty_lines(true, _, _) -> [];
+empty_lines(false, false, _) -> [];
+empty_lines(false, true, File) ->
+    {ok, Data} = file:read_file(File),
+    List = binary:split(Data, [<<"\n">>], [global, trim]),
+    {ok, NonEmptyLineRe} = re:compile("\\S"),
+    {Res, _} = lists:foldl(fun (Line, {EmptyLines, N}) ->
+                                   case re:run(Line, NonEmptyLineRe) of
+                                     {match, _} -> {EmptyLines, N + 1};
+                                     nomatch -> {[N | EmptyLines], N + 1}
+                                   end
+                           end,
+                           {[], 1}, List),
+    lists:reverse(Res).
 

@@ -10,7 +10,7 @@
 
 -module(rebar3_prettypr).
 
--export([format/2]).
+-export([format/3]).
 
 -import(prettypr,
         [text/1, nest/2, above/2, beside/2, sep/1, par/1, par/2, floating/3, floating/1,
@@ -40,7 +40,7 @@
          break_indent = ?BREAK_INDENT  :: non_neg_integer(),
          clause = undefined  :: clause_t() | undefined, paper = ?PAPER  :: integer(),
          ribbon = ?RIBBON  :: integer(), user = ?NOUSER  :: term(),
-         empty_lines = []  :: [pos_integer()],
+         inline_expressions = true  :: boolean(), empty_lines = []  :: [pos_integer()],
          encoding = epp:default_encoding()  :: epp:source_encoding()}).
 
 set_prec(Ctxt, Prec) ->
@@ -50,20 +50,13 @@ reset_prec(Ctxt) ->
     set_prec(Ctxt, 0).    % used internally
 
 %% =====================================================================
-%% @spec format(Tree::syntaxTree(), Options::[term()]) -> string()
-%%
-%% @type syntaxTree() = erl_syntax:syntaxTree().
-%%
-%% An abstract syntax tree. See the {@link erl_syntax} module for
-%% details.
-%%
 %% @doc Prettyprint-formats an abstract Erlang syntax tree as text. For
 %% example, if you have a `.beam' file that has been compiled with
 %% `debug_info', the following should print the source code for the
 %% module (as it looks in the debug info representation):
 %% ```{ok,{_,[{abstract_code,{_,AC}}]}} =
 %%            beam_lib:chunks("myfile.beam",[abstract_code]),
-%%    io:put_chars(rebar3_prettypr:format(erl_syntax:form_list(AC)))
+%%    io:put_chars(rebar3_prettypr:format(erl_syntax:form_list(AC), [], []))
 %% '''
 %%
 %% Available options:
@@ -84,6 +77,11 @@ reset_prec(Ctxt) ->
 %%       <dd>Specifies the number of spaces to use for breaking indentation.
 %%       The default value is 2.</dd>
 %%
+%%   <dt>{inline_expressions, boolean()}</dt>
+%%       <dd>Specifies wether multiple sequential expressions within the
+%%       same clause can be placed in the same line (if paper/ribbon permits).
+%%       The default value is true.</dd>
+%%
 %%   <dt>{encoding, epp:source_encoding()}</dt>
 %%       <dd>Specifies the encoding of the generated file.</dd>
 %% </dl>
@@ -92,12 +90,12 @@ reset_prec(Ctxt) ->
 %% @see format/1
 %% @see layout/2
 
--spec format(erl_syntax:syntaxTree(), [term()]) -> string().
+-spec format(erl_syntax:syntaxTree(), [pos_integer()], [term()]) -> string().
 
-format(Node, Options) ->
+format(Node, EmptyLines, Options) ->
     W = proplists:get_value(paper, Options, ?PAPER),
     L = proplists:get_value(ribbon, Options, ?RIBBON),
-    prettypr:format(layout(Node, Options), W, L).
+    prettypr:format(layout(Node, EmptyLines, Options), W, L).
 
 %% =====================================================================
 %% @spec layout(Tree::syntaxTree(), Options::[term()]) -> prettypr:document()
@@ -117,15 +115,17 @@ format(Node, Options) ->
 %% @see prettypr
 %% @see format/2
 
--spec layout(erl_syntax:syntaxTree(), [term()]) -> prettypr:document().
+-spec layout(erl_syntax:syntaxTree(), [pos_integer()],
+             [term()]) -> prettypr:document().
 
-layout(Node, Options) ->
+layout(Node, EmptyLines, Options) ->
     lay(Node,
         #ctxt{paper = proplists:get_value(paper, Options, ?PAPER),
               ribbon = proplists:get_value(ribbon, Options, ?RIBBON),
               break_indent = proplists:get_value(break_indent, Options, ?BREAK_INDENT),
               sub_indent = proplists:get_value(sub_indent, Options, ?SUB_INDENT),
-              empty_lines = proplists:get_value(empty_lines, Options, []),
+              inline_expressions = proplists:get_value(inline_expressions, Options, true),
+              empty_lines = EmptyLines,
               encoding = proplists:get_value(encoding, Options, epp:default_encoding())}).
 
 lay(Node, Ctxt) ->
@@ -226,8 +226,7 @@ lay_no_comments(Node, Ctxt) ->
           Operator = erl_syntax:prefix_expr_operator(Node),
           {{Prec, PrecR}, Name} = case erl_syntax:type(Operator) of
                                     operator ->
-                                        N = erl_syntax:operator_name(Operator),
-                                        {preop_prec(N), N};
+                                        N = erl_syntax:operator_name(Operator), {preop_prec(N), N};
                                     _ -> {{0, 0}, any}
                                   end,
           D1 = lay(Operator, reset_prec(Ctxt)),
@@ -734,8 +733,7 @@ lay_fun_sep(Clauses, Ctxt) ->
     sep([follow(text("fun"), Clauses, Ctxt#ctxt.sub_indent), text("end")]).
 
 lay_expr_argument(none, D, Ctxt) ->
-    {_, Prec, _} = inop_prec('#'),
-    maybe_parentheses(D, Prec, Ctxt);
+    {_, Prec, _} = inop_prec('#'), maybe_parentheses(D, Prec, Ctxt);
 lay_expr_argument(Arg, D, Ctxt) ->
     {PrecL, Prec, _} = inop_prec('#'),
     D1 = beside(lay(Arg, set_prec(Ctxt, PrecL)), D),
@@ -822,8 +820,7 @@ lay_clauses(Cs, Type, Ctxt) ->
 make_fun_clause(P, G, B, Ctxt) -> make_fun_clause(none, P, G, B, Ctxt).
 
 make_fun_clause(N, P, G, B, Ctxt) ->
-    D = make_fun_clause_head(N, P, Ctxt),
-    make_case_clause(D, G, B, Ctxt).
+    D = make_fun_clause_head(N, P, Ctxt), make_case_clause(D, G, B, Ctxt).
 
 make_fun_clause_head(N, P, Ctxt) when N =:= none -> lay_parentheses(P, Ctxt);
 make_fun_clause_head(N, P, Ctxt) -> beside(N, lay_parentheses(P, Ctxt)).
@@ -926,6 +923,8 @@ tidy_float_second([$e | Cs]) -> tidy_float_second([$e, $+ | Cs]);
 tidy_float_second([_C | Cs]) -> tidy_float_second(Cs);
 tidy_float_second([]) -> [].
 
+lay_clause_expressions(Exprs, Ctxt = #ctxt{inline_expressions = true}, Fun) ->
+    sep(seq(Exprs, floating(text(",")), Ctxt, Fun));
 lay_clause_expressions([H], Ctxt, Fun) -> Fun(H, Ctxt);
 lay_clause_expressions([H | T], Ctxt, Fun) ->
     Clause = beside(Fun(H, Ctxt), floating(text(","))),
@@ -941,5 +940,6 @@ is_last_and_before_empty_line(H, [], #ctxt{empty_lines = EmptyLines}) ->
 is_last_and_before_empty_line(H, [H2 | _], #ctxt{empty_lines = EmptyLines}) ->
     erl_syntax:get_pos(H2) - erl_syntax:get_pos(H) >= 2 andalso
       lists:member(erl_syntax:get_pos(H) + 1, EmptyLines).
+
 
 %% =====================================================================
