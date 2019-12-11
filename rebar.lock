@@ -1,1 +1,6 @@
-[].
+{"1.1.0",
+[{<<"katana_code">>,{pkg,<<"katana_code">>,<<"0.2.1">>},0}]}.
+[
+{pkg_hash,[
+ {<<"katana_code">>, <<"B2195859DF57D8BEBF619A9FD3327CD7D01563A98417156D0F4C5FAB435F2630">>}]}
+].
