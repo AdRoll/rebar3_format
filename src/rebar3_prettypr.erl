@@ -10,7 +10,7 @@
 
 -module(rebar3_prettypr).
 
--export([format/2]).
+-export([format/3]).
 
 -import(prettypr,
         [text/1, nest/2, above/2, beside/2, sep/1, par/1, par/2, floating/3, floating/1,
@@ -40,6 +40,7 @@
          break_indent = ?BREAK_INDENT  :: non_neg_integer(),
          clause = undefined  :: clause_t() | undefined, paper = ?PAPER  :: integer(),
          ribbon = ?RIBBON  :: integer(), user = ?NOUSER  :: term(),
+         inline_expressions = true  :: boolean(), empty_lines = []  :: [pos_integer()],
          encoding = epp:default_encoding()  :: epp:source_encoding()}).
 
 set_prec(Ctxt, Prec) ->
@@ -49,20 +50,13 @@ reset_prec(Ctxt) ->
     set_prec(Ctxt, 0).    % used internally
 
 %% =====================================================================
-%% @spec format(Tree::syntaxTree(), Options::[term()]) -> string()
-%%
-%% @type syntaxTree() = erl_syntax:syntaxTree().
-%%
-%% An abstract syntax tree. See the {@link erl_syntax} module for
-%% details.
-%%
 %% @doc Prettyprint-formats an abstract Erlang syntax tree as text. For
 %% example, if you have a `.beam' file that has been compiled with
 %% `debug_info', the following should print the source code for the
 %% module (as it looks in the debug info representation):
 %% ```{ok,{_,[{abstract_code,{_,AC}}]}} =
 %%            beam_lib:chunks("myfile.beam",[abstract_code]),
-%%    io:put_chars(rebar3_prettypr:format(erl_syntax:form_list(AC)))
+%%    io:put_chars(rebar3_prettypr:format(erl_syntax:form_list(AC), [], []))
 %% '''
 %%
 %% Available options:
@@ -83,6 +77,11 @@ reset_prec(Ctxt) ->
 %%       <dd>Specifies the number of spaces to use for breaking indentation.
 %%       The default value is 2.</dd>
 %%
+%%   <dt>{inline_expressions, boolean()}</dt>
+%%       <dd>Specifies wether multiple sequential expressions within the
+%%       same clause can be placed in the same line (if paper/ribbon permits).
+%%       The default value is true.</dd>
+%%
 %%   <dt>{encoding, epp:source_encoding()}</dt>
 %%       <dd>Specifies the encoding of the generated file.</dd>
 %% </dl>
@@ -91,12 +90,12 @@ reset_prec(Ctxt) ->
 %% @see format/1
 %% @see layout/2
 
--spec format(erl_syntax:syntaxTree(), [term()]) -> string().
+-spec format(erl_syntax:syntaxTree(), [pos_integer()], [term()]) -> string().
 
-format(Node, Options) ->
+format(Node, EmptyLines, Options) ->
     W = proplists:get_value(paper, Options, ?PAPER),
     L = proplists:get_value(ribbon, Options, ?RIBBON),
-    prettypr:format(layout(Node, Options), W, L).
+    prettypr:format(layout(Node, EmptyLines, Options), W, L).
 
 %% =====================================================================
 %% @spec layout(Tree::syntaxTree(), Options::[term()]) -> prettypr:document()
@@ -116,14 +115,17 @@ format(Node, Options) ->
 %% @see prettypr
 %% @see format/2
 
--spec layout(erl_syntax:syntaxTree(), [term()]) -> prettypr:document().
+-spec layout(erl_syntax:syntaxTree(), [pos_integer()],
+             [term()]) -> prettypr:document().
 
-layout(Node, Options) ->
+layout(Node, EmptyLines, Options) ->
     lay(Node,
         #ctxt{paper = proplists:get_value(paper, Options, ?PAPER),
               ribbon = proplists:get_value(ribbon, Options, ?RIBBON),
               break_indent = proplists:get_value(break_indent, Options, ?BREAK_INDENT),
               sub_indent = proplists:get_value(sub_indent, Options, ?SUB_INDENT),
+              inline_expressions = proplists:get_value(inline_expressions, Options, true),
+              empty_lines = EmptyLines,
               encoding = proplists:get_value(encoding, Options, epp:default_encoding())}).
 
 lay(Node, Ctxt) ->
@@ -254,8 +256,7 @@ lay_no_comments(Node, Ctxt) ->
                  none -> none;
                  G -> lay(G, Ctxt1)
                end,
-          D3 = sep(seq(erl_syntax:clause_body(Node), lay_text_float(","), Ctxt1,
-                       fun lay/2)),
+          D3 = lay_clause_expressions(erl_syntax:clause_body(Node), Ctxt1, fun lay/2),
           case Ctxt#ctxt.clause of
             fun_expr -> make_fun_clause(D1, D2, D3, Ctxt);
             {function, N} -> make_fun_clause(N, D1, D2, D3, Ctxt);
@@ -921,6 +922,24 @@ tidy_float_second([$e, $- | _] = Cs) -> Cs;
 tidy_float_second([$e | Cs]) -> tidy_float_second([$e, $+ | Cs]);
 tidy_float_second([_C | Cs]) -> tidy_float_second(Cs);
 tidy_float_second([]) -> [].
+
+lay_clause_expressions(Exprs, Ctxt = #ctxt{inline_expressions = true}, Fun) ->
+    sep(seq(Exprs, floating(text(",")), Ctxt, Fun));
+lay_clause_expressions([H], Ctxt, Fun) -> Fun(H, Ctxt);
+lay_clause_expressions([H | T], Ctxt, Fun) ->
+    Clause = beside(Fun(H, Ctxt), floating(text(","))),
+    Next = lay_clause_expressions(T, Ctxt, Fun),
+    case is_last_and_before_empty_line(H, T, Ctxt) of
+      true -> above(above(Clause, text("")), Next);
+      false -> above(Clause, Next)
+    end;
+lay_clause_expressions([], _, _) -> empty().
+
+is_last_and_before_empty_line(H, [], #ctxt{empty_lines = EmptyLines}) ->
+    lists:member(erl_syntax:get_pos(H) + 1, EmptyLines);
+is_last_and_before_empty_line(H, [H2 | _], #ctxt{empty_lines = EmptyLines}) ->
+    erl_syntax:get_pos(H2) - erl_syntax:get_pos(H) >= 2 andalso
+      lists:member(erl_syntax:get_pos(H) + 1, EmptyLines).
 
 
 %% =====================================================================
