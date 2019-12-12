@@ -98,8 +98,6 @@ format(Node, EmptyLines, Options) ->
     prettypr:format(layout(Node, EmptyLines, Options), W, L).
 
 %% =====================================================================
-%% @spec layout(Tree::syntaxTree(), Options::[term()]) -> prettypr:document()
-%%
 %% @doc Creates an abstract document layout for a syntax tree. The
 %% result represents a set of possible layouts (cf. module `prettypr').
 %% For information on the options, see {@link format/2}; note, however,
