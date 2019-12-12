@@ -1,6 +1,6 @@
 {application, rebar3_format, [
     {description, "A rebar plugin for code formatting"},
-    {vsn, "0.0.2"},
+    {vsn, "0.0.3"},
     {registered, []},
     {applications, [kernel, stdlib, katana_code]},
     {env, []},
