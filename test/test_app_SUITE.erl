@@ -14,6 +14,7 @@ test_app(_Config) ->
     {ok, State3} = rebar3_format_prv:do(State3),
     case os:cmd("git --no-pager diff --no-index -- after formatted") of
       "" -> ok;
-      Diff -> ct:pal("Differences:~n~s", [Diff]), ct:fail(Diff)
+      Diff ->
+          ct:pal("Differences:~n~s", [unicode:characters_to_binary(Diff)]), ct:fail(Diff)
     end.
 

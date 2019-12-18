@@ -10,21 +10,21 @@ in_this() ->
 
 this_function() ->
     has:two(),
-    
+
     empty:lines(),
     first:one(wont, be, preserved).
 
 here() ->
     we:have(many),
-    
+
     empty:lines(),
-    
+
     but:only(two, should),
     be:preserved().
 
 empty(Lines) ->
     should:nt(be, preserved, if_they:appear(within, a:single(expression))),
     but:we_preserve(Lines),
-    
+
     between:them().
 
