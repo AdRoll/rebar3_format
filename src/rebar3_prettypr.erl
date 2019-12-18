@@ -7,7 +7,6 @@
 %% This module is a front end to the pretty-printing library module
 %% `prettypr', for text formatting of abstract syntax trees defined by
 %% the module `erl_syntax'.
-
 -module(rebar3_prettypr).
 
 -export([format/3]).
@@ -89,7 +88,6 @@ reset_prec(Ctxt) ->
 %% @see erl_syntax
 %% @see format/1
 %% @see layout/2
-
 -spec format(erl_syntax:syntaxTree(), [pos_integer()], [term()]) -> string().
 
 format(Node, EmptyLines, Options) ->
@@ -112,7 +110,6 @@ format(Node, EmptyLines, Options) ->
 %%
 %% @see prettypr
 %% @see format/2
-
 -spec layout(erl_syntax:syntaxTree(), [pos_integer()],
              [term()]) -> prettypr:document().
 
@@ -136,20 +133,17 @@ lay(Node, Ctxt) ->
     end.
 
 %% For pre-comments, all padding is ignored.
-
 lay_precomments([], D) -> D;
 lay_precomments(Cs, D) ->
     above(floating(break(stack_comments(Cs, false)), -1, -1), D).
 
 %% For postcomments, individual padding is added.
-
 lay_postcomments([], D) -> D;
 lay_postcomments(Cs, D) ->
     beside(D, floating(break(stack_comments(Cs, true)), 1, 0)).
 
 %% Format (including padding, if `Pad' is `true', otherwise not)
 %% and stack the listed comments above each other.
-
 stack_comments([C | Cs], Pad) ->
     D = stack_comment_lines(erl_syntax:comment_text(C)),
     D1 = case Pad of
@@ -169,7 +163,6 @@ stack_comments([C | Cs], Pad) ->
 
 %% Stack lines of text above each other and prefix each string in
 %% the list with a single `%' character.
-
 stack_comment_lines([S | Ss]) ->
     D = text(add_comment_prefix(S)),
     case Ss of
@@ -181,7 +174,6 @@ stack_comment_lines([]) -> empty().
 add_comment_prefix(S) -> [$% | S].
 
 %% This part ignores annotations and comments:
-
 lay_no_comments(Node, Ctxt) ->
     case erl_syntax:type(Node) of
       %% We list literals and other common cases first.
@@ -766,7 +758,6 @@ split_string(Xs, N, L) -> split_string_first(Xs, N, L, []).
 
 %% We only split strings at whitespace, if possible. We must make sure
 %% we do not split an escape sequence.
-
 split_string_first([$\s | Xs], N, L, As) when N =< 0, L >= 5 ->
     {lists:reverse([$\s | As]), Xs};
 split_string_first([$\t | Xs], N, L, As) when N =< 0, L >= 5 ->
@@ -807,14 +798,12 @@ split_string_next([], N, L, As) -> split_string_first([], N, L, As).
 %% Note that there is nothing in `lay_clauses' that actually requires
 %% that the elements have type `clause'; it just sets up the proper
 %% context and arranges the elements suitably for clauses.
-
 lay_clauses(Cs, Type, Ctxt) ->
     vertical(seq(Cs, lay_text_float(";"), Ctxt#ctxt{clause = Type}, fun lay/2)).
 
 %% Note that for the clause-making functions, the guard argument
 %% can be `none', which has different interpretations in different
 %% contexts.
-
 make_fun_clause(P, G, B, Ctxt) -> make_fun_clause(none, P, G, B, Ctxt).
 
 make_fun_clause(N, P, G, B, Ctxt) ->

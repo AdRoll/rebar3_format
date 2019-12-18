@@ -54,6 +54,9 @@ The plugin supports the following configuration options in the `format` section 
     - Erlang's `prettypr` inserts a tab character each time it has to insert 8 spaces for indentation and that code is in a 100% unconfigurable/unreplaceable/unhookable function. If this setting is `true`, the formatter will turn those tabs into 8 spaces again.
     - The default value is `true`.
     - **NOTE:** We are aware that `true` is not the _actual OTP default_ but... **really?** Who wants their code indented with a mixture of tabs and spaces? 🙈
+* `remove_trailing_spaces` (`boolean()`):
+    - If this setting is `true`, the formatter will remove all trailing whitespaces.
+    - The default value is `true`.
 * `inline_expressions` (`boolean()`):
     - Specifies if sequential expressions in a clause should be placed in the same line if `paper` and `ribbon` allows it or if each expression should be placed in its own line.
     - The default value is `true`.

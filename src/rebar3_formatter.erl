@@ -7,7 +7,8 @@
                   output_dir => undefined | string(), encoding => none | epp:source_encoding(),
                   paper => pos_integer(), ribbon => pos_integer(), break_indent => pos_integer(),
                   sub_indent => pos_integer(), remove_tabs => boolean(),
-                  inline_expressions => boolean(), preserve_empty_lines => boolean()}.
+                  remove_trailing_spaces => boolean(), inline_expressions => boolean(),
+                  preserve_empty_lines => boolean()}.
 
 -export_type([opts/0]).
 
@@ -47,6 +48,7 @@ format(File, AST, Comments, Opts) ->
     BreakIndent = maps:get(break_indent, Opts, 4),
     SubIndent = maps:get(sub_indent, Opts, 2),
     RemoveTabs = maps:get(remove_tabs, Opts, true),
+    RemoveTrailingSpaces = maps:get(remove_trailing_spaces, Opts, true),
     InlineExpressions = maps:get(inline_expressions, Opts, true),
     PreserveEmptyLines = maps:get(preserve_empty_lines, Opts, false),
     FinalFile = case maps:get(output_dir, Opts) of
@@ -65,11 +67,16 @@ format(File, AST, Comments, Opts) ->
                                           FormatOpts),
     Formatted = maybe_remove_tabs(RemoveTabs,
                                   unicode:characters_to_binary(PreFormatted, Encoding)),
-    file:write_file(FinalFile, Formatted).
+    Clean = maybe_remove_trailing_spaces(RemoveTrailingSpaces, Formatted),
+    file:write_file(FinalFile, Clean).
 
 maybe_remove_tabs(false, Formatted) -> Formatted;
 maybe_remove_tabs(true, Formatted) ->
     binary:replace(Formatted, <<"\t">>, <<"        ">>, [global]).
+
+maybe_remove_trailing_spaces(false, Formatted) -> Formatted;
+maybe_remove_trailing_spaces(true, Formatted) ->
+    re:replace(Formatted, <<" +\n">>, <<"\n">>, [global, {return, binary}]).
 
 empty_lines(true, _, _) -> [];
 empty_lines(false, false, _) -> [];
