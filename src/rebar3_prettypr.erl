@@ -357,9 +357,8 @@ lay_no_comments(Node, Ctxt) ->
           beside(D1, D2);
       block_expr ->
           Ctxt1 = reset_prec(Ctxt),
-          Es = seq(erl_syntax:block_expr_body(Node), lay_text_float(","), Ctxt1,
-                   fun lay/2),
-          sep([text("begin"), nest(Ctxt1#ctxt.sub_indent, sep(Es)), text("end")]);
+          Es = lay_clause_expressions(erl_syntax:block_expr_body(Node), Ctxt1, fun lay/2),
+          sep([text("begin"), nest(Ctxt1#ctxt.sub_indent, Es), text("end")]);
       catch_expr ->
           {Prec, PrecR} = preop_prec('catch'),
           D = lay(erl_syntax:catch_expr_body(Node), set_prec(Ctxt, PrecR)),
@@ -449,8 +448,8 @@ lay_no_comments(Node, Ctxt) ->
                  none -> D1;
                  T ->
                      D3 = lay(T, Ctxt1),
-                     A = erl_syntax:receive_expr_action(Node),
-                     D4 = sep(seq(A, lay_text_float(","), Ctxt1, fun lay/2)),
+                     D4 = lay_clause_expressions(erl_syntax:receive_expr_action(Node), Ctxt1,
+                                                 fun lay/2),
                      sep([D1,
                           follow(lay_text_float("after"), append_clause_body(D4, D3, Ctxt1),
                                  Ctxt1#ctxt.sub_indent)])
@@ -516,13 +515,12 @@ lay_no_comments(Node, Ctxt) ->
           maybe_parentheses(D3, Prec, Ctxt);
       try_expr ->
           Ctxt1 = reset_prec(Ctxt),
-          D1 = sep(seq(erl_syntax:try_expr_body(Node), lay_text_float(","), Ctxt1,
-                       fun lay/2)),
+          D1 = lay_clause_expressions(erl_syntax:try_expr_body(Node), Ctxt1, fun lay/2),
           Es0 = [text("end")],
           Es1 = case erl_syntax:try_expr_after(Node) of
                   [] -> Es0;
                   As ->
-                      D2 = sep(seq(As, lay_text_float(","), Ctxt1, fun lay/2)),
+                      D2 = lay_clause_expressions(As, Ctxt1, fun lay/2),
                       [text("after"), nest(Ctxt1#ctxt.sub_indent, D2) | Es0]
                 end,
           Es2 = case erl_syntax:try_expr_handlers(Node) of
