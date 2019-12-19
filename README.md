@@ -57,6 +57,11 @@ The plugin supports the following configuration options in the `format` section 
 * `remove_trailing_spaces` (`boolean()`):
     - If this setting is `true`, the formatter will remove all trailing whitespaces.
     - The default value is `true`.
+* `inline_items` (`boolean()`):
+    - Specifies the desired behavior when using multiple lines for a multi-item structure (i.e. tuple, list, map, etc.).
+    - When this flag is on, the formatter will try to fit as many items in each line as permitted by `paper` and `ribbon`.
+    - When the flag is off, the formatter will place each item in its own line.
+    - The default value is `true`.
 * `inline_expressions` (`boolean()`):
     - Specifies if sequential expressions in a clause should be placed in the same line if `paper` and `ribbon` allows it or if each expression should be placed in its own line.
     - The default value is `true`.
