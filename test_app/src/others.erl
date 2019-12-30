@@ -2,10 +2,9 @@
 
 -compile(export_all).
 
-strange_infix_operators(A, B) ->
-    bnot (-(A rem B)).
+strange_infix_operators(A, B) -> bnot (-(A rem B)).
 
--define(OUT_OF_CONTEXT_CLAUSE, true -> false).
+-define(OUT_OF_CONTEXT_CLAUSE, true -> false ).
 
 -record(rec, {key, value}).
 
@@ -16,55 +15,49 @@ named_fun_expr() ->
     end.
 
 catch_expr() ->
-    catch this:train(with, all, its, arguments, {they, might, be, too, many, to, "handle"}).
+    catch this:train(with, all, its, arguments,
+                     {they, might, be, too, many, to, "handle"}).
 
 comprehensions(Bin, List) ->
-    BinToBin = << <<X:1>> || <<X:8/integer>> <= Bin, X > 0, with:a_very(complex, boolean_filter, on, X) >>,
-    BinToList = [ X || <<X:8/integer>> <= Bin, X > 0, with:a_very(complex, boolean_filter, on, X)],
-    ListToBin = << <<X:1>> || X <- List, X > 0, with:a_very(complex, boolean_filter, on, X) >>,
-    ListToList = [ X || X <- List, X > 0, with:a_very(complex, boolean_filter, on, X)],
+    BinToBin = << <<X:1>>
+                   || <<X:8/integer>> <= Bin, X > 0,
+                      with:a_very(complex, boolean_filter, on, X) >>,
+    BinToList = [X
+                 || <<X:8/integer>> <= Bin, X > 0, with:a_very(complex, boolean_filter, on, X)],
+    ListToBin = << <<X:1>>
+                    || X <- List, X > 0, with:a_very(complex, boolean_filter, on, X) >>,
+    ListToList = [X
+                  || X <- List, X > 0, with:a_very(complex, boolean_filter, on, X)],
     {BinToBin, BinToList, ListToBin, ListToList}.
 
 parentheses() ->
-    ({"does                            ", this, ([([code, <<"        look         ">>, like]), "lisp", (((to))), (([{[((<<"(      you or me or them?)">>))]}]))])}).
+    {"does                            ", this,
+     [[code, <<"        look         ">>, like], "lisp", to,
+      [{[<<"(      you or me or them?)">>]}]]}.
 
-receive_expr() ->
-    receive
-        with -> {no, timeout}
-    end.
+receive_expr() -> receive with -> {no, timeout} end.
 
-record_index_expr(List) ->
-    lists:keyfind(a, #rec.key, List).
+record_index_expr(List) -> lists:keyfind(a, #rec.key, List).
 
 try_expr_after() ->
     try to:open({the, door}) of
-        my -> room or your;
-        room -> {my, friend}
+      my -> room or your;
+      room -> {my, friend}
     catch
-        {you_cant, Open} when Open ->
-            it:was(Open)
+      {you_cant, Open} when Open -> it:was(Open)
     after
-        close:the(door, anyway)
+      close:the(door, anyway)
     end,
-    try with:no(catching)
-    after
-        do:something({to, "clean up", <<"the">>, [filthy, filthy, mess], you, created, "if you can"})
+    try with:no(catching) after
+      do:something({to, "clean up", <<"the">>, [filthy, filthy, mess], you, created,
+                    "if you can"})
     end.
 
 bit_types(X) ->
-    <<X:4/little-signed-integer-unit:8, (something:on(X)):32/big-unsigned-integer-unit:32>>.
+    <<X:4/little-signed-integer-unit:8,
+      (something:on(X)):32/big-unsigned-integer-unit:32>>.
 
 numbers() ->
-    {
-        1.00000000001,
-        1.0000001,
-        1.001,
-        16#FFFFFFFF,
-        2#101010101,
-        8#11111,
-        -1.0e+001,
-        0.5e-1,
-        12312.231234e12,
-        1.2e-0,
-        1.2e-000001
-    }.
+    {1.00099999999999988987, 4294967295, 341, 4681, -1.0e+1, 5.0e-2,
+     1.2312231234e+16, 1.19999999999999995559, 1.19999999999999995559e-1}.
+
