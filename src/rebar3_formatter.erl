@@ -1,7 +1,7 @@
 %% @doc Automatic formatter for Erlang modules
 -module(rebar3_formatter).
 
--export([format/2]).
+-export([format/2, remove_line_numbers/1]).
 
 -type opts() :: #{files => [file:filename_all()],
                   output_dir => undefined | string(), encoding => none | epp:source_encoding(),
@@ -20,9 +20,14 @@
 
 format(File, Opts) ->
     AST = get_ast(File),
+    QuickAST = get_quick_ast(File),
     Comments = get_comments(File),
     FileOpts = maps:merge(Opts, get_per_file_opts(File)),
-    format(File, AST, Comments, FileOpts).
+    NewFile = format(File, AST, Comments, FileOpts),
+    case get_quick_ast(NewFile) of
+      QuickAST -> ok;
+      _ -> erlang:error({modified_ast, File, NewFile})
+    end.
 
 get_ast(File) ->
     case ktn_dodger:parse_file(File) of
@@ -33,6 +38,23 @@ get_ast(File) ->
           end;
       {error, OpenError} -> erlang:error({cant_parse, File, OpenError})
     end.
+
+get_quick_ast(File) ->
+    case ktn_dodger:quick_parse_file(File) of
+      {ok, AST} -> remove_line_numbers(AST);
+      {error, OpenError} -> erlang:error({cant_parse, File, OpenError})
+    end.
+
+%% @doc Removes line numbers from ASTs to allow for "semantic" comparison
+remove_line_numbers(AST) when is_list(AST) ->
+    lists:map(fun remove_line_numbers/1, AST);
+remove_line_numbers(AST) when is_tuple(AST) ->
+    [Type, _Line | Rest] = tuple_to_list(AST),
+    case Type of
+      error -> AST;
+      Type -> list_to_tuple([Type, no | remove_line_numbers(Rest)])
+    end;
+remove_line_numbers(AST) -> AST.
 
 get_comments(File) -> erl_comment_scan:file(File).
 
@@ -72,7 +94,8 @@ format(File, AST, Comments, Opts) ->
     Formatted = maybe_remove_tabs(RemoveTabs,
                                   unicode:characters_to_binary(PreFormatted, Encoding)),
     Clean = maybe_remove_trailing_spaces(RemoveTrailingSpaces, Formatted),
-    file:write_file(FinalFile, Clean).
+    ok = file:write_file(FinalFile, Clean),
+    FinalFile.
 
 maybe_remove_tabs(false, Formatted) -> Formatted;
 maybe_remove_tabs(true, Formatted) ->
