@@ -18,8 +18,12 @@
 -spec a_fun() -> t(boolean()).
 a_fun() -> {true}.
 
+-ifdef(MORE).
+
 -attribute(w).
 -attribute(w2).
+
+-endif.
 
 -spec another_fun() -> t(number()).
 another_fun() -> {1}.
