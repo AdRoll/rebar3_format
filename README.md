@@ -70,6 +70,9 @@ The plugin supports the following configuration options in the `format` section 
     - This option is only used when `inline_expressions` is `false`.
     - If this option is `true`, one empty line will preserved for each group of empty lines that are placed between expressions in a clause.
     - The default value is `false`.
+* `newline_after_attributes` (`boolean()`):
+    - Specifies if attributes must be separated from the code below them by an empty line.
+    - The default value is `true`.
 
 ### Per-File Configuration
 

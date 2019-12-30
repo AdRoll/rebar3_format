@@ -41,6 +41,7 @@
          ribbon = ?RIBBON  :: integer(), user = ?NOUSER  :: term(),
          inline_items = true  :: boolean(), inline_expressions = true  :: boolean(),
          empty_lines = []  :: [pos_integer()],
+         newline_after_attributes = true  :: boolean(),
          encoding = epp:default_encoding()  :: epp:source_encoding()}).
 
 set_prec(Ctxt, Prec) ->
@@ -92,6 +93,11 @@ reset_prec(Ctxt) ->
 %%
 %%   <dt>{encoding, epp:source_encoding()}</dt>
 %%       <dd>Specifies the encoding of the generated file.</dd>
+%%
+%%   <dt>{newline_after_attributes, boolean()}</dt>
+%%       <dd>Specifies if attributes must be separated from the code below
+%%       them by an empty line.
+%%       The default value is true.</dd>
 %% </dl>
 %%
 %% @see erl_syntax
@@ -130,6 +136,8 @@ layout(Node, EmptyLines, Options) ->
               sub_indent = proplists:get_value(sub_indent, Options, ?SUB_INDENT),
               inline_expressions = proplists:get_value(inline_expressions, Options, true),
               inline_items = proplists:get_value(inline_items, Options, true),
+              newline_after_attributes =
+                  proplists:get_value(newline_after_attributes, Options, true),
               empty_lines = EmptyLines,
               encoding = proplists:get_value(encoding, Options, epp:default_encoding())}).
 
@@ -318,15 +326,15 @@ lay_no_comments(Node, Ctxt) ->
                 {atom, _, 'if'} -> erl_syntax:variable('if');
                 N0 -> N0
               end,
-          D = case attribute_type(Node) of
-                spec ->
+          D = case attribute_name(Node) of
+                Tag when Tag =:= spec; Tag =:= callback ->
                     [SpecTuple] = Args,
                     [FuncName, FuncTypes] = erl_syntax:tuple_elements(SpecTuple),
                     Name = get_func_node(FuncName),
                     Types = dodge_macros(FuncTypes),
                     D1 = lay_clauses(erl_syntax:concrete(Types), spec, Ctxt1),
                     beside(follow(lay(N, Ctxt1), lay(Name, Ctxt1), Ctxt1#ctxt.break_indent), D1);
-                type ->
+                Tag when Tag =:= type; Tag =:= opaque ->
                     [TypeTuple] = Args,
                     [Name, Type0, Elements] = erl_syntax:tuple_elements(TypeTuple),
                     TypeName = dodge_macros(Name),
@@ -401,7 +409,8 @@ lay_no_comments(Node, Ctxt) ->
       form_list ->
           Es = seq(erl_syntax:form_list_elements(Node), none, reset_prec(Ctxt),
                    fun lay/2),
-          vertical_sep(text(""), Es);
+          AddEmptyLines = empty_lines_to_add(erl_syntax:form_list_elements(Node), Ctxt),
+          vertical_sep(lists:zip(Es, AddEmptyLines));
       generator ->
           Ctxt1 = reset_prec(Ctxt),
           D1 = lay(erl_syntax:generator_pattern(Node), Ctxt1),
@@ -664,17 +673,9 @@ lay_no_comments(Node, Ctxt) ->
                                erl_syntax:user_type_application_arguments(Node), Ctxt)
     end.
 
-attribute_type(Node) ->
+attribute_name(Node) ->
     N = erl_syntax:attribute_name(Node),
-    case catch erl_syntax:concrete(N) of
-      opaque -> type;
-      spec -> spec;
-      callback -> spec;
-      type -> type;
-      export_type -> export_type;
-      optional_callbacks -> optional_callbacks;
-      _ -> N
-    end.
+    try erl_syntax:concrete(N) catch _:_ -> N end.
 
 is_subtype(Name, [Var, _]) ->
     erl_syntax:is_atom(Name, is_subtype) andalso erl_syntax:type(Var) =:= variable;
@@ -876,9 +877,32 @@ vertical([D]) -> D;
 vertical([D | Ds]) -> above(D, vertical(Ds));
 vertical([]) -> [].
 
-vertical_sep(_Sep, [D]) -> D;
-vertical_sep(Sep, [D | Ds]) -> above(above(D, Sep), vertical_sep(Sep, Ds));
-vertical_sep(_Sep, []) -> [].
+vertical_sep([{D, _}]) -> D;
+vertical_sep([{D, empty_line} | Ds]) ->
+    above(above(D, text("")), vertical_sep(Ds));
+vertical_sep([{D, no_empty_line} | Ds]) -> above(D, vertical_sep(Ds));
+vertical_sep([]) -> [].
+
+empty_lines_to_add(Nodes, #ctxt{newline_after_attributes = true}) ->
+    lists:duplicate(length(Nodes), empty_line);
+empty_lines_to_add([], _Ctxt) -> [];
+empty_lines_to_add([Node | Nodes], Ctxt) ->
+    AfterThisNode = case erl_syntax:type(Node) of
+                      attribute ->
+                          AttrName = attribute_name(Node),
+                          case is_last_in_list(AttrName, Nodes) of
+                            true -> empty_line;
+                            false -> no_empty_line
+                          end;
+                      _ -> empty_line
+                    end,
+    [AfterThisNode | empty_lines_to_add(Nodes, Ctxt)].
+
+is_last_in_list(_AttrName, []) -> true;
+is_last_in_list(spec, _) ->
+    false; % we never want to add an empty line after spec
+is_last_in_list(AttrName, [Node | _]) ->
+    erl_syntax:type(Node) /= attribute orelse attribute_name(Node) /= AttrName.
 
 spaces(N) when N > 0 -> [$\s | spaces(N - 1)];
 spaces(_) -> [].

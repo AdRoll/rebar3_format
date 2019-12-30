@@ -8,7 +8,8 @@
                   paper => pos_integer(), ribbon => pos_integer(), break_indent => pos_integer(),
                   sub_indent => pos_integer(), remove_tabs => boolean(),
                   remove_trailing_spaces => boolean(), inline_items => boolean(),
-                  inline_expressions => boolean(), preserve_empty_lines => boolean()}.
+                  inline_expressions => boolean(), preserve_empty_lines => boolean(),
+                  newline_after_attributes => boolean()}.
 
 -export_type([opts/0]).
 
@@ -52,6 +53,7 @@ format(File, AST, Comments, Opts) ->
     InlineItems = maps:get(inline_items, Opts, true),
     InlineExpressions = maps:get(inline_expressions, Opts, true),
     PreserveEmptyLines = maps:get(preserve_empty_lines, Opts, false),
+    NewlineAfterAttrs = maps:get(newline_after_attributes, Opts, true),
     FinalFile = case maps:get(output_dir, Opts) of
                   undefined -> File;
                   OutputDir -> filename:join(filename:absname(OutputDir), File)
@@ -59,7 +61,8 @@ format(File, AST, Comments, Opts) ->
     ok = filelib:ensure_dir(FinalFile),
     FormatOpts = [{paper, Paper}, {ribbon, Ribbon}, {encoding, Encoding},
                   {break_indent, BreakIndent}, {sub_indent, SubIndent},
-                  {inline_items, InlineItems}, {inline_expressions, InlineExpressions}],
+                  {inline_items, InlineItems}, {inline_expressions, InlineExpressions},
+                  {newline_after_attributes, NewlineAfterAttrs}],
     ExtendedAST = AST ++ [{eof, 0}],
     WithComments = erl_recomment:recomment_forms(erl_syntax:form_list(ExtendedAST),
                                                  Comments),
