@@ -61,10 +61,9 @@
 
 -type b1() :: B1 :: binary() | (BitString :: bitstring()).
 
--define(PAIR(A, B), {A, B}).
+-type pair(A, B) :: {A, B}.
 
--spec (?MODULE):f('?<macro> ('(PAIR, r0(), r0())) -> '?<macro> ('(PAIR, t(),
-                                                                  t()).
+-spec type_specs:f(pair(r0(), r0())) -> pair(t(), t()).
 
 f({R, R}) ->
     _ = (?MODULE_STRING) ++ "hej",
@@ -73,7 +72,7 @@ f({R, R}) ->
     _ = R#r{f1 = 17, f2 = b},
     {1, 1}.
 
--spec (?MODULE):b() -> integer() | fun().
+-spec type_specs:b() -> pos_integer().
 
 b() -> case foo:bar() of #{a := 2} -> 19 end.
 
