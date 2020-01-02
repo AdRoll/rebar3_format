@@ -1,5 +1,27 @@
 # Changelog
 
+## [0.0.4](https://github.com/AdRoll/rebar3_format/tree/0.0.4) (2020-01-02)
+
+[Full Changelog](https://github.com/AdRoll/rebar3_format/compare/0.0.3...0.0.4)
+
+**Fixed bugs:**
+
+- Remove trailing whitespaces [\#12](https://github.com/AdRoll/rebar3_format/issues/12)
+
+**Closed issues:**
+
+- Don't put more than one item per line in multi-line data structures [\#32](https://github.com/AdRoll/rebar3_format/issues/32)
+- Module attribute grouping [\#30](https://github.com/AdRoll/rebar3_format/issues/30)
+
+**Merged pull requests:**
+
+- \[\#30\] Add an option to avoid adding empty lines after attributes [\#47](https://github.com/AdRoll/rebar3_format/pull/47) ([elbrujohalcon](https://github.com/elbrujohalcon))
+- Fix \#32: don't put more one item per row [\#45](https://github.com/AdRoll/rebar3_format/pull/45) ([elbrujohalcon](https://github.com/elbrujohalcon))
+- \[Fix \#12\] Remove trailing whitespaces [\#44](https://github.com/AdRoll/rebar3_format/pull/44) ([elbrujohalcon](https://github.com/elbrujohalcon))
+- Verify the result of the formatting [\#43](https://github.com/AdRoll/rebar3_format/pull/43) ([elbrujohalcon](https://github.com/elbrujohalcon))
+- Temporarily remove lint and apply other fixes [\#42](https://github.com/AdRoll/rebar3_format/pull/42) ([elbrujohalcon](https://github.com/elbrujohalcon))
+- Recover the linting as a plugin, once rebar3\_lint uses katana\_code 0.2.1 [\#41](https://github.com/AdRoll/rebar3_format/pull/41) ([juanbono](https://github.com/juanbono))
+
 ## [0.0.3](https://github.com/AdRoll/rebar3_format/tree/0.0.3) (2019-12-12)
 
 [Full Changelog](https://github.com/AdRoll/rebar3_format/compare/0.0.2...0.0.3)
@@ -10,6 +32,7 @@
 
 **Merged pull requests:**
 
+- Bump version to 0.0.3 [\#40](https://github.com/AdRoll/rebar3_format/pull/40) ([elbrujohalcon](https://github.com/elbrujohalcon))
 - Update README.md [\#38](https://github.com/AdRoll/rebar3_format/pull/38) ([msantos](https://github.com/msantos))
 - \[\#25\] Replace epp\_dodger with ktn\_dodger [\#35](https://github.com/AdRoll/rebar3_format/pull/35) ([juanbono](https://github.com/juanbono))
 - Add support for preserving empty lines [\#31](https://github.com/AdRoll/rebar3_format/pull/31) ([juanbono](https://github.com/juanbono))
