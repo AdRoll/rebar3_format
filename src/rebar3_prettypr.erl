@@ -82,7 +82,7 @@ reset_prec(Ctxt) ->
 %%       <dd>Specifies the desired behavior when using multiple lines for a
 %%       multi-item structure (i.e. tuple, list, map, etc.).
 %%       When this flag is on, the formatter will try to fit as many items
-%%       in each line as permitted by `paper` and `ribbon`.
+%%       in each line as permitted by 'paper' and 'ribbon'.
 %%       Otherwise, the formatter will place each item in its own line.
 %%       The default value is true.</dd>
 %%
