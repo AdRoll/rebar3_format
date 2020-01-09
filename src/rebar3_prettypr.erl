@@ -198,7 +198,7 @@ lay_no_comments(Node, Ctxt) ->
       variable -> text(erl_syntax:variable_literal(Node));
       atom -> text(erl_syntax:atom_literal(Node, Ctxt#ctxt.encoding));
       integer -> text(erl_syntax:integer_literal(Node));
-      float -> text(erl_syntax:float_literal(Node));
+      float -> text(tidy_float(erl_syntax:float_value(Node)));
       char -> text(erl_syntax:char_literal(Node, Ctxt#ctxt.encoding));
       string -> lay_string(erl_syntax:string_literal(Node, Ctxt#ctxt.encoding), Ctxt);
       nil -> text("[]");
@@ -906,6 +906,8 @@ is_last_in_list(AttrName, [Node | _]) ->
 
 spaces(N) when N > 0 -> [$\s | spaces(N - 1)];
 spaces(_) -> [].
+
+tidy_float(Float) -> io_lib:format("~p", [Float]).
 
 lay_items(Exprs, Ctxt, Fun) -> lay_items(Exprs, lay_text_float(","), Ctxt, Fun).
 

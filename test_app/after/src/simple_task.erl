@@ -1,6 +1,6 @@
 -module(simple_task).
 
--vsn(1.00000000000000000000e+00).
+-vsn(1.0).
 
 -author("test author").
 
