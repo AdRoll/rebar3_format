@@ -97,7 +97,8 @@ id(I) -> I.
 
 foo3() ->
     [atom, 'some other atom', {tuple, 1, 2, 3}, 1, 2, 3, 3333, 3, 3333, 2, 1,
-     [$a, $b, $c], "hello world", <<"hello world">>, <<1, 2, 3, 4, 5:6>>, 3.1415, 1.03e33].
+     [$a, $b, $c], "hello world", <<"hello world">>, <<1, 2, 3, 4, 5:6>>, 3.1415,
+     1.03e33].
 
 %% application and records
 

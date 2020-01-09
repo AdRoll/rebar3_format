@@ -30,7 +30,7 @@ format(File, Opts) ->
     end.
 
 get_ast(File) ->
-    case ktn_dodger:parse_file(File) of
+    case ktn_dodger:parse_file(File, [{scan_opts, [text]}]) of
       {ok, AST} ->
           case [Error || {error, Error} <- AST] of
             [] -> AST;

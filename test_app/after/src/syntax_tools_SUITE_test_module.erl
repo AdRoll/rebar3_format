@@ -424,13 +424,13 @@ sub_string(String, Start, Stop) -> substr(String, Start, Stop - Start + 1).
 %%
 
 to_lower_char(C) when is_integer(C), $A =< C, C =< $Z -> C + 32;
-to_lower_char(C) when is_integer(C), 192 =< C, C =< 214 -> C + 32;
-to_lower_char(C) when is_integer(C), 216 =< C, C =< 222 -> C + 32;
+to_lower_char(C) when is_integer(C), 16#C0 =< C, C =< 16#D6 -> C + 32;
+to_lower_char(C) when is_integer(C), 16#D8 =< C, C =< 16#DE -> C + 32;
 to_lower_char(C) -> C.
 
 to_upper_char(C) when is_integer(C), $a =< C, C =< $z -> C - 32;
-to_upper_char(C) when is_integer(C), 224 =< C, C =< 246 -> C - 32;
-to_upper_char(C) when is_integer(C), 248 =< C, C =< 254 -> C - 32;
+to_upper_char(C) when is_integer(C), 16#E0 =< C, C =< 16#F6 -> C - 32;
+to_upper_char(C) when is_integer(C), 16#F8 =< C, C =< 16#FE -> C - 32;
 to_upper_char(C) -> C.
 
 -spec to_lower(String) -> Result when String :: io_lib:latin1_string(),
