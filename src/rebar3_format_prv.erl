@@ -19,7 +19,7 @@ init(State) ->
     {ok, rebar_state:add_provider(State, Provider)}.
 
 %% @private
--spec do(rebar_state:t()) -> {ok, rebar_state:t()} | {error, string()}.
+-spec do(rebar_state:t()) -> {ok, rebar_state:t()} | {error, binary()}.
 
 do(State) ->
     OutputDirOpt = get_output_dir(State),
@@ -33,13 +33,14 @@ do(State) ->
     end.
 
 %% @private
--spec format_error(any()) -> iolist().
+-spec format_error(any()) -> binary().
 
 format_error({erl_parse, Error}) ->
     iolist_to_binary(io_lib:format("Formatting error: ~s.Try running with DEBUG=1 for more "
                                    "information",
                                    [Error]));
-format_error(Reason) -> io_lib:format("Unknown Formatting Error: ~p", [Reason]).
+format_error(Reason) ->
+    iolist_to_binary(io_lib:format("Unknown Formatting Error: ~p", [Reason])).
 
 -spec get_files(rebar3_formatter:opts(),
                 rebar_state:t()) -> [file:filename_all()].
