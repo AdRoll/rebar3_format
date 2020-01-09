@@ -198,7 +198,7 @@ lay_no_comments(Node, Ctxt) ->
       variable -> text(erl_syntax:variable_literal(Node));
       atom -> text(erl_syntax:atom_literal(Node, Ctxt#ctxt.encoding));
       integer -> text(erl_syntax:integer_literal(Node));
-      float -> text(tidy_float(erl_syntax:float_literal(Node)));
+      float -> text(erl_syntax:float_literal(Node));
       char -> text(erl_syntax:char_literal(Node, Ctxt#ctxt.encoding));
       string -> lay_string(erl_syntax:string_literal(Node, Ctxt#ctxt.encoding), Ctxt);
       nil -> text("[]");
@@ -906,28 +906,6 @@ is_last_in_list(AttrName, [Node | _]) ->
 
 spaces(N) when N > 0 -> [$\s | spaces(N - 1)];
 spaces(_) -> [].
-
-tidy_float([$., C | Cs]) ->
-    [$., C | tidy_float_first(Cs)];  % preserve first decimal digit
-tidy_float([$e | _] = Cs) -> tidy_float_second(Cs);
-tidy_float([C | Cs]) -> [C | tidy_float(Cs)];
-tidy_float([]) -> [].
-
-tidy_float_first([$0, $0, $0 | Cs]) ->
-    tidy_float_second(Cs);    % cut mantissa at three consecutive zeros.
-tidy_float_first([$e | _] = Cs) -> tidy_float_second(Cs);
-tidy_float_first([C | Cs]) -> [C | tidy_float_first(Cs)];
-tidy_float_first([]) -> [].
-
-tidy_float_second([$e, $+, $0]) -> [];
-tidy_float_second([$e, $+, $0 | Cs]) -> tidy_float_second([$e, $+ | Cs]);
-tidy_float_second([$e, $+ | _] = Cs) -> Cs;
-tidy_float_second([$e, $-, $0]) -> [];
-tidy_float_second([$e, $-, $0 | Cs]) -> tidy_float_second([$e, $- | Cs]);
-tidy_float_second([$e, $- | _] = Cs) -> Cs;
-tidy_float_second([$e | Cs]) -> tidy_float_second([$e, $+ | Cs]);
-tidy_float_second([_C | Cs]) -> tidy_float_second(Cs);
-tidy_float_second([]) -> [].
 
 lay_items(Exprs, Ctxt, Fun) -> lay_items(Exprs, lay_text_float(","), Ctxt, Fun).
 

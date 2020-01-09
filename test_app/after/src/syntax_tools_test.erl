@@ -80,7 +80,7 @@ foo2(A, B) ->
       ?macro_block("hello"), ?macro_block([$h, $e, $l, $l, $0]),
       ?macro_argument1((id(<<"hello">>))),
       ?macro_argument1(if A -> B;
-                          true -> 3.14
+                          true -> 3.14000000000000012434e+00
                        end),
       ?macro_argument1(case A of
                          ok -> B;
@@ -97,8 +97,8 @@ id(I) -> I.
 
 foo3() ->
     [atom, 'some other atom', {tuple, 1, 2, 3}, 1, 2, 3, 3333, 3, 3333, 2, 1,
-     [$a, $b, $c], "hello world", <<"hello world">>, <<1, 2, 3, 4, 5:6>>, 3.1415,
-     1.02999999999999996700e+33].
+     [$a, $b, $c], "hello world", <<"hello world">>, <<1, 2, 3, 4, 5:6>>,
+     3.14150000000000018119e+00, 1.02999999999999996700e+33].
 
 %% application and records
 
