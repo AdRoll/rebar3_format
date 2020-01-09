@@ -1,7 +1,7 @@
 %% @doc Automatic formatter for Erlang modules
 -module(rebar3_formatter).
 
--export([format/2, remove_line_numbers/1]).
+-export([format/2]).
 
 -type opts() :: #{files => [file:filename_all()],
                   output_dir => undefined | string(), encoding => none | epp:source_encoding(),
