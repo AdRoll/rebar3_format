@@ -1,26 +1,33 @@
 # Changelog
 
-## [0.0.4](https://github.com/AdRoll/rebar3_format/tree/0.0.4) (2020-01-02)
+## [0.1.0](https://github.com/AdRoll/rebar3_format/tree/0.1.0) (2020-01-21)
 
-[Full Changelog](https://github.com/AdRoll/rebar3_format/compare/0.0.3...0.0.4)
+[Full Changelog](https://github.com/AdRoll/rebar3_format/compare/0.0.3...0.1.0)
 
 **Fixed bugs:**
 
 - Remove trailing whitespaces [\#12](https://github.com/AdRoll/rebar3_format/issues/12)
+- Don't format numbers written with sintactic sugar  [\#24](https://github.com/AdRoll/rebar3_format/issues/24)
 
 **Closed issues:**
 
+- Consider using erlang\_ls parser instead of epp\_dodger [\#34](https://github.com/AdRoll/rebar3_format/issues/34)
+- Add a configuration option to control export lists indentation [\#33](https://github.com/AdRoll/rebar3_format/issues/33)
 - Don't put more than one item per line in multi-line data structures [\#32](https://github.com/AdRoll/rebar3_format/issues/32)
 - Module attribute grouping [\#30](https://github.com/AdRoll/rebar3_format/issues/30)
+- The formatter adds parentheses arbitrarily [\#50](https://github.com/AdRoll/rebar3_format/issues/50)
 
 **Merged pull requests:**
 
+- Bump Version to 0.0.4 [\#49](https://github.com/AdRoll/rebar3_format/pull/49) ([elbrujohalcon](https://github.com/elbrujohalcon))
 - \[\#30\] Add an option to avoid adding empty lines after attributes [\#47](https://github.com/AdRoll/rebar3_format/pull/47) ([elbrujohalcon](https://github.com/elbrujohalcon))
 - Fix \#32: don't put more one item per row [\#45](https://github.com/AdRoll/rebar3_format/pull/45) ([elbrujohalcon](https://github.com/elbrujohalcon))
 - \[Fix \#12\] Remove trailing whitespaces [\#44](https://github.com/AdRoll/rebar3_format/pull/44) ([elbrujohalcon](https://github.com/elbrujohalcon))
 - Verify the result of the formatting [\#43](https://github.com/AdRoll/rebar3_format/pull/43) ([elbrujohalcon](https://github.com/elbrujohalcon))
 - Temporarily remove lint and apply other fixes [\#42](https://github.com/AdRoll/rebar3_format/pull/42) ([elbrujohalcon](https://github.com/elbrujohalcon))
 - Recover the linting as a plugin, once rebar3\_lint uses katana\_code 0.2.1 [\#41](https://github.com/AdRoll/rebar3_format/pull/41) ([juanbono](https://github.com/juanbono))
+- \[Fix \#50\] Remove superfluous parentheses from macros [\#57](https://github.com/AdRoll/rebar3_format/pull/57) ([elbrujohalcon](https://github.com/elbrujohalcon))
+- \[Fix \#24\] Don't reformat numbers written with syntactic sugar [\#52](https://github.com/AdRoll/rebar3_format/pull/52) ([elbrujohalcon](https://github.com/elbrujohalcon))
 
 ## [0.0.3](https://github.com/AdRoll/rebar3_format/tree/0.0.3) (2019-12-12)
 
