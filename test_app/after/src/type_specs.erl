@@ -38,7 +38,7 @@
 
 -wild(attribute).
 
--record(par, {a  :: undefined | (?MODULE)}).
+-record(par, {a  :: undefined | ?MODULE}).
 
 -record(r0, {}).
 
@@ -66,7 +66,7 @@
 -spec type_specs:f(pair(r0(), r0())) -> pair(t(), t()).
 
 f({R, R}) ->
-    _ = (?MODULE_STRING) ++ "hej",
+    _ = ?MODULE_STRING ++ "hej",
     _ = <<"foo">>,
     _ = R#r.f1,
     _ = R#r{f1 = 17, f2 = b},
@@ -82,5 +82,5 @@ b() -> case foo:bar() of #{a := 2} -> 19 end.
        (X, Y) -> {atom(), float()} when X :: atom(), Y :: float();
        (integer(), atom()) -> {integer(), atom()}.
 
-c(A, B) -> _ = (?I), {A, B}.
+c(A, B) -> _ = ?I, {A, B}.
 
