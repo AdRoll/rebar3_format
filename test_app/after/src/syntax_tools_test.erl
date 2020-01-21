@@ -78,7 +78,7 @@ foo2(A, B) ->
       ?macro_string, ?macro_cond1, ?macro_cond2, ?macro_block(A), ?macro_if(A, B),
       ?macro_argument1(A), ?macro_argument1(begin A end), ?macro_block(<<"hello">>),
       ?macro_block("hello"), ?macro_block([$h, $e, $l, $l, $0]),
-      ?macro_argument1((id(<<"hello">>))),
+      ?macro_argument1(id(<<"hello">>)),
       ?macro_argument1(if A -> B;
                           true -> 3.14
                        end),
@@ -87,7 +87,7 @@ foo2(A, B) ->
                          C -> C
                        end),
       ?macro_argument1(receive M -> M after 100 -> 3 end),
-      ?macro_argument1(try foo5(A) catch C:(?macro_simple5) -> {C, B} end),
+      ?macro_argument1(try foo5(A) catch C:?macro_simple5 -> {C, B} end),
       ?macro_argument2(A, B)],
      A, B, ok].
 
@@ -106,8 +106,8 @@ foo4(A, B, #state{c = C} = S) ->
     Ls = foo3(),
     S1 = #state{a = 1, b = 2},
     [foo2(A, Ls), B, C, B(3, C), erlang:process_info(self()),
-     erlang:(?macro_simple5)(self()), A:(?MACRO_SIMPLE2)(), A:(?macro_simple1)(),
+     erlang:?macro_simple5(self()), A:?MACRO_SIMPLE2(), A:?macro_simple1(),
      A:process_info(self()), A:B(3), S#state{a = 2, b = B, d = S1}].
 
-foo5(A) -> try foo2(A, A) of R -> R catch error:(?macro_simple5) -> nope end.
+foo5(A) -> try foo2(A, A) of R -> R catch error:?macro_simple5 -> nope end.
 

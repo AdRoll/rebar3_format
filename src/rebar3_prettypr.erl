@@ -244,8 +244,8 @@ lay_no_comments(Node, Ctxt) ->
                end,
           maybe_parentheses(D3, Prec, Ctxt);
       application ->
-          lay_type_application(erl_syntax:application_operator(Node),
-                               erl_syntax:application_arguments(Node), Ctxt);
+          lay_application(erl_syntax:application_operator(Node),
+                          erl_syntax:application_arguments(Node), Ctxt);
       match_expr ->
           {PrecL, Prec, PrecR} = inop_prec('='),
           D1 = lay(erl_syntax:match_expr_pattern(Node), set_prec(Ctxt, PrecL)),
@@ -341,7 +341,7 @@ lay_no_comments(Node, Ctxt) ->
                     Type = dodge_macros(Type0),
                     As0 = dodge_macros(Elements),
                     As = erl_syntax:concrete(As0),
-                    D1 = lay_type_application(TypeName, As, Ctxt1),
+                    D1 = lay_application(TypeName, As, Ctxt1),
                     D2 = lay(erl_syntax:concrete(Type), Ctxt1),
                     beside(follow(lay(N, Ctxt1), beside(D1, lay_text_float(" :: ")),
                                   Ctxt1#ctxt.break_indent),
@@ -353,7 +353,7 @@ lay_no_comments(Node, Ctxt) ->
                     beside(lay(N, Ctxt1),
                            beside(text("("), beside(lay(As, Ctxt1), lay_text_float(")"))));
                 _ when Args =:= none -> lay(N, Ctxt1);
-                _ -> D1 = lay_items(Args, Ctxt1, fun lay/2), lay_application(N, D1, Ctxt1)
+                _ -> lay_application(N, Args, Ctxt1)
               end,
           beside(lay_text_float("-"), beside(D, lay_text_float(".")));
       binary ->
@@ -443,12 +443,10 @@ lay_no_comments(Node, Ctxt) ->
           N = erl_syntax:macro_name(Node),
           D = case erl_syntax:macro_arguments(Node) of
                 none -> lay(N, Ctxt1);
-                Args ->
-                    As = lay_items(Args, set_prec(Ctxt1, max_prec()), fun lay/2),
-                    lay_application(N, As, Ctxt1)
+                Args -> lay_application(N, Args, Ctxt1)
               end,
           D1 = beside(lay_text_float("?"), D),
-          maybe_parentheses(D1, 0, Ctxt);    % must be conservative!
+          maybe_parentheses(D1, 0, Ctxt1);
       parentheses ->
           D = lay(erl_syntax:parentheses_body(Node), reset_prec(Ctxt)),
           lay_parentheses(D, Ctxt);
@@ -571,7 +569,7 @@ lay_no_comments(Node, Ctxt) ->
                 [A] = Arguments,
                 D1 = lay(A, reset_prec(Ctxt)),
                 beside(text("["), beside(D1, text(", ...]")));
-            _ -> lay_type_application(Name, Arguments, Ctxt)
+            _ -> lay_application(Name, Arguments, Ctxt)
           end;
       bitstring_type ->
           Ctxt1 = set_prec(Ctxt, max_prec()),
@@ -617,7 +615,7 @@ lay_no_comments(Node, Ctxt) ->
                 D2 = lay(Type, set_prec(Ctxt, PrecR)),
                 D3 = lay_follow_beside_text_float(D1, D2, Ctxt),
                 maybe_parentheses(D3, Prec, Ctxt);
-            false -> lay_type_application(Name, Args, Ctxt)
+            false -> lay_application(Name, Args, Ctxt)
           end;
       map_type ->
           case erl_syntax:map_type_fields(Node) of
@@ -669,8 +667,8 @@ lay_no_comments(Node, Ctxt) ->
                          set_prec(Ctxt, PrecR), fun lay/2),
           maybe_parentheses(Es, Prec, Ctxt);
       user_type_application ->
-          lay_type_application(erl_syntax:user_type_application_name(Node),
-                               erl_syntax:user_type_application_arguments(Node), Ctxt)
+          lay_application(erl_syntax:user_type_application_name(Node),
+                          erl_syntax:user_type_application_arguments(Node), Ctxt)
     end.
 
 attribute_name(Node) ->
@@ -858,7 +856,7 @@ lay_type_par_text(Name, Value, Text, Ctxt) ->
     D2 = lay(Value, Ctxt1),
     par([D1, lay_text_float(Text), D2], Ctxt1#ctxt.break_indent).
 
-lay_type_application(Name, Arguments, Ctxt) ->
+lay_application(Name, Arguments, Ctxt) ->
     {PrecL, Prec} = func_prec(), %
     D1 = lay(Name, set_prec(Ctxt, PrecL)),
     As = lay_items(Arguments, reset_prec(Ctxt), fun lay/2),
@@ -960,9 +958,6 @@ is_last_and_before_empty_line(H, [], #ctxt{empty_lines = EmptyLines}) ->
     lists:member(get_pos(H) + 1, EmptyLines);
 is_last_and_before_empty_line(H, [H2 | _], #ctxt{empty_lines = EmptyLines}) ->
     get_pos(H2) - get_pos(H) >= 2 andalso lists:member(get_pos(H) + 1, EmptyLines).
-
-lay_application(Name, Params, Ctxt) ->
-    beside(lay(Name, Ctxt), beside(text("("), beside(Params, lay_text_float(")")))).
 
 get_pos(Node) ->
     case erl_syntax:get_pos(Node) of
