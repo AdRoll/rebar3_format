@@ -109,9 +109,7 @@ format(Node, EmptyLines, Options) ->
                         false -> []
                       end,
     PreFormatted = prettypr:format(layout(Node, FinalEmptyLines, Options), W, L),
-    RemoveTabs = maps:get(remove_tabs, Options, true),
-    Formatted = maybe_remove_tabs(RemoveTabs,
-                                  unicode:characters_to_binary(PreFormatted, E)),
+    Formatted = remove_tabs(unicode:characters_to_binary(PreFormatted, E)),
     RemoveTrailingSpaces = maps:get(remove_trailing_spaces, Options, true),
     maybe_remove_trailing_spaces(RemoveTrailingSpaces, Formatted).
 
@@ -969,8 +967,7 @@ get_pos(Node) ->
       L when is_list(L) -> proplists:get_value(location, L, 0)
     end.
 
-maybe_remove_tabs(false, Formatted) -> Formatted;
-maybe_remove_tabs(true, Formatted) ->
+remove_tabs(Formatted) ->
     binary:replace(Formatted, <<"\t">>, <<"        ">>, [global]).
 
 maybe_remove_trailing_spaces(false, Formatted) -> Formatted;
