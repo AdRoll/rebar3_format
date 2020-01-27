@@ -14,7 +14,6 @@
 %%      Apply formatting rules to a file containing erlang code.
 %%      Use <code>Opts</code> to configure the formatter.
 -spec format(file:filename_all(), module(), opts()) -> ok.
-
 format(File, Formatter, Opts) ->
     AST = get_ast(File),
     QuickAST = get_quick_ast(File),

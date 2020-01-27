@@ -19,24 +19,18 @@
 -import(prettypr,
         [text/1, nest/2, above/2, beside/2, sep/1, par/1, par/2, floating/3, floating/1,
          break/1, follow/2, follow/3, empty/0]).
-
 -import(erl_parse,
         [preop_prec/1, inop_prec/1, func_prec/0, max_prec/0, type_inop_prec/1,
          type_preop_prec/1]).
 
 -define(PADDING, 2).
-
 -define(PAPER, 80).
-
 -define(RIBBON, 56).
-
 -define(NOUSER, undefined).
-
 -define(NOHOOK, none).
 
 -type hook() :: none |
                 fun((erl_syntax:syntaxTree(), _, _) -> prettypr:document()).
-
 -type clause_t() :: case_expr | cond_expr | fun_expr | if_expr | receive_expr |
                     try_expr | {function, prettypr:document()} | spec.
 
@@ -60,7 +54,6 @@
 %% @see set_ctxt_precedence/2
 
 -spec get_ctxt_precedence(context()) -> integer().
-
 get_ctxt_precedence(Ctxt) -> Ctxt#ctxt.prec.
 
 %% @spec (context(), integer()) -> context()
@@ -72,7 +65,6 @@ get_ctxt_precedence(Ctxt) -> Ctxt#ctxt.prec.
 %% @see get_ctxt_precedence/1
 
 -spec set_ctxt_precedence(context(), integer()) -> context().
-
 set_ctxt_precedence(Ctxt, Prec) -> set_prec(Ctxt, Prec).
 
 set_prec(Ctxt, Prec) ->
@@ -86,7 +78,6 @@ reset_prec(Ctxt) ->
 %% @see set_ctxt_paperwidth/2
 
 -spec get_ctxt_paperwidth(context()) -> integer().
-
 get_ctxt_paperwidth(Ctxt) -> Ctxt#ctxt.paper.
 
 %% @spec (context(), integer()) -> context()
@@ -100,7 +91,6 @@ get_ctxt_paperwidth(Ctxt) -> Ctxt#ctxt.paper.
 %% @see get_ctxt_paperwidth/1
 
 -spec set_ctxt_paperwidth(context(), integer()) -> context().
-
 set_ctxt_paperwidth(Ctxt, W) -> Ctxt#ctxt{paper = W}.
 
 %% @spec (context()) -> integer()
@@ -108,7 +98,6 @@ set_ctxt_paperwidth(Ctxt, W) -> Ctxt#ctxt{paper = W}.
 %% @see set_ctxt_linewidth/2
 
 -spec get_ctxt_linewidth(context()) -> integer().
-
 get_ctxt_linewidth(Ctxt) -> Ctxt#ctxt.ribbon.
 
 %% @spec (context(), integer()) -> context()
@@ -122,7 +111,6 @@ get_ctxt_linewidth(Ctxt) -> Ctxt#ctxt.ribbon.
 %% @see get_ctxt_linewidth/1
 
 -spec set_ctxt_linewidth(context(), integer()) -> context().
-
 set_ctxt_linewidth(Ctxt, W) -> Ctxt#ctxt{ribbon = W}.
 
 %% @spec (context()) -> hook()
@@ -130,7 +118,6 @@ set_ctxt_linewidth(Ctxt, W) -> Ctxt#ctxt{ribbon = W}.
 %% @see set_ctxt_hook/2
 
 -spec get_ctxt_hook(context()) -> hook().
-
 get_ctxt_hook(Ctxt) -> Ctxt#ctxt.hook.
 
 %% @spec (context(), hook()) -> context()
@@ -138,7 +125,6 @@ get_ctxt_hook(Ctxt) -> Ctxt#ctxt.hook.
 %% @see get_ctxt_hook/1
 
 -spec set_ctxt_hook(context(), hook()) -> context().
-
 set_ctxt_hook(Ctxt, Hook) -> Ctxt#ctxt{hook = Hook}.
 
 %% @spec (context()) -> term()
@@ -146,7 +132,6 @@ set_ctxt_hook(Ctxt, Hook) -> Ctxt#ctxt{hook = Hook}.
 %% @see set_ctxt_user/2
 
 -spec get_ctxt_user(context()) -> term().
-
 get_ctxt_user(Ctxt) -> Ctxt#ctxt.user.
 
 %% @spec (context(), term()) -> context()
@@ -154,7 +139,6 @@ get_ctxt_user(Ctxt) -> Ctxt#ctxt.user.
 %% @see get_ctxt_user/1
 
 -spec set_ctxt_user(context(), term()) -> context().
-
 set_ctxt_user(Ctxt, X) -> Ctxt#ctxt{user = X}.
 
 %% =====================================================================
@@ -162,7 +146,6 @@ set_ctxt_user(Ctxt, X) -> Ctxt#ctxt{user = X}.
 %% @equiv format(Tree, [])
 
 -spec format(erl_syntax:syntaxTree()) -> string().
-
 format(Node) -> format(Node, [], #{}).
 
 %% =====================================================================
@@ -248,7 +231,6 @@ format(Node) -> format(Node, [], #{}).
 
 -spec format(erl_syntax:syntaxTree(), [pos_integer()],
              rebar3_formatter:opts()) -> string().
-
 format(Node, _EmptyLines, Options) ->
     W = maps:get(paper, Options, ?PAPER),
     L = maps:get(ribbon, Options, ?RIBBON),
@@ -262,7 +244,6 @@ format(Node, _EmptyLines, Options) ->
 %% @equiv best(Tree, [])
 
 -spec best(erl_syntax:syntaxTree()) -> empty | prettypr:document().
-
 best(Node) -> best(Node, []).
 
 %% =====================================================================
@@ -281,7 +262,6 @@ best(Node) -> best(Node, []).
 %% @see prettypr:best/3
 
 -spec best(erl_syntax:syntaxTree(), [term()]) -> empty | prettypr:document().
-
 best(Node, Options) ->
     W = proplists:get_value(paper, Options, ?PAPER),
     L = proplists:get_value(ribbon, Options, ?RIBBON),
@@ -292,7 +272,6 @@ best(Node, Options) ->
 %% @equiv layout(Tree, [])
 
 -spec layout(erl_syntax:syntaxTree()) -> prettypr:document().
-
 layout(Node) -> layout(Node, []).
 
 %% =====================================================================
@@ -315,7 +294,6 @@ layout(Node) -> layout(Node, []).
 %% @see layout/1
 
 -spec layout(erl_syntax:syntaxTree(), [term()]) -> prettypr:document().
-
 layout(Node, Options) ->
     lay(Node,
         #ctxt{hook = proplists:get_value(hook, Options, ?NOHOOK),

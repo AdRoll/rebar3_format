@@ -48,7 +48,6 @@ if_expr() ->
 
 -spec
   a_function_with_a_very_long_name() -> a_type_with_a_very_long_name().
-
 a_function_with_a_very_long_name() ->
  {specs, " and ", types,
   should:be(indented_using:break_indent(1))}.

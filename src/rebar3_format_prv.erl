@@ -5,7 +5,6 @@
 
 %% @private
 -spec init(rebar_state:t()) -> {ok, rebar_state:t()}.
-
 init(State) ->
     Provider = providers:create([{name, format}, {module, rebar3_format_prv},
                                  {bare, true}, {deps, [app_discovery]},
@@ -20,7 +19,6 @@ init(State) ->
 
 %% @private
 -spec do(rebar_state:t()) -> {ok, rebar_state:t()} | {error, binary()}.
-
 do(State) ->
     OutputDirOpt = get_output_dir(State),
     Formatter = get_formatter(State),
@@ -35,7 +33,6 @@ do(State) ->
 
 %% @private
 -spec format_error(any()) -> binary().
-
 format_error({erl_parse, Error}) ->
     iolist_to_binary(io_lib:format("Formatting error: ~s.Try running with DEBUG=1 for more "
                                    "information",
@@ -44,7 +41,6 @@ format_error(Reason) ->
     iolist_to_binary(io_lib:format("Unknown Formatting Error: ~p", [Reason])).
 
 -spec get_files(rebar_state:t()) -> [file:filename_all()].
-
 get_files(State) ->
     {Args, _} = rebar_state:command_parsed_args(State),
     Patterns = case lists:keyfind(files, 1, Args) of
@@ -59,7 +55,6 @@ get_files(State) ->
     [File || Pattern <- Patterns, File <- filelib:wildcard(Pattern)].
 
 -spec get_output_dir(rebar_state:t()) -> undefined | string().
-
 get_output_dir(State) ->
     {Args, _} = rebar_state:command_parsed_args(State),
     case lists:keyfind(output, 1, Args) of
@@ -68,20 +63,17 @@ get_output_dir(State) ->
     end.
 
 -spec get_formatter(rebar_state:t()) -> module().
-
 get_formatter(State) ->
     proplists:get_value(formatter, rebar_state:get(State, format, []),
                         default_formatter).
 
 -spec get_opts(rebar_state:t()) -> rebar3_formatter:opts().
-
 get_opts(State) ->
     proplists:get_value(options, rebar_state:get(State, format, []), #{}).
 
 -spec format([file:filename_all()], module(), rebar3_formatter:opts()) -> ok |
                                                                           {error,
                                                                            {atom(), string()}}.
-
 format(Files, Formatter, Opts) ->
     try lists:foreach(fun (File) ->
                               rebar_api:debug("Formatting ~p with ~p", [File, Opts]),

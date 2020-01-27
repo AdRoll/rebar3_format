@@ -8,21 +8,15 @@
 -import(prettypr,
         [text/1, nest/2, above/2, beside/2, sep/1, par/1, par/2, floating/3, floating/1,
          break/1, follow/2, follow/3, empty/0]).
-
 -import(erl_parse,
         [preop_prec/1, inop_prec/1, func_prec/0, max_prec/0, type_inop_prec/1,
          type_preop_prec/1]).
 
 -define(PADDING, 2).
-
 -define(PAPER, 100).
-
 -define(RIBBON, 80).
-
 -define(BREAK_INDENT, 4).
-
 -define(SUB_INDENT, 2).
-
 -define(NOUSER, undefined).
 
 -type clause_t() :: case_expr | fun_expr | if_expr | receive_expr | try_expr |
@@ -35,7 +29,6 @@
          ribbon = ?RIBBON  :: integer(), user = ?NOUSER  :: term(),
          inline_items = true  :: boolean(), inline_expressions = true  :: boolean(),
          empty_lines = []  :: [pos_integer()],
-         newline_after_attributes = true  :: boolean(),
          encoding = epp:default_encoding()  :: epp:source_encoding()}).
 
 set_prec(Ctxt, Prec) ->
@@ -88,10 +81,6 @@ reset_prec(Ctxt) ->
 %%   <dt>{encoding, epp:source_encoding()}</dt>
 %%       <dd>Specifies the encoding of the generated file.</dd>
 %%
-%%   <dt>{newline_after_attributes, boolean()}</dt>
-%%       <dd>Specifies if attributes must be separated from the code below
-%%       them by an empty line.
-%%       The default value is true.</dd>
 %% </dl>
 %%
 %% @see erl_syntax
@@ -99,7 +88,6 @@ reset_prec(Ctxt) ->
 %% @see layout/2
 -spec format(erl_syntax:syntaxTree(), [pos_integer()],
              rebar3_formatter:opts()) -> string().
-
 format(Node, EmptyLines, Options) ->
     W = maps:get(paper, Options, ?PAPER),
     L = maps:get(ribbon, Options, ?RIBBON),
@@ -135,7 +123,6 @@ remove_trailing_spaces(Formatted) ->
 %% @see format/2
 -spec layout(erl_syntax:syntaxTree(), [pos_integer()],
              rebar3_formatter:opts()) -> prettypr:document().
-
 layout(Node, EmptyLines, Options) ->
     lay(Node,
         #ctxt{paper = maps:get(paper, Options, ?PAPER),
@@ -143,9 +130,7 @@ layout(Node, EmptyLines, Options) ->
               break_indent = maps:get(break_indent, Options, ?BREAK_INDENT),
               sub_indent = maps:get(sub_indent, Options, ?SUB_INDENT),
               inline_expressions = maps:get(inline_expressions, Options, true),
-              inline_items = maps:get(inline_items, Options, true),
-              newline_after_attributes = maps:get(newline_after_attributes, Options, true),
-              empty_lines = EmptyLines,
+              inline_items = maps:get(inline_items, Options, true), empty_lines = EmptyLines,
               encoding = maps:get(encoding, Options, epp:default_encoding())}).
 
 lay(Node, Ctxt) ->
@@ -888,8 +873,6 @@ vertical_sep([{D, empty_line} | Ds]) ->
 vertical_sep([{D, no_empty_line} | Ds]) -> above(D, vertical_sep(Ds));
 vertical_sep([]) -> [].
 
-empty_lines_to_add(Nodes, #ctxt{newline_after_attributes = true}) ->
-    lists:duplicate(length(Nodes), empty_line);
 empty_lines_to_add([], _Ctxt) -> [];
 empty_lines_to_add([Node | Nodes], Ctxt) ->
     AfterThisNode = case erl_syntax:type(Node) of
