@@ -60,9 +60,6 @@ The plugin supports the following configuration options in the `format` section 
         + `sub_indent`(`pos_integer()`):
             * Specifies the preferred number of characters to use to indent a line that "follows" the current one (for instance, a long clause head or a long function application).
             * The default value is `2`.
-        + `remove_trailing_spaces` (`boolean()`):
-            * If this setting is `true`, the formatter will remove all trailing whitespaces.
-            * The default value is `true`.
         + `inline_items` (`boolean()`):
             * Specifies the desired behavior when using multiple lines for a multi-item structure (i.e. tuple, list, map, etc.).
             * When this flag is on, the formatter will try to fit as many items in each line as permitted by `paper` and `ribbon`.

@@ -110,8 +110,13 @@ format(Node, EmptyLines, Options) ->
                       end,
     PreFormatted = prettypr:format(layout(Node, FinalEmptyLines, Options), W, L),
     Formatted = remove_tabs(unicode:characters_to_binary(PreFormatted, E)),
-    RemoveTrailingSpaces = maps:get(remove_trailing_spaces, Options, true),
-    maybe_remove_trailing_spaces(RemoveTrailingSpaces, Formatted).
+    remove_trailing_spaces(Formatted).
+
+remove_tabs(Formatted) ->
+    binary:replace(Formatted, <<"\t">>, <<"        ">>, [global]).
+
+remove_trailing_spaces(Formatted) ->
+    re:replace(Formatted, <<" +\n">>, <<"\n">>, [global, {return, binary}]).
 
 %% =====================================================================
 %% @doc Creates an abstract document layout for a syntax tree. The
@@ -966,13 +971,6 @@ get_pos(Node) ->
       I when is_integer(I) -> I;
       L when is_list(L) -> proplists:get_value(location, L, 0)
     end.
-
-remove_tabs(Formatted) ->
-    binary:replace(Formatted, <<"\t">>, <<"        ">>, [global]).
-
-maybe_remove_trailing_spaces(false, Formatted) -> Formatted;
-maybe_remove_trailing_spaces(true, Formatted) ->
-    re:replace(Formatted, <<" +\n">>, <<"\n">>, [global, {return, binary}]).
 
 
 %% =====================================================================
