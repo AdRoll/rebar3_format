@@ -15,9 +15,9 @@
 
 -define(PADDING, 2).
 
--define(PAPER, 80).
+-define(PAPER, 100).
 
--define(RIBBON, 56).
+-define(RIBBON, 80).
 
 -define(BREAK_INDENT, 4).
 
@@ -97,12 +97,23 @@ reset_prec(Ctxt) ->
 %% @see erl_syntax
 %% @see format/1
 %% @see layout/2
--spec format(erl_syntax:syntaxTree(), [pos_integer()], [term()]) -> string().
+-spec format(erl_syntax:syntaxTree(), [pos_integer()],
+             rebar3_formatter:opts()) -> string().
 
 format(Node, EmptyLines, Options) ->
-    W = proplists:get_value(paper, Options, ?PAPER),
-    L = proplists:get_value(ribbon, Options, ?RIBBON),
-    prettypr:format(layout(Node, EmptyLines, Options), W, L).
+    W = maps:get(paper, Options, ?PAPER),
+    L = maps:get(ribbon, Options, ?RIBBON),
+    E = maps:get(encoding, Options, utf8),
+    FinalEmptyLines = case maps:get(preserve_empty_lines, Options, false) of
+                        true -> EmptyLines;
+                        false -> []
+                      end,
+    PreFormatted = prettypr:format(layout(Node, FinalEmptyLines, Options), W, L),
+    RemoveTabs = maps:get(remove_tabs, Options, true),
+    Formatted = maybe_remove_tabs(RemoveTabs,
+                                  unicode:characters_to_binary(PreFormatted, E)),
+    RemoveTrailingSpaces = maps:get(remove_trailing_spaces, Options, true),
+    maybe_remove_trailing_spaces(RemoveTrailingSpaces, Formatted).
 
 %% =====================================================================
 %% @doc Creates an abstract document layout for a syntax tree. The
@@ -120,20 +131,19 @@ format(Node, EmptyLines, Options) ->
 %% @see prettypr
 %% @see format/2
 -spec layout(erl_syntax:syntaxTree(), [pos_integer()],
-             [term()]) -> prettypr:document().
+             rebar3_formatter:opts()) -> prettypr:document().
 
 layout(Node, EmptyLines, Options) ->
     lay(Node,
-        #ctxt{paper = proplists:get_value(paper, Options, ?PAPER),
-              ribbon = proplists:get_value(ribbon, Options, ?RIBBON),
-              break_indent = proplists:get_value(break_indent, Options, ?BREAK_INDENT),
-              sub_indent = proplists:get_value(sub_indent, Options, ?SUB_INDENT),
-              inline_expressions = proplists:get_value(inline_expressions, Options, true),
-              inline_items = proplists:get_value(inline_items, Options, true),
-              newline_after_attributes =
-                  proplists:get_value(newline_after_attributes, Options, true),
+        #ctxt{paper = maps:get(paper, Options, ?PAPER),
+              ribbon = maps:get(ribbon, Options, ?RIBBON),
+              break_indent = maps:get(break_indent, Options, ?BREAK_INDENT),
+              sub_indent = maps:get(sub_indent, Options, ?SUB_INDENT),
+              inline_expressions = maps:get(inline_expressions, Options, true),
+              inline_items = maps:get(inline_items, Options, true),
+              newline_after_attributes = maps:get(newline_after_attributes, Options, true),
               empty_lines = EmptyLines,
-              encoding = proplists:get_value(encoding, Options, epp:default_encoding())}).
+              encoding = maps:get(encoding, Options, epp:default_encoding())}).
 
 lay(Node, Ctxt) ->
     case erl_syntax:has_comments(Node) of
@@ -958,6 +968,14 @@ get_pos(Node) ->
       I when is_integer(I) -> I;
       L when is_list(L) -> proplists:get_value(location, L, 0)
     end.
+
+maybe_remove_tabs(false, Formatted) -> Formatted;
+maybe_remove_tabs(true, Formatted) ->
+    binary:replace(Formatted, <<"\t">>, <<"        ">>, [global]).
+
+maybe_remove_trailing_spaces(false, Formatted) -> Formatted;
+maybe_remove_trailing_spaces(true, Formatted) ->
+    re:replace(Formatted, <<" +\n">>, <<"\n">>, [global, {return, binary}]).
 
 
 %% =====================================================================

@@ -3,18 +3,12 @@
 
 -export([format/3]).
 
--type opts() :: #{files => [file:filename_all()],
-                  output_dir => undefined | string(), encoding => none | epp:source_encoding(),
-                  paper => pos_integer(), ribbon => pos_integer(), break_indent => pos_integer(),
-                  sub_indent => pos_integer(), remove_tabs => boolean(),
-                  remove_trailing_spaces => boolean(), inline_items => boolean(),
-                  inline_expressions => boolean(), preserve_empty_lines => boolean(),
-                  newline_after_attributes => boolean()}.
+-type opts() :: #{output_dir => undefined | file:filename_all(),
+                  encoding => none | epp:source_encoding(), _ => _}.
 
 -export_type([opts/0]).
 
--callback format(erl_syntax:forms(), [pos_integer()],
-                 proplists:proplist()) -> string().
+-callback format(erl_syntax:forms(), [pos_integer()], opts()) -> string().
 
 %% @doc Format a file.
 %%      Apply formatting rules to a file containing erlang code.
@@ -69,49 +63,19 @@ apply_per_file_opts(File, Opts) ->
     lists:foldl(fun (Map, Acc) -> maps:merge(Acc, Map) end, Opts, FileOpts).
 
 format(File, AST, Formatter, Comments, Opts) ->
-    Paper = maps:get(paper, Opts, 100),
-    Ribbon = maps:get(ribbon, Opts, 80),
-    Encoding = maps:get(encoding, Opts, utf8),
-    BreakIndent = maps:get(break_indent, Opts, 4),
-    SubIndent = maps:get(sub_indent, Opts, 2),
-    RemoveTabs = maps:get(remove_tabs, Opts, true),
-    RemoveTrailingSpaces = maps:get(remove_trailing_spaces, Opts, true),
-    InlineItems = maps:get(inline_items, Opts, true),
-    InlineExpressions = maps:get(inline_expressions, Opts, true),
-    PreserveEmptyLines = maps:get(preserve_empty_lines, Opts, false),
-    NewlineAfterAttrs = maps:get(newline_after_attributes, Opts, true),
     FinalFile = case maps:get(output_dir, Opts) of
                   undefined -> File;
                   OutputDir -> filename:join(filename:absname(OutputDir), File)
                 end,
     ok = filelib:ensure_dir(FinalFile),
-    FormatOpts = [{paper, Paper}, {ribbon, Ribbon}, {encoding, Encoding},
-                  {break_indent, BreakIndent}, {sub_indent, SubIndent},
-                  {inline_items, InlineItems}, {inline_expressions, InlineExpressions},
-                  {newline_after_attributes, NewlineAfterAttrs}],
     ExtendedAST = AST ++ [{eof, 0}],
     WithComments = erl_recomment:recomment_forms(erl_syntax:form_list(ExtendedAST),
                                                  Comments),
-    PreFormatted = Formatter:format(WithComments,
-                                    empty_lines(InlineExpressions, PreserveEmptyLines, File),
-                                    FormatOpts),
-    Formatted = maybe_remove_tabs(RemoveTabs,
-                                  unicode:characters_to_binary(PreFormatted, Encoding)),
-    Clean = maybe_remove_trailing_spaces(RemoveTrailingSpaces, Formatted),
-    ok = file:write_file(FinalFile, Clean),
+    Formatted = Formatter:format(WithComments, empty_lines(File), Opts),
+    ok = file:write_file(FinalFile, Formatted),
     FinalFile.
 
-maybe_remove_tabs(false, Formatted) -> Formatted;
-maybe_remove_tabs(true, Formatted) ->
-    binary:replace(Formatted, <<"\t">>, <<"        ">>, [global]).
-
-maybe_remove_trailing_spaces(false, Formatted) -> Formatted;
-maybe_remove_trailing_spaces(true, Formatted) ->
-    re:replace(Formatted, <<" +\n">>, <<"\n">>, [global, {return, binary}]).
-
-empty_lines(true, _, _) -> [];
-empty_lines(false, false, _) -> [];
-empty_lines(false, true, File) ->
+empty_lines(File) ->
     {ok, Data} = file:read_file(File),
     List = binary:split(Data, [<<"\n">>], [global, trim]),
     {ok, NonEmptyLineRe} = re:compile("\\S"),

@@ -163,10 +163,10 @@ set_ctxt_user(Ctxt, X) -> Ctxt#ctxt{user = X}.
 
 -spec format(erl_syntax:syntaxTree()) -> string().
 
-format(Node) -> format(Node, [], []).
+format(Node) -> format(Node, [], #{}).
 
 %% =====================================================================
-%% @spec format(Tree::syntaxTree(), Options::[term()]) -> string()
+%% @spec format(Tree::syntaxTree(), _, Options::rebar3_formatter:opts()) -> string()
 %%
 %% @type syntaxTree() = erl_syntax:syntaxTree().
 %%
@@ -190,7 +190,7 @@ format(Node) -> format(Node, [], []).
 %% module (as it looks in the debug info representation):
 %% ```{ok,{_,[{abstract_code,{_,AC}}]}} =
 %%            beam_lib:chunks("myfile.beam",[abstract_code]),
-%%    io:put_chars(otp_formatter:format(erl_syntax:form_list(AC), [], []))
+%%    io:put_chars(otp_formatter:format(erl_syntax:form_list(AC), [], #{}))
 %% '''
 %%
 %% Available options:
@@ -246,12 +246,16 @@ format(Node) -> format(Node, [], []).
 %% @see get_ctxt_user/1
 %% @see set_ctxt_user/2
 
--spec format(erl_syntax:syntaxTree(), [pos_integer()], [term()]) -> string().
+-spec format(erl_syntax:syntaxTree(), [pos_integer()],
+             rebar3_formatter:opts()) -> string().
 
 format(Node, _EmptyLines, Options) ->
-    W = proplists:get_value(paper, Options, ?PAPER),
-    L = proplists:get_value(ribbon, Options, ?RIBBON),
-    prettypr:format(layout(Node, Options), W, L).
+    W = maps:get(paper, Options, ?PAPER),
+    L = maps:get(ribbon, Options, ?RIBBON),
+    E = maps:get(encoding, Options, utf8),
+    OptList = maps:to_list(Options),
+    PreFormatted = prettypr:format(layout(Node, OptList), W, L),
+    binary_to_list(unicode:characters_to_binary(PreFormatted, E)).
 
 %% =====================================================================
 %% @spec best(Tree::syntaxTree()) -> empty | prettypr:document()
@@ -664,7 +668,8 @@ lay_no_comments(Node, Ctxt) ->
                     beside(lay(N, Ctxt1), beside(text("("), beside(par(As), lay_text_float(")"))))
               end,
           D1 = beside(lay_text_float("?"), D),
-          maybe_parentheses(D1, 0, Ctxt);    % must be conservative!
+          maybe_parentheses(D1, 0,
+                            Ctxt);    % must be conservative!
       parentheses ->
           D = lay(erl_syntax:parentheses_body(Node), reset_prec(Ctxt)),
           lay_parentheses(D, Ctxt);

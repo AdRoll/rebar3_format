@@ -10,7 +10,7 @@ main([]) ->
                 [File || Path <- ["src/*.erl", "test/*.erl"],
                          File <- filelib:wildcard(Path)],
             Opts = #{output_dir => undefined},
-            lists:foreach(fun (File) -> rebar3_formatter:format(File, otp_formatter, Opts) end, Files);
+            lists:foreach(fun (File) -> rebar3_formatter:format(File, default_formatter, Opts) end, Files);
         _ ->
             io:format("Not formatting the formatter. We're not on the regular compiling cycle~n")
     end.
