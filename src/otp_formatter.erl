@@ -395,8 +395,8 @@ lay_no_comments(Node, Ctxt) ->
       %% We list literals and other common cases first.
       variable -> text(erl_syntax:variable_literal(Node));
       atom -> text(erl_syntax:atom_literal(Node, Ctxt#ctxt.encoding));
-      integer -> text(erl_syntax:integer_literal(Node));
-      float -> text(tidy_float(erl_syntax:float_literal(Node)));
+      integer -> text(tidy_integer(Node));
+      float -> text(tidy_float(Node));
       char -> text(erl_syntax:char_literal(Node, Ctxt#ctxt.encoding));
       string -> lay_string(erl_syntax:string_literal(Node, Ctxt#ctxt.encoding), Ctxt);
       nil -> text("[]");
@@ -1117,27 +1117,35 @@ vertical_sep(_Sep, []) -> [].
 spaces(N) when N > 0 -> [$\s | spaces(N - 1)];
 spaces(_) -> [].
 
-tidy_float([$., C | Cs]) ->
-    [$., C | tidy_float_first(Cs)];  % preserve first decimal digit
-tidy_float([$e | _] = Cs) -> tidy_float_second(Cs);
-tidy_float([C | Cs]) -> [C | tidy_float(Cs)];
-tidy_float([]) -> [].
+tidy_integer(Node) -> tidy_number(Node, erl_syntax:integer_literal(Node)).
 
-tidy_float_first([$0, $0, $0 | Cs]) ->
-    tidy_float_second(Cs);    % cut mantissa at three consecutive zeros.
-tidy_float_first([$e | _] = Cs) -> tidy_float_second(Cs);
-tidy_float_first([C | Cs]) -> [C | tidy_float_first(Cs)];
-tidy_float_first([]) -> [].
+tidy_float(Node) ->
+    tidy_number(Node, io_lib:format("~p", [erl_syntax:float_value(Node)])).
 
-tidy_float_second([$e, $+, $0]) -> [];
-tidy_float_second([$e, $+, $0 | Cs]) -> tidy_float_second([$e, $+ | Cs]);
-tidy_float_second([$e, $+ | _] = Cs) -> Cs;
-tidy_float_second([$e, $-, $0]) -> [];
-tidy_float_second([$e, $-, $0 | Cs]) -> tidy_float_second([$e, $- | Cs]);
-tidy_float_second([$e, $- | _] = Cs) -> Cs;
-tidy_float_second([$e | Cs]) -> tidy_float_second([$e, $+ | Cs]);
-tidy_float_second([_C | Cs]) -> tidy_float_second(Cs);
-tidy_float_second([]) -> [].
+%% @doc If we captured the original text for the number, then we use it.
+%%      Otherwise, we use the value returned by the parser.
+%%      The goal is to preserve things like 16#FADE or -1e-1 instead of turning
+%%      them into integers or "pretty printed" floats.
+tidy_number(Node, Default) ->
+    case erl_syntax:get_pos(Node) of
+      L when is_list(L) ->
+          case proplists:get_value(text, L, undefined) of
+            undefined -> Default;
+            Text -> number_from_text(Text, Default)
+          end;
+      _ -> Default
+    end.
+
+%% @doc This function covers the corner case when erl_parse:parse_form/1
+%%      (used by ktn_dodger) screws up the text for things like fun x/1 or
+%%      -vsn(1) and therefore that text, that was actually captured,
+%%      can not be used.
+%% NOTE: floats work as "integers" according to string:to_integer/1
+number_from_text(Text, Default) ->
+    case string:to_integer(Text) of
+      {error, no_integer} -> Default;
+      {_, _} -> Text
+    end.
 
 
 %% =====================================================================
