@@ -3,7 +3,7 @@
 -export([a_fun/0]).
 -export([another_fun/0]).
 
--format([{newline_after_attributes, false}]).
+-format(#{newline_after_attributes => false}).
 
 -dialyzer([{nowarn_function, {a_fun, 0}}]).
 

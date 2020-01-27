@@ -19,7 +19,7 @@
          very_very_long_name_3 = very_very_long_name_3  ::
              very_very_long_name_3}).
 
--format([{inline_items, false}, {inline_expressions, false}, {paper, 80}]).
+-format(#{inline_expressions => false, inline_items => false, paper => 80}).
 
 -export([short_tuple/0, short_list/0, short_fun/0]).
 

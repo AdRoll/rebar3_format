@@ -23,11 +23,12 @@ init(State) ->
 
 do(State) ->
     OutputDirOpt = get_output_dir(State),
+    Formatter = get_formatter(State),
     Opts = maps:put(output_dir, OutputDirOpt, get_opts(State)),
     rebar_api:debug("Formatter options: ~p", [Opts]),
-    Files = get_files(Opts, State),
+    Files = get_files(State),
     rebar_api:debug("Found ~p files: ~p", [length(Files), Files]),
-    case format(Files, Opts) of
+    case format(Files, Formatter, Opts) of
       ok -> {ok, State};
       {error, Error} -> {error, format_error(Error)}
     end.
@@ -42,17 +43,17 @@ format_error({erl_parse, Error}) ->
 format_error(Reason) ->
     iolist_to_binary(io_lib:format("Unknown Formatting Error: ~p", [Reason])).
 
--spec get_files(rebar3_formatter:opts(),
-                rebar_state:t()) -> [file:filename_all()].
+-spec get_files(rebar_state:t()) -> [file:filename_all()].
 
-get_files(Opts, State) ->
+get_files(State) ->
     {Args, _} = rebar_state:command_parsed_args(State),
     Patterns = case lists:keyfind(files, 1, Args) of
                  {files, Wildcard} -> [Wildcard];
                  false ->
-                     case Opts of
-                       #{files := Wildcards} -> Wildcards;
-                       _ -> ["src/**/*.?rl"]
+                     case proplists:get_value(files, rebar_state:get(State, format, []), undefined)
+                         of
+                       undefined -> ["src/**/*.?rl"];
+                       Wildcards -> Wildcards
                      end
                end,
     [File || Pattern <- Patterns, File <- filelib:wildcard(Pattern)].
@@ -66,17 +67,25 @@ get_output_dir(State) ->
       false -> undefined
     end.
 
+-spec get_formatter(rebar_state:t()) -> module().
+
+get_formatter(State) ->
+    proplists:get_value(formatter, rebar_state:get(State, format, []),
+                        default_formatter).
+
 -spec get_opts(rebar_state:t()) -> rebar3_formatter:opts().
 
-get_opts(State) -> maps:from_list(rebar_state:get(State, format, [])).
+get_opts(State) ->
+    proplists:get_value(options, rebar_state:get(State, format, []), #{}).
 
--spec format([file:filename_all()], rebar3_formatter:opts()) -> ok |
-                                                                {error, {atom(), string()}}.
+-spec format([file:filename_all()], module(), rebar3_formatter:opts()) -> ok |
+                                                                          {error,
+                                                                           {atom(), string()}}.
 
-format(Files, Opts) ->
+format(Files, Formatter, Opts) ->
     try lists:foreach(fun (File) ->
                               rebar_api:debug("Formatting ~p with ~p", [File, Opts]),
-                              rebar3_formatter:format(File, Opts)
+                              rebar3_formatter:format(File, Formatter, Opts)
                       end,
                       Files)
     catch

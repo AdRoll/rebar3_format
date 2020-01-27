@@ -1,7 +1,7 @@
 -module(indent_18).
 
--format([{break_indent, 1}, {sub_indent, 8},
-         {paper, 50}]).
+-format(#{break_indent => 1, paper => 50,
+          sub_indent => 8}).
 
 -record(record,
         {fields =

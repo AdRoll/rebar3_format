@@ -2,8 +2,8 @@
 
 -compile(export_all).
 
--format([{remove_trailing_spaces, false}, {inline_expressions, false},
-         {preserve_empty_lines, true}]).
+-format(#{inline_expressions => false, preserve_empty_lines => true,
+          remove_trailing_spaces => false}).
 
 this_function() ->
     has:multiple_lines(),

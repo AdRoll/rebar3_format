@@ -1,7 +1,7 @@
 %% @doc Automatic formatter for Erlang modules
 -module(rebar3_formatter).
 
--export([format/2]).
+-export([format/3]).
 
 -type opts() :: #{files => [file:filename_all()],
                   output_dir => undefined | string(), encoding => none | epp:source_encoding(),
@@ -13,17 +13,20 @@
 
 -export_type([opts/0]).
 
+-callback format(erl_syntax:forms(), [pos_integer()],
+                 proplists:proplist()) -> string().
+
 %% @doc Format a file.
 %%      Apply formatting rules to a file containing erlang code.
 %%      Use <code>Opts</code> to configure the formatter.
--spec format(file:filename_all(), opts()) -> ok.
+-spec format(file:filename_all(), module(), opts()) -> ok.
 
-format(File, Opts) ->
+format(File, Formatter, Opts) ->
     AST = get_ast(File),
     QuickAST = get_quick_ast(File),
     Comments = get_comments(File),
-    FileOpts = maps:merge(Opts, get_per_file_opts(File)),
-    NewFile = format(File, AST, Comments, FileOpts),
+    FileOpts = apply_per_file_opts(File, Opts),
+    NewFile = format(File, AST, Formatter, Comments, FileOpts),
     case get_quick_ast(NewFile) of
       QuickAST -> ok;
       _ -> erlang:error({modified_ast, File, NewFile})
@@ -60,11 +63,12 @@ get_comments(File) -> erl_comment_scan:file(File).
 
 %% @doc We need to use quick_parse_file/1 here because the returned format
 %%      is much more manageable than the one returned by parse_file/1
-get_per_file_opts(File) ->
+apply_per_file_opts(File, Opts) ->
     {ok, AST} = epp_dodger:quick_parse_file(File),
-    maps:from_list([Opt || {attribute, _, format, Opts} <- AST, Opt <- Opts]).
+    FileOpts = [Opt || {attribute, _, format, Opt} <- AST],
+    lists:foldl(fun (Map, Acc) -> maps:merge(Acc, Map) end, Opts, FileOpts).
 
-format(File, AST, Comments, Opts) ->
+format(File, AST, Formatter, Comments, Opts) ->
     Paper = maps:get(paper, Opts, 100),
     Ribbon = maps:get(ribbon, Opts, 80),
     Encoding = maps:get(encoding, Opts, utf8),
@@ -88,9 +92,9 @@ format(File, AST, Comments, Opts) ->
     ExtendedAST = AST ++ [{eof, 0}],
     WithComments = erl_recomment:recomment_forms(erl_syntax:form_list(ExtendedAST),
                                                  Comments),
-    PreFormatted = rebar3_prettypr:format(WithComments,
-                                          empty_lines(InlineExpressions, PreserveEmptyLines, File),
-                                          FormatOpts),
+    PreFormatted = Formatter:format(WithComments,
+                                    empty_lines(InlineExpressions, PreserveEmptyLines, File),
+                                    FormatOpts),
     Formatted = maybe_remove_tabs(RemoveTabs,
                                   unicode:characters_to_binary(PreFormatted, Encoding)),
     Clean = maybe_remove_trailing_spaces(RemoveTrailingSpaces, Formatted),

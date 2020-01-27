@@ -1,13 +1,7 @@
-%% @doc Rebar3 Pretty Printing of abstract Erlang syntax trees,
-%% based on original erl_prettypr.
-%%
-%% It was taken verbatim from erl_prettypr
-%% and it was modified to meet our specific needs.
-%%
-%% This module is a front end to the pretty-printing library module
-%% `prettypr', for text formatting of abstract syntax trees defined by
-%% the module `erl_syntax'.
--module(rebar3_prettypr).
+%% @doc Rebar3 Pretty Printing of abstract Erlang syntax trees, following our own preferred style.
+-module(default_formatter).
+
+-behaviour(rebar3_formatter).
 
 -export([format/3]).
 
@@ -57,7 +51,7 @@ reset_prec(Ctxt) ->
 %% module (as it looks in the debug info representation):
 %% ```{ok,{_,[{abstract_code,{_,AC}}]}} =
 %%            beam_lib:chunks("myfile.beam",[abstract_code]),
-%%    io:put_chars(rebar3_prettypr:format(erl_syntax:form_list(AC), [], []))
+%%    io:put_chars(default_prettypr:format(erl_syntax:form_list(AC), [], []))
 %% '''
 %%
 %% Available options:
