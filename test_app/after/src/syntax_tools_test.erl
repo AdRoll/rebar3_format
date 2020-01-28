@@ -19,23 +19,14 @@
 % -?attrib([foo2/2]).
 
 -define(macro_simple1, ok).
-
 -define(MACRO_SIMPLE2, other).
-
 -define(macro_simple3, ?MODULE).
-
 -define(macro_simple4, [?macro_simple3, ?MODULE, ?MACRO_SIMPLE2]).
-
 -define(macro_simple5, process_info).
-
 -define(macro_string, "hello world").
-
 -define(macro_argument1(X), X + 3).
-
 -define(macro_argument2(X, Y), X + 3 * Y).
-
 -define(macro_block(X), begin X end).
-
 -define(macro_if(X1, X2),
         if X1 -> X2;
            true -> none
@@ -62,7 +53,6 @@
 -endif.
 
 -undef(macro_def1).
-
 -undef(macro_def2).
 
 %% basic test

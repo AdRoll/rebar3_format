@@ -1,9 +1,7 @@
 -module(macros).
 
 -define(ADULT_AGE, 21).
-
 -define(NEW_PERSON(Name, Age), #{name => Name, age => Age}).
-
 -define(SOMEONE, ?NEW_PERSON("Someone", 44)).
 
 is_adult(Person) -> Age = maps:get(age, Person, 0), Age >= ?ADULT_AGE.

@@ -12,7 +12,6 @@
 -record(small,
         {f1, % The first field
          f2}).  % The second field
-
 -record(large,
         {large_field_1, % The first field
          large_field_2, % The second field

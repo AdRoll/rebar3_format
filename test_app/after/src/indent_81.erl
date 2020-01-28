@@ -1,7 +1,7 @@
 -module(indent_81).
 
--format([{break_indent, 8}, {sub_indent, 1},
-         {paper, 50}]).
+-format(#{break_indent => 8, paper => 50,
+          sub_indent => 1}).
 
 -record(record,
         {fields =
@@ -50,7 +50,6 @@ if_expr() ->
 
 -spec
          a_function_with_a_very_long_name() -> a_type_with_a_very_long_name().
-
 a_function_with_a_very_long_name() ->
         {specs, " and ", types,
          should:be(indented_using:break_indent(8))}.

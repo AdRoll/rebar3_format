@@ -4,7 +4,6 @@
 -module(inline_items).
 
 -record(short_rec, {x, y, z}).
-
 -record(long_rec,
         {x1 = x1  :: x1,
          x2 = x2  :: x2,
@@ -19,16 +18,12 @@
          very_very_long_name_3 = very_very_long_name_3  ::
              very_very_long_name_3}).
 
--format([{inline_items, false}, {inline_expressions, false}, {paper, 80}]).
+-format(#{inline_expressions => false, inline_items => false, paper => 80}).
 
 -export([short_tuple/0, short_list/0, short_fun/0]).
-
 -export([short_bin/0, short_guard/1, short_lc/0]).
-
 -export([short_bc/0, short_arglist/3, short_rec/0]).
-
 -export([short_map/0]).
-
 -export([long_tuple/0,
          long_list/0,
          long_fun/0,
@@ -41,32 +36,27 @@
          long_map/0]).
 
 -spec short_tuple() -> {T, T, T} when T :: {x, y, z}.
-
 short_tuple() ->
     X = {x, y, z},
     Y = {x, y, z},
     {X, Y, {x, y, z}}.
 
 -spec short_list() -> [T | [T]] when T :: [x | y | z].
-
 short_list() ->
     X = [x, y, z],
     Y = [x, y | z],
     [X, Y, [x | y:z()]].
 
 -spec short_fun() -> fun((X, Y, Z) -> {X, Y, Z}).
-
 short_fun() -> fun (X, Y, Z) -> {X, Y, Z} end.
 
 -spec short_bin() -> binary().
-
 short_bin() ->
     X = <<1, 2, 3>>,
     Y = <<1:1, 7:7, 2:2/little-integer-unit:32, 3/float>>,
     <<X/binary, Y/binary>>.
 
 -spec short_guard(integer()) -> integer().
-
 short_guard(X) when is_integer(X), X < 2 ->
     case X of
       X when X >= -1 -> X + 1;
@@ -74,27 +64,21 @@ short_guard(X) when is_integer(X), X < 2 ->
     end.
 
 -spec short_lc() -> [{_, _, _}].
-
 short_lc() -> [{X, Y, Z} || {X, Y, Z} <- x:y(z), Z < Y].
 
 -spec short_bc() -> binary().
-
 short_bc() -> << <<X, Y, Z>>  || <<X, Y, Z>> <= x:y(z), Z < Y >>.
 
 -spec short_arglist(number(), number(), number()) -> number().
-
 short_arglist(X, Y, Z) -> X + Y + Z.
 
 -spec short_rec() -> #short_rec{x :: x, y :: y, z :: z}.
-
 short_rec() -> #short_rec{x = x, y = y, z = z}.
 
 -spec short_map() -> #{x => x, y => y, z := z}.
-
 short_map() -> #{x => x, y => y, z => z}.
 
 -spec long_tuple() -> {T, T, T} when T :: {x, y, z}.
-
 long_tuple() ->
     X = {x1,
          x2,
@@ -143,7 +127,6 @@ long_tuple() ->
                                           very_very_long_name_1 |
                                           very_very_long_name_2 |
                                           very_very_long_name_3].
-
 long_list() ->
     X = [x1,
          x2,
@@ -203,7 +186,6 @@ long_list() ->
                                                 VeryVeryLongName1,
                                                 VeryVeryLongName2,
                                                 VeryVeryLongName3}).
-
 long_fun() ->
     fun (X1,
          X2,
@@ -230,7 +212,6 @@ long_fun() ->
     end.
 
 -spec long_bin() -> binary().
-
 long_bin() ->
     X = <<1,
           1,
@@ -268,7 +249,6 @@ long_bin() ->
       Y/binary>>.
 
 -spec long_guard(integer()) -> integer().
-
 long_guard(VeryVeryLongName)
     when is_integer(VeryVeryLongName),
          VeryVeryLongName < 2,
@@ -282,7 +262,6 @@ long_guard(VeryVeryLongName)
     end.
 
 -spec long_lc() -> [{_, _, _}].
-
 long_lc() ->
     [{X, Y, Z}
      || X <- generator:x(),
@@ -293,7 +272,6 @@ long_lc() ->
         X + Y == Z].
 
 -spec long_bc() -> binary().
-
 long_bc() ->
     << <<X, Y, Z>>
         || <<X>> <- generator:x(),
@@ -310,7 +288,6 @@ long_bc() ->
                    non_neg_integer(),
                    non_neg_integer(),
                    non_neg_integer()) -> number().
-
 long_arglist(X1,
              X2,
              X3,
@@ -330,7 +307,6 @@ long_arglist(X1,
                               very_very_long_name_1 :: very_very_long_name_1,
                               very_very_long_name_2 :: very_very_long_name_2,
                               very_very_long_name_3 :: very_very_long_name_3}.
-
 long_rec() ->
     #long_rec{x1 = x1,
               x2 = x2,
@@ -351,7 +327,6 @@ long_rec() ->
                       very_very_long_name_1 := very_very_long_name_1,
                       very_very_long_name_2 := very_very_long_name_2,
                       very_very_long_name_3 := very_very_long_name_3}.
-
 long_map() ->
     #{x1 => x1,
       x2 => x2,
