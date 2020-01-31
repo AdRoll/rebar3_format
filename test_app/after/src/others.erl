@@ -48,7 +48,9 @@ try_expr_after() ->
     after
       close:the(door, anyway)
     end,
-    try with:no(catching) after
+    try
+      with:no(catching)
+    after
       do:something({to,
                     "clean up",
                     <<"the">>,
@@ -60,4 +62,12 @@ try_expr_after() ->
 
 bit_types(X) ->
     <<X:4/little-signed-integer-unit:8, (something:on(X)):32/big-unsigned-integer-unit:32>>.
+
+multi_try_expr() ->
+    try
+      there:are(2),
+      expressions:in(this_block)
+    catch
+      A:Catch:Expression -> formatter:should(indent, A, Catch, Expression)
+    end.
 

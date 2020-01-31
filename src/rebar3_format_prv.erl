@@ -81,11 +81,12 @@ get_opts(State) -> proplists:get_value(options, rebar_state:get(State, format, [
                                                                           {error,
                                                                            {atom(), string()}}.
 format(Files, Formatter, Opts) ->
-    try lists:foreach(fun (File) ->
-                              rebar_api:debug("Formatting ~p with ~p", [File, Opts]),
-                              rebar3_formatter:format(File, Formatter, Opts)
-                      end,
-                      Files)
+    try
+      lists:foreach(fun (File) ->
+                            rebar_api:debug("Formatting ~p with ~p", [File, Opts]),
+                            rebar3_formatter:format(File, Formatter, Opts)
+                    end,
+                    Files)
     catch
       _:{cant_parse, File, {_, erl_parse, Error}} ->
           rebar_api:debug("Couldn't parse ~s: ~p", [File, Error]),
