@@ -12,5 +12,10 @@ can_err(E) ->
       C:R:Stacktrace -> error
     end.
 
-also_can_err() -> try launch_missiles catch E:R -> error end.
+also_can_err() ->
+    try
+      launch_missiles
+    catch
+      E:R -> error
+    end.
 

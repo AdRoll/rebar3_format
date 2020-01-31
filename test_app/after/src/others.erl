@@ -48,7 +48,9 @@ try_expr_after() ->
     after
       close:the(door, anyway)
     end,
-    try with:no(catching) after
+    try
+      with:no(catching)
+    after
       do:something({to,
                     "clean up",
                     <<"the">>,
@@ -63,8 +65,9 @@ bit_types(X) ->
 
 multi_try_expr() ->
     try
-        there:are(2),
-        expressions:in(this_block)
+      there:are(2),
+      expressions:in(this_block)
     catch
-        A:Catch:Expression -> formatter:should(indent,A,Catch,Expression)
+      A:Catch:Expression -> formatter:should(indent, A, Catch, Expression)
     end.
+
