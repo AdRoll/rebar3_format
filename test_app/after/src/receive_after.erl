@@ -7,8 +7,6 @@ sleep(T) ->
     receive
 
       after T ->
-                io:format("Waking up after ~p milliseconds to keep on working as "
-                          "usual!!~n",
-                          [T])
+                io:format("Waking up after ~p milliseconds to keep on working as usual!!~n", [T])
     end.
 

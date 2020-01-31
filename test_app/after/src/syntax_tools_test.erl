@@ -86,18 +86,17 @@ id(I) -> I.
 %% basic terms
 
 foo3() ->
-    [atom, 'some other atom', {tuple, 1, 2, 3}, 1, 2, 3, 3333, 3, 3333, 2, 1,
-     [$a, $b, $c], "hello world", <<"hello world">>, <<1, 2, 3, 4, 5:6>>, 3.1415,
-     1.03e33].
+    [atom, 'some other atom', {tuple, 1, 2, 3}, 1, 2, 3, 3333, 3, 3333, 2, 1, [$a, $b, $c],
+     "hello world", <<"hello world">>, <<1, 2, 3, 4, 5:6>>, 3.1415, 1.03e33].
 
 %% application and records
 
 foo4(A, B, #state{c = C} = S) ->
     Ls = foo3(),
     S1 = #state{a = 1, b = 2},
-    [foo2(A, Ls), B, C, B(3, C), erlang:process_info(self()),
-     erlang:?macro_simple5(self()), A:?MACRO_SIMPLE2(), A:?macro_simple1(),
-     A:process_info(self()), A:B(3), S#state{a = 2, b = B, d = S1}].
+    [foo2(A, Ls), B, C, B(3, C), erlang:process_info(self()), erlang:?macro_simple5(self()),
+     A:?MACRO_SIMPLE2(), A:?macro_simple1(), A:process_info(self()), A:B(3),
+     S#state{a = 2, b = B, d = S1}].
 
 foo5(A) -> try foo2(A, A) of R -> R catch error:?macro_simple5 -> nope end.
 
