@@ -76,7 +76,10 @@ foo2(A, B) ->
                          ok -> B;
                          C -> C
                        end),
-      ?macro_argument1(receive M -> M after 100 -> 3 end),
+      ?macro_argument1(receive
+                         M -> M
+                         after 100 -> 3
+                       end),
       ?macro_argument1(try foo5(A) catch C:?macro_simple5 -> {C, B} end),
       ?macro_argument2(A, B)],
      A, B, ok].

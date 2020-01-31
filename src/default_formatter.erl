@@ -443,9 +443,9 @@ lay_no_comments(Node, Ctxt) ->
                      D3 = lay(T, Ctxt1),
                      D4 = lay_clause_expressions(erl_syntax:receive_expr_action(Node), Ctxt1,
                                                  fun lay/2),
-                     sep([D1,
-                          follow(lay_text_float("after"), append_clause_body(D4, D3, Ctxt1),
-                                 Ctxt1#ctxt.sub_indent)])
+                     vertical([D1,
+                               follow(lay_text_float("after"), append_clause_body(D4, D3, Ctxt1),
+                                      Ctxt1#ctxt.sub_indent)])
                end,
           sep([text("receive"), nest(Ctxt1#ctxt.sub_indent, D2), text("end")]);
       record_access ->
