@@ -31,9 +31,9 @@
 
 -wild(attribute).
 
--record(par, {a  :: undefined | igor_type_specs}).
+-record(par, {a :: undefined | igor_type_specs}).
 -record(r0, {}).
--record(r, {f1  :: integer(), f2 = a  :: atom(), f3  :: fun(), f4 = 7}).
+-record(r, {f1 :: integer(), f2 = a :: atom(), f3 :: fun(), f4 = 7}).
 
 -type r0() :: #r0{} | #r{f1 :: 3} | #r{f1 :: 3, f2 :: sju}.
 -type m1() :: #{}.

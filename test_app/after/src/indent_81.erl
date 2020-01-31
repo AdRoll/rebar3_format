@@ -6,11 +6,11 @@
 -record(record,
         {fields =
                  should:be(indented_using:break_indent(8)),
-         including  ::
+         including ::
                  those:that_use_types(with_very_long_names),
          what_about =
                  fields_with:very_long_values(and_very:long_type_names())
-                  ::
+                 ::
                  they:also(should:be(indented_using:break_indent(8)))}).
 
 infix_expr() ->

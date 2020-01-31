@@ -34,10 +34,10 @@
                     {function, prettypr:document()} | spec.
 
 -record(ctxt,
-        {prec = 0  :: integer(), sub_indent = 2  :: non_neg_integer(),
-         break_indent = 4  :: non_neg_integer(), clause = undefined  :: clause_t() | undefined,
-         hook = ?NOHOOK  :: hook(), paper = ?PAPER  :: integer(), ribbon = ?RIBBON  :: integer(),
-         user = ?NOUSER  :: term(), encoding = epp:default_encoding()  :: epp:source_encoding()}).
+        {prec = 0 :: integer(), sub_indent = 2 :: non_neg_integer(),
+         break_indent = 4 :: non_neg_integer(), clause = undefined :: clause_t() | undefined,
+         hook = ?NOHOOK :: hook(), paper = ?PAPER :: integer(), ribbon = ?RIBBON :: integer(),
+         user = ?NOUSER :: term(), encoding = epp:default_encoding() :: epp:source_encoding()}).
 
 -type context() :: #ctxt{}.
 

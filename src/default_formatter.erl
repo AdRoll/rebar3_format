@@ -23,13 +23,12 @@
                     {function, prettypr:document()} | spec.
 
 -record(ctxt,
-        {prec = 0  :: integer(), sub_indent = ?SUB_INDENT  :: non_neg_integer(),
-         break_indent = ?BREAK_INDENT  :: non_neg_integer(),
-         clause = undefined  :: clause_t() | undefined, paper = ?PAPER  :: integer(),
-         ribbon = ?RIBBON  :: integer(), user = ?NOUSER  :: term(),
-         inline_items = true  :: boolean(), inline_expressions = true  :: boolean(),
-         empty_lines = []  :: [pos_integer()],
-         encoding = epp:default_encoding()  :: epp:source_encoding()}).
+        {prec = 0 :: integer(), sub_indent = ?SUB_INDENT :: non_neg_integer(),
+         break_indent = ?BREAK_INDENT :: non_neg_integer(),
+         clause = undefined :: clause_t() | undefined, paper = ?PAPER :: integer(),
+         ribbon = ?RIBBON :: integer(), user = ?NOUSER :: term(), inline_items = true :: boolean(),
+         inline_expressions = true :: boolean(), empty_lines = [] :: [pos_integer()],
+         encoding = epp:default_encoding() :: epp:source_encoding()}).
 
 set_prec(Ctxt, Prec) ->
     Ctxt#ctxt{prec = Prec}.    % used internally
@@ -503,7 +502,7 @@ lay_no_comments(Node, Ctxt) ->
           Ctxt1 = reset_prec(Ctxt),
           D1 = lay(erl_syntax:typed_record_field_body(Node), Ctxt1),
           D2 = lay(erl_syntax:typed_record_field_type(Node), set_prec(Ctxt, Prec)),
-          D3 = par([D1, lay_text_float(" ::"), D2], Ctxt1#ctxt.break_indent),
+          D3 = lay_double_colon(D1, D2, Ctxt1, without_preceding_space),
           maybe_parentheses(D3, Prec, Ctxt);
       try_expr ->
           Ctxt1 = reset_prec(Ctxt),
@@ -538,7 +537,7 @@ lay_no_comments(Node, Ctxt) ->
           {_, Prec, _} = type_inop_prec('::'),
           D1 = lay(erl_syntax:annotated_type_name(Node), reset_prec(Ctxt)),
           D2 = lay(erl_syntax:annotated_type_body(Node), set_prec(Ctxt, Prec)),
-          D3 = lay_follow_beside_text_float(D1, D2, Ctxt),
+          D3 = lay_double_colon(D1, D2, Ctxt, with_preceding_space),
           maybe_parentheses(D3, Prec, Ctxt);
       type_application ->
           Name = erl_syntax:type_application_name(Node),
@@ -598,7 +597,7 @@ lay_no_comments(Node, Ctxt) ->
                 {PrecL, Prec, PrecR} = type_inop_prec('::'),
                 D1 = lay(Var, set_prec(Ctxt, PrecL)),
                 D2 = lay(Type, set_prec(Ctxt, PrecR)),
-                D3 = lay_follow_beside_text_float(D1, D2, Ctxt),
+                D3 = lay_double_colon(D1, D2, Ctxt, with_preceding_space),
                 maybe_parentheses(D3, Prec, Ctxt);
             false -> lay_application(Name, Args, Ctxt)
           end;
@@ -636,7 +635,7 @@ lay_no_comments(Node, Ctxt) ->
           Ctxt1 = reset_prec(Ctxt),
           D1 = lay(erl_syntax:record_type_field_name(Node), Ctxt1),
           D2 = lay(erl_syntax:record_type_field_type(Node), Ctxt1),
-          par([D1, lay_text_float("::"), D2], Ctxt1#ctxt.break_indent);
+          lay_double_colon(D1, D2, Ctxt1, without_preceding_space);
       tuple_type ->
           case erl_syntax:tuple_type_elements(Node) of
             any_size -> text("tuple()");
@@ -694,9 +693,6 @@ dodge_macros(Type) ->
     erl_syntax_lib:map(F, Type).
 
 lay_text_float(Str) -> floating(text(Str)).
-
-lay_follow_beside_text_float(D1, D2, Ctxt) ->
-    follow(beside(D1, lay_text_float(" ::")), D2, Ctxt#ctxt.break_indent).
 
 lay_fun_sep(Clauses, Ctxt) ->
     sep([follow(text("fun"), Clauses, Ctxt#ctxt.sub_indent), text("end")]).
@@ -937,6 +933,11 @@ get_pos(Node) ->
       I when is_integer(I) -> I;
       L when is_list(L) -> proplists:get_value(location, L, 0)
     end.
+
+lay_double_colon(D1, D2, Ctxt, with_preceding_space) ->
+    follow(beside(D1, lay_text_float(" ::")), D2, Ctxt#ctxt.break_indent);
+lay_double_colon(D1, D2, Ctxt, without_preceding_space) ->
+    par([D1, lay_text_float("::"), D2], Ctxt#ctxt.break_indent).
 
 
 %% =====================================================================
