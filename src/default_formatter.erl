@@ -51,11 +51,11 @@ reset_prec(Ctxt) ->
 %% <dl>
 %%   <dt>{paper, integer()}</dt>
 %%       <dd>Specifies the preferred maximum number of characters on any
-%%       line, including indentation. The default value is 80.</dd>
+%%       line, including indentation. The default value is 100.</dd>
 %%
 %%   <dt>{ribbon, integer()}</dt>
 %%       <dd>Specifies the preferred maximum number of characters on any
-%%       line, not counting indentation. The default value is 65.</dd>
+%%       line, not counting indentation. The default value is 90.</dd>
 %%
 %%   <dt>{break_indent, integer()}</dt>
 %%       <dd>Specifies the number of spaces to use for breaking indentation.
