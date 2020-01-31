@@ -10,8 +10,8 @@
 -type t() :: integer().
 -type ff(A) :: ot(A, A) | tuple() | 1..3 | map() | {}.
 -type ff1() :: ff(bin()) | foo:bar().
--type ff2() :: {list(), [_], [integer()], nonempty_list(), [atom(), ...],
-                [ff1(), ...], [], []}.
+-type ff2() :: {list(), [_], [integer()], nonempty_list(), [atom(), ...], [ff1(), ...],
+                [], []}.
 -type bin() :: <<>> | <<_:(+4)>> | <<_:_*8>> | <<_:12, _:_*16>> | <<_:16>> |
                <<_:16, _:_*(+0)>>.
 
@@ -30,9 +30,9 @@
 
 -wild(attribute).
 
--record(par, {a  :: undefined | ?MODULE}).
+-record(par, {a :: undefined | ?MODULE}).
 -record(r0, {}).
--record(r, {f1  :: integer(), f2 = a  :: atom(), f3  :: fun(), f4 = 7}).
+-record(r, {f1 :: integer(), f2 = a :: atom(), f3 :: fun(), f4 = 7}).
 
 -type r0() :: #r0{} | #r{f1 :: 3} | #r{f1 :: 3, f2 :: sju}.
 -type m1() :: #{} | map().
@@ -48,11 +48,7 @@
 
 -spec type_specs:f(pair(r0(), r0())) -> pair(t(), t()).
 f({R, R}) ->
-    _ = ?MODULE_STRING ++ "hej",
-    _ = <<"foo">>,
-    _ = R#r.f1,
-    _ = R#r{f1 = 17, f2 = b},
-    {1, 1}.
+    _ = ?MODULE_STRING ++ "hej", _ = <<"foo">>, _ = R#r.f1, _ = R#r{f1 = 17, f2 = b}, {1, 1}.
 
 -spec type_specs:b() -> pos_integer().
 b() -> case foo:bar() of #{a := 2} -> 19 end.

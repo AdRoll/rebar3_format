@@ -53,7 +53,7 @@ The plugin supports the following configuration options in the `format` section 
             * The default value is `100`.
         + `ribbon`(`pos_integer()`):
             * Specifies the preferred maximum number of characters on any line, not counting indentation.
-            * The default value is `80`.
+            * The default value is `90`.
         + `break_indent`(`pos_integer()`):
             * Specifies the preferred number of characters to use to indent a line that "breaks" from the previous one (for instance, a clause body after a clause head).
             * The default value is `4`.

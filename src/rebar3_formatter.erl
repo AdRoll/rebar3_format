@@ -42,8 +42,7 @@ get_quick_ast(File) ->
     end.
 
 %% @doc Removes line numbers from ASTs to allow for "semantic" comparison
-remove_line_numbers(AST) when is_list(AST) ->
-    lists:map(fun remove_line_numbers/1, AST);
+remove_line_numbers(AST) when is_list(AST) -> lists:map(fun remove_line_numbers/1, AST);
 remove_line_numbers(AST) when is_tuple(AST) ->
     [Type, _Line | Rest] = tuple_to_list(AST),
     case Type of
@@ -68,8 +67,7 @@ format(File, AST, Formatter, Comments, Opts) ->
                 end,
     ok = filelib:ensure_dir(FinalFile),
     ExtendedAST = AST ++ [{eof, 0}],
-    WithComments = erl_recomment:recomment_forms(erl_syntax:form_list(ExtendedAST),
-                                                 Comments),
+    WithComments = erl_recomment:recomment_forms(erl_syntax:form_list(ExtendedAST), Comments),
     Formatted = Formatter:format(WithComments, empty_lines(File), Opts),
     ok = file:write_file(FinalFile, Formatted),
     FinalFile.

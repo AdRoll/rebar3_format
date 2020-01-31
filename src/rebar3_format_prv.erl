@@ -6,9 +6,8 @@
 %% @private
 -spec init(rebar_state:t()) -> {ok, rebar_state:t()}.
 init(State) ->
-    Provider = providers:create([{name, format}, {module, rebar3_format_prv},
-                                 {bare, true}, {deps, [app_discovery]},
-                                 {example, "rebar3 format [file(s)]"},
+    Provider = providers:create([{name, format}, {module, rebar3_format_prv}, {bare, true},
+                                 {deps, [app_discovery]}, {example, "rebar3 format [file(s)]"},
                                  {opts,
                                   [{files, $f, "files", string,
                                     "List of files and directories to be formatted"},
@@ -34,9 +33,8 @@ do(State) ->
 %% @private
 -spec format_error(any()) -> binary().
 format_error({erl_parse, Error}) ->
-    iolist_to_binary(io_lib:format("Formatting error: ~s.Try running with DEBUG=1 for more "
-                                   "information",
-                                   [Error]));
+    Msg = "Formatting error: ~p.Try running with DEBUG=1 for more information",
+    iolist_to_binary(io_lib:format(Msg, [Error]));
 format_error(Reason) ->
     iolist_to_binary(io_lib:format("Unknown Formatting Error: ~p", [Reason])).
 
@@ -64,12 +62,10 @@ get_output_dir(State) ->
 
 -spec get_formatter(rebar_state:t()) -> module().
 get_formatter(State) ->
-    proplists:get_value(formatter, rebar_state:get(State, format, []),
-                        default_formatter).
+    proplists:get_value(formatter, rebar_state:get(State, format, []), default_formatter).
 
 -spec get_opts(rebar_state:t()) -> rebar3_formatter:opts().
-get_opts(State) ->
-    proplists:get_value(options, rebar_state:get(State, format, []), #{}).
+get_opts(State) -> proplists:get_value(options, rebar_state:get(State, format, []), #{}).
 
 -spec format([file:filename_all()], module(), rebar3_formatter:opts()) -> ok |
                                                                           {error,
@@ -82,10 +78,8 @@ format(Files, Formatter, Opts) ->
                       Files)
     catch
       _:{cant_parse, File, {_, erl_parse, Error}} ->
-          rebar_api:debug("Couldn't parse ~s: ~p", [File, Error]),
-          {error, {erl_parse, Error}};
+          rebar_api:debug("Couldn't parse ~s: ~p", [File, Error]), {error, {erl_parse, Error}};
       _:Error:Stack ->
-          rebar_api:warn("Error parsing files: ~p~nStack: ~p", [Error, Stack]),
-          {error, Error}
+          rebar_api:warn("Error parsing files: ~p~nStack: ~p", [Error, Stack]), {error, Error}
     end.
 

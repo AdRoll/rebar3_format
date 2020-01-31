@@ -11,8 +11,8 @@
 -type t() :: integer().
 -type ff(A) :: ot(A, A) | tuple() | 1..3 | map() | {}.
 -type ff1() :: ff(bin()) | foo:bar().
--type ff2() :: {list(), [_], [integer()], nonempty_list(), [atom(), ...],
-                [ff1(), ...], [], []}.
+-type ff2() :: {list(), [_], [integer()], nonempty_list(), [atom(), ...], [ff1(), ...],
+                [], []}.
 -type bin() :: <<>> | <<_:(+4)>> | <<_:_*8>> | <<_:12, _:_*16>> | <<_:16>> |
                <<_:16, _:_*(+0)>>.
 
@@ -31,9 +31,9 @@
 
 -wild(attribute).
 
--record(par, {a  :: undefined | igor_type_specs}).
+-record(par, {a :: undefined | igor_type_specs}).
 -record(r0, {}).
--record(r, {f1  :: integer(), f2 = a  :: atom(), f3  :: fun(), f4 = 7}).
+-record(r, {f1 :: integer(), f2 = a :: atom(), f3 :: fun(), f4 = 7}).
 
 -type r0() :: #r0{} | #r{f1 :: 3} | #r{f1 :: 3, f2 :: sju}.
 -type m1() :: #{}.
