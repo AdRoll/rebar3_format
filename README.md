@@ -64,15 +64,15 @@ The plugin supports the following configuration options in the `format` section 
             * Specifies the desired behavior when using multiple lines for a multi-item structure (i.e. tuple, list, map, etc.).
             * When this flag is on, the formatter will try to fit as many items in each line as permitted by `paper` and `ribbon`.
             * When the flag is off, the formatter will place each item in its own line.
-            * The default value is `true`.
+            * The default value is `false`.
         + `inline_expressions` (`boolean()`):
             * Specifies if sequential expressions in a clause should be placed in the same line if `paper` and `ribbon` allows it or if each expression should be placed in its own line.
-            * The default value is `true`.
+            * The default value is `false`.
         + `preserve_empty_lines` (`boolean()`):
             * Specifies if blank lines should be preserved when formatting.
             * This option is only used when `inline_expressions` is `false`.
             * If this option is `true`, one empty line will preserved for each group of empty lines that are placed between expressions in a clause.
-            * The default value is `false`.
+            * The default value is `true`.
 * `files` (`[file:filename_all()]`):
     - List of wildcard patterns representing the files that will be formatted by default (i.e. when not using `--files` on command line).
     - The default value is `["src/**/*.?rl"]`

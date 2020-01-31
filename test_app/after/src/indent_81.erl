@@ -1,6 +1,7 @@
 -module(indent_81).
 
--format(#{break_indent => 8, paper => 50,
+-format(#{break_indent => 8,
+          paper => 50,
           sub_indent => 1}).
 
 -record(record,
@@ -30,7 +31,9 @@ case_expr() ->
         case
          expressions:that(are_too_long_for_a_line,
                           should:be(indented_using:sub_indent(1)),
-                          but, the, "of",
+                          but,
+                          the,
+                          "of",
                           should:be(indented_using:break_indent(8)))
                 of
          clauses ->
@@ -40,7 +43,9 @@ case_expr() ->
 if_expr() ->
         if
          {expressions_that_are_too_long_for_a_line,
-          [should, be, indented_using,
+          [should,
+           be,
+           indented_using,
            {sub_indent, 1}]} ->
                  ok
         end.
@@ -51,7 +56,9 @@ if_expr() ->
 -spec
          a_function_with_a_very_long_name() -> a_type_with_a_very_long_name().
 a_function_with_a_very_long_name() ->
-        {specs, " and ", types,
+        {specs,
+         " and ",
+         types,
          should:be(indented_using:break_indent(8))}.
 
 block_expr() ->
@@ -95,7 +102,8 @@ try_expr() ->
         try
          expressions:that(are_too_long_for_a_line,
                           should:be(indented_using:sub_indent(1)),
-                          but, the)
+                          but,
+                          the)
         of
          should -> not be:indented(at_all)
         catch

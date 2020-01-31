@@ -2,6 +2,8 @@
 
 -export([all/0]).
 
+-format #{inline_expressions => true, inline_items => true}.
+
 all() ->
   heredoc(),
   superlong(),

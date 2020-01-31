@@ -2,8 +2,6 @@
 
 -compile(export_all).
 
--format(#{inline_expressions => false, preserve_empty_lines => true}).
-
 in_this() ->
     function,
     there:are(no, empty, lines).

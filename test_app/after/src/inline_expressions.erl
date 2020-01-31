@@ -2,7 +2,7 @@
 
 -compile(export_all).
 
--format(#{inline_expressions => false}).
+-format(#{preserve_empty_lines => false}).
 
 these() ->
     Expressions = should:occupy(),

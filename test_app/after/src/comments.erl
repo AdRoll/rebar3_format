@@ -39,5 +39,7 @@ dummy_fn(A) ->
 % This is
 % a multiline
 % comment
-multiline() -> X = "\nThis is\na multiline\nstring\n", {ok, X}.
+multiline() ->
+    X = "\nThis is\na multiline\nstring\n",
+    {ok, X}.
 

@@ -28,8 +28,11 @@ comprehensions(Bin, List) ->
     {BinToBin, BinToList, ListToBin, ListToList}.
 
 parentheses() ->
-    {"does                            ", this,
-     [[code, <<"        look         ">>, like], "lisp", to,
+    {"does                            ",
+     this,
+     [[code, <<"        look         ">>, like],
+      "lisp",
+      to,
       [{[<<"(      you or me or them?)">>]}]]}.
 
 receive_expr() -> receive with -> {no, timeout} end.
@@ -46,7 +49,12 @@ try_expr_after() ->
       close:the(door, anyway)
     end,
     try with:no(catching) after
-      do:something({to, "clean up", <<"the">>, [filthy, filthy, mess], you, created,
+      do:something({to,
+                    "clean up",
+                    <<"the">>,
+                    [filthy, filthy, mess],
+                    you,
+                    created,
                     "if you can"})
     end.
 

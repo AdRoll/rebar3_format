@@ -4,7 +4,8 @@
 -export([format/3]).
 
 -type opts() :: #{output_dir => undefined | file:filename_all(),
-                  encoding => none | epp:source_encoding(), _ => _}.
+                  encoding => none | epp:source_encoding(),
+                  _ => _}.
 
 -export_type([opts/0]).
 
@@ -82,6 +83,7 @@ empty_lines(File) ->
                                      nomatch -> {[N | EmptyLines], N + 1}
                                    end
                            end,
-                           {[], 1}, List),
+                           {[], 1},
+                           List),
     lists:reverse(Res).
 
