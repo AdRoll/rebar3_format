@@ -543,7 +543,11 @@ lay_no_comments(Node, Ctxt) ->
           maybe_parentheses(D3, Prec, Ctxt);
       try_expr ->
           Ctxt1 = reset_prec(Ctxt),
-          D1 = lay_clause_expressions(erl_syntax:try_expr_body(Node), Ctxt1, fun lay/2),
+          D0 = lay_clause_expressions(erl_syntax:try_expr_body(Node), Ctxt1, fun lay/2),
+          D1 = case erl_syntax:try_expr_clauses(Node) of
+                 [] -> vertical([text("try"), nest(Ctxt1#ctxt.sub_indent, D0)]);
+                 _ -> follow(text("try"), D0, Ctxt1#ctxt.sub_indent)
+               end,
           Es0 = [text("end")],
           Es1 = case erl_syntax:try_expr_after(Node) of
                   [] -> Es0;
@@ -563,7 +567,7 @@ lay_no_comments(Node, Ctxt) ->
                       D4 = lay_clauses(Cs, try_expr, Ctxt1),
                       [text("of"), nest(Ctxt1#ctxt.sub_indent, D4) | Es2]
                 end,
-          sep([par([follow(text("try"), D1, Ctxt1#ctxt.sub_indent), hd(Es3)]) | tl(Es3)]);
+          sep([par([D1, hd(Es3)]) | tl(Es3)]);
       warning_marker ->
           E = erl_syntax:warning_marker_info(Node),
           beside(text("%% WARNING: "), lay_error_info(E, reset_prec(Ctxt)));
@@ -695,7 +699,11 @@ lay_no_comments(Node, Ctxt) ->
 
 attribute_name(Node) ->
     N = erl_syntax:attribute_name(Node),
-    try erl_syntax:concrete(N) catch _:_ -> N end.
+    try
+      erl_syntax:concrete(N)
+    catch
+      _:_ -> N
+    end.
 
 is_subtype(Name, [Var, _]) ->
     erl_syntax:is_atom(Name, is_subtype) andalso erl_syntax:type(Var) =:= variable;
