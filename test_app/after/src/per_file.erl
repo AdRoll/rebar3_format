@@ -6,7 +6,10 @@
               20}).
 
 this() ->
-    [file, should,
-     be, very, very,
+    [file,
+     should,
+     be,
+     very,
+     very,
      narrow].
 

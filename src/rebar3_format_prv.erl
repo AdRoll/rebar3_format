@@ -6,14 +6,24 @@
 %% @private
 -spec init(rebar_state:t()) -> {ok, rebar_state:t()}.
 init(State) ->
-    Provider = providers:create([{name, format}, {module, rebar3_format_prv}, {bare, true},
-                                 {deps, [app_discovery]}, {example, "rebar3 format [file(s)]"},
+    Provider = providers:create([{name, format},
+                                 {module, rebar3_format_prv},
+                                 {bare, true},
+                                 {deps, [app_discovery]},
+                                 {example, "rebar3 format [file(s)]"},
                                  {opts,
-                                  [{files, $f, "files", string,
+                                  [{files,
+                                    $f,
+                                    "files",
+                                    string,
                                     "List of files and directories to be formatted"},
-                                   {output, $o, "output", string,
+                                   {output,
+                                    $o,
+                                    "output",
+                                    string,
                                     "Output directory for the formatted files"}]},
-                                 {short_desc, "A rebar plugin for code formatting"}, {desc, ""}]),
+                                 {short_desc, "A rebar plugin for code formatting"},
+                                 {desc, ""}]),
     {ok, rebar_state:add_provider(State, Provider)}.
 
 %% @private
@@ -78,8 +88,10 @@ format(Files, Formatter, Opts) ->
                       Files)
     catch
       _:{cant_parse, File, {_, erl_parse, Error}} ->
-          rebar_api:debug("Couldn't parse ~s: ~p", [File, Error]), {error, {erl_parse, Error}};
+          rebar_api:debug("Couldn't parse ~s: ~p", [File, Error]),
+          {error, {erl_parse, Error}};
       _:Error:Stack ->
-          rebar_api:warn("Error parsing files: ~p~nStack: ~p", [Error, Stack]), {error, Error}
+          rebar_api:warn("Error parsing files: ~p~nStack: ~p", [Error, Stack]),
+          {error, Error}
     end.
 

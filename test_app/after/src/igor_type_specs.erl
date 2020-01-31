@@ -11,9 +11,19 @@
 -type t() :: integer().
 -type ff(A) :: ot(A, A) | tuple() | 1..3 | map() | {}.
 -type ff1() :: ff(bin()) | foo:bar().
--type ff2() :: {list(), [_], [integer()], nonempty_list(), [atom(), ...], [ff1(), ...],
-                [], []}.
--type bin() :: <<>> | <<_:(+4)>> | <<_:_*8>> | <<_:12, _:_*16>> | <<_:16>> |
+-type ff2() :: {list(),
+                [_],
+                [integer()],
+                nonempty_list(),
+                [atom(), ...],
+                [ff1(), ...],
+                [],
+                []}.
+-type bin() :: <<>> |
+               <<_:(+4)>> |
+               <<_:_*8>> |
+               <<_:12, _:_*16>> |
+               <<_:16>> |
                <<_:16, _:_*(+0)>>.
 
                                  % same as "<<_:16>>"
@@ -56,5 +66,7 @@ b() -> case foo:bar() of #{a := 2} -> 19 end.
 -spec c(Atom :: atom(), Integer :: integer()) -> {atom(), integer()};
        (X, Y) -> {atom(), float()} when X :: atom(), Y :: float();
        (integer(), atom()) -> {integer(), atom()}.
-c(A, B) -> _ = integer, {A, B}.
+c(A, B) ->
+    _ = integer,
+    {A, B}.
 

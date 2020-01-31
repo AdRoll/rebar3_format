@@ -4,6 +4,8 @@
 nospaces/1, newlines/1,
 cases/1    ].
 
+-format #{inline_expressions => true}.
+
 -export [
   another/0
   ,one/1,
