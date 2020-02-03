@@ -66,6 +66,9 @@ The plugin supports the following configuration options in the `format` section 
             * When the flag is `none`, the formatter will place each item in its own line.
             * When the flag is `{when_over, N}` the formatter will work as `none` for lists with up to `N` elements, and it will inline longer lists.
             * The default value is `{when_over, 25}` to properly accommodate large binaries or lists.
+        + `inline_clause_bodies` (`boolean()`):
+            * Specifies if clause bodies (for `case`, `function`, etc. statements) should be placed in the same line as the clause heads if `paper` and `ribbon` allows it or if all bodies should be placed in the next line after their clause heads.
+            * The default value is `false`.
         + `inline_expressions` (`boolean()`):
             * Specifies if sequential expressions in a clause should be placed in the same line if `paper` and `ribbon` allows it or if each expression should be placed in its own line.
             * The default value is `false`.

@@ -65,7 +65,11 @@ f({R, R}) ->
     {1, 1}.
 
 -spec type_specs:b() -> pos_integer().
-b() -> case foo:bar() of #{a := 2} -> 19 end.
+b() ->
+    case foo:bar() of
+      #{a := 2} ->
+          19
+    end.
 
 -define(I, integer).
 

@@ -36,8 +36,10 @@ do(State) ->
     Files = get_files(State),
     rebar_api:debug("Found ~p files: ~p", [length(Files), Files]),
     case format(Files, Formatter, Opts) of
-      ok -> {ok, State};
-      {error, Error} -> {error, format_error(Error)}
+      ok ->
+          {ok, State};
+      {error, Error} ->
+          {error, format_error(Error)}
     end.
 
 %% @private
@@ -52,12 +54,15 @@ format_error(Reason) ->
 get_files(State) ->
     {Args, _} = rebar_state:command_parsed_args(State),
     Patterns = case lists:keyfind(files, 1, Args) of
-                 {files, Wildcard} -> [Wildcard];
+                 {files, Wildcard} ->
+                     [Wildcard];
                  false ->
                      case proplists:get_value(files, rebar_state:get(State, format, []), undefined)
                          of
-                       undefined -> ["src/**/*.?rl"];
-                       Wildcards -> Wildcards
+                       undefined ->
+                           ["src/**/*.?rl"];
+                       Wildcards ->
+                           Wildcards
                      end
                end,
     [File || Pattern <- Patterns, File <- filelib:wildcard(Pattern)].
@@ -66,8 +71,10 @@ get_files(State) ->
 get_output_dir(State) ->
     {Args, _} = rebar_state:command_parsed_args(State),
     case lists:keyfind(output, 1, Args) of
-      {output, OutputDir} -> OutputDir;
-      false -> undefined
+      {output, OutputDir} ->
+          OutputDir;
+      false ->
+          undefined
     end.
 
 -spec get_formatter(rebar_state:t()) -> module().
@@ -75,7 +82,8 @@ get_formatter(State) ->
     proplists:get_value(formatter, rebar_state:get(State, format, []), default_formatter).
 
 -spec get_opts(rebar_state:t()) -> rebar3_formatter:opts().
-get_opts(State) -> proplists:get_value(options, rebar_state:get(State, format, []), #{}).
+get_opts(State) ->
+    proplists:get_value(options, rebar_state:get(State, format, []), #{}).
 
 -spec format([file:filename_all()], module(), rebar3_formatter:opts()) -> ok |
                                                                           {error,

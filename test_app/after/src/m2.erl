@@ -6,6 +6,8 @@
 
 -module(m2).
 
+-format(#{inline_clause_bodies => true}).
+
 -export([foo/0, foo/1, foo/2, bar/0, bar/1, bar/2, record_update/2, record/0]).
 
 foo() -> ok.

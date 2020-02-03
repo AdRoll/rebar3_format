@@ -7,4 +7,4 @@
 @copyright (c) 2019 NextRoll Inc.
 @title The Erlang Formatter
 @doc This project provides a rebar3 plugin to use the <code>rebar3 format</code> command.
-@reference See <a href="http://github.com/AdRoll/rebar_format">Our README</a> for more information.
+@reference See <a target="_blank" href="https://github.com/AdRoll/rebar3_format#rebar3_format">Our README</a> for more information.

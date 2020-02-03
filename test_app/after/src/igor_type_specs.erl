@@ -61,7 +61,11 @@ f({R, R}) ->
     {1, 1}.
 
 -spec igor_type_specs:b() -> integer() | fun().
-b() -> case foo:bar() of #{a := 2} -> 19 end.
+b() ->
+    case foo:bar() of
+      #{a := 2} ->
+          19
+    end.
 
 -spec c(Atom :: atom(), Integer :: integer()) -> {atom(), integer()};
        (X, Y) -> {atom(), float()} when X :: atom(), Y :: float();

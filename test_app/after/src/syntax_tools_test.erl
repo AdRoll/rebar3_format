@@ -28,8 +28,10 @@
 -define(macro_argument2(X, Y), X + 3 * Y).
 -define(macro_block(X), begin X end).
 -define(macro_if(X1, X2),
-        if X1 -> X2;
-           true -> none
+        if X1 ->
+               X2;
+           true ->
+               none
         end).
 
 -ifdef(macro_def1).
@@ -56,7 +58,8 @@
 -undef(macro_def2).
 
 %% basic test
-foo1() -> ok.
+foo1() ->
+    ok.
 
 %% macro test
 foo2(A, B) ->
@@ -81,28 +84,36 @@ foo2(A, B) ->
       ?macro_block("hello"),
       ?macro_block([$h, $e, $l, $l, $0]),
       ?macro_argument1(id(<<"hello">>)),
-      ?macro_argument1(if A -> B;
-                          true -> 3.14
+      ?macro_argument1(if A ->
+                              B;
+                          true ->
+                              3.14
                        end),
       ?macro_argument1(case A of
-                         ok -> B;
-                         C -> C
+                         ok ->
+                             B;
+                         C ->
+                             C
                        end),
       ?macro_argument1(receive
-                         M -> M
-                         after 100 -> 3
+                         M ->
+                             M
+                         after 100 ->
+                                   3
                        end),
       ?macro_argument1(try
                          foo5(A)
                        catch
-                         C:?macro_simple5 -> {C, B}
+                         C:?macro_simple5 ->
+                             {C, B}
                        end),
       ?macro_argument2(A, B)],
      A,
      B,
      ok].
 
-id(I) -> I.
+id(I) ->
+    I.
 
 %% basic terms
 
@@ -142,5 +153,12 @@ foo4(A, B, #state{c = C} = S) ->
      A:B(3),
      S#state{a = 2, b = B, d = S1}].
 
-foo5(A) -> try foo2(A, A) of R -> R catch error:?macro_simple5 -> nope end.
+foo5(A) ->
+    try foo2(A, A) of
+      R ->
+          R
+    catch
+      error:?macro_simple5 ->
+          nope
+    end.
 
