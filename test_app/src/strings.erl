@@ -2,7 +2,7 @@
 
 -export([all/0]).
 
--format #{inline_expressions => true, inline_items => true}.
+-format #{inline_expressions => true}.
 
 all() ->
   heredoc(),
