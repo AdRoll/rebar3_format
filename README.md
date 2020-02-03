@@ -69,9 +69,6 @@ The plugin supports the following configuration options in the `format` section 
         + `inline_expressions` (`boolean()`):
             * Specifies if sequential expressions in a clause should be placed in the same line if `paper` and `ribbon` allows it or if each expression should be placed in its own line.
             * The default value is `false`.
-        + `inline_clause_bodies` (`boolean()`):
-            * Specifies if sequential expressions in a clause should be placed in the same line if `paper` and `ribbon` allows it or if each expression should be placed in its own line.
-            * The default value is `false`.
         + `preserve_empty_lines` (`boolean()`):
             * Specifies if blank lines should be preserved when formatting.
             * This option is only used when `inline_expressions` is `false`.
