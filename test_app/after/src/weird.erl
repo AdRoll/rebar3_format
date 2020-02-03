@@ -2,7 +2,7 @@
 
 -export([ugly/2, nospaces/1, newlines/1, cases/1]).
 
--format(#{inline_expressions => true}).
+-format #{inline_expressions => true}.
 
 -export([another/0, one/1, bites/0, the/0, dust/0]).
 

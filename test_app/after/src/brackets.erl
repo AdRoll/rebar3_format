@@ -1,6 +1,6 @@
 -module(brackets).
 
--format(#{inline_items => all, paper => 50}).
+-format #{inline_items => all, paper => 50}.
 
 -compile(export_all).
 
