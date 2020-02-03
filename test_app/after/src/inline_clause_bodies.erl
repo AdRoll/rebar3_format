@@ -1,6 +1,6 @@
 -module(inline_clause_bodies).
 
--format #{paper => 60}.
+-format(#{paper => 60}).
 
 -compile(export_all).
 
