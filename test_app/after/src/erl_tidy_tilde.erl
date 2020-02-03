@@ -8,5 +8,6 @@
 
 -export([start/0]).
 
-start() -> io:put_chars("tilde characters ('~')in source were breaking erl_tidy\n").
+start() ->
+    io:put_chars("tilde characters ('~')in source were breaking erl_tidy\n").
 

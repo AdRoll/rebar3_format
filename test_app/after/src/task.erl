@@ -16,8 +16,10 @@
 -callback start(task_spec()) -> any().
 
 -spec name(Spec :: task_spec()) -> atom().
-name({Name, _MFA}) -> Name.
+name({Name, _MFA}) ->
+    Name.
 
 -spec mfa(task_spec()) -> mfa().
-mfa({_, MFA}) -> MFA.
+mfa({_, MFA}) ->
+    MFA.
 

@@ -47,7 +47,10 @@ short_list() ->
     [X, Y, [x | y:z()]].
 
 -spec short_fun() -> fun((X, Y, Z) -> {X, Y, Z}).
-short_fun() -> fun (X, Y, Z) -> {X, Y, Z} end.
+short_fun() ->
+    fun (X, Y, Z) ->
+            {X, Y, Z}
+    end.
 
 -spec short_bin() -> binary().
 short_bin() ->
@@ -58,24 +61,31 @@ short_bin() ->
 -spec short_guard(integer()) -> integer().
 short_guard(X) when is_integer(X), X < 2 ->
     case X of
-      X when X >= -1 -> X + 1;
-      X -> X
+      X when X >= -1 ->
+          X + 1;
+      X ->
+          X
     end.
 
 -spec short_lc() -> [{_, _, _}].
-short_lc() -> [{X, Y, Z} || {X, Y, Z} <- x:y(z), Z < Y].
+short_lc() ->
+    [{X, Y, Z} || {X, Y, Z} <- x:y(z), Z < Y].
 
 -spec short_bc() -> binary().
-short_bc() -> << <<X, Y, Z>>  || <<X, Y, Z>> <= x:y(z), Z < Y >>.
+short_bc() ->
+    << <<X, Y, Z>>  || <<X, Y, Z>> <= x:y(z), Z < Y >>.
 
 -spec short_arglist(number(), number(), number()) -> number().
-short_arglist(X, Y, Z) -> X + Y + Z.
+short_arglist(X, Y, Z) ->
+    X + Y + Z.
 
 -spec short_rec() -> #short_rec{x :: x, y :: y, z :: z}.
-short_rec() -> #short_rec{x = x, y = y, z = z}.
+short_rec() ->
+    #short_rec{x = x, y = y, z = z}.
 
 -spec short_map() -> #{x => x, y => y, z := z}.
-short_map() -> #{x => x, y => y, z => z}.
+short_map() ->
+    #{x => x, y => y, z => z}.
 
 -spec long_tuple() -> {T, T, T} when T :: {x, y, z}.
 long_tuple() ->
@@ -257,7 +267,8 @@ long_guard(VeryVeryLongName)
        VeryVeryLongName < 1, VeryVeryLongName > 0;
        VeryVeryLongName == 0 ->
            VeryVeryLongName + 1;
-       VeryVeryLongName -> VeryVeryLongName
+       VeryVeryLongName ->
+           VeryVeryLongName
     end.
 
 -spec long_lc() -> [{_, _, _}].

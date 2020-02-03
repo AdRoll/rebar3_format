@@ -4,6 +4,8 @@
 
 -some(thing).        % some attribute comment
 
+-format(#{inline_clause_bodies => true}).
+
 % Regular comment
 -export([dummy_fn/1, multiline/0]).
 

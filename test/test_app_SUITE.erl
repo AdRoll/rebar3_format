@@ -2,7 +2,8 @@
 
 -export([all/0, test_app/1]).
 
-all() -> [test_app].
+all() ->
+    [test_app].
 
 test_app(_Config) ->
     ok = file:set_cwd("../../../../test_app"),
@@ -11,7 +12,8 @@ test_app(_Config) ->
     State3 = rebar_state:command_parsed_args(State2, {[{output, "formatted"}], something}),
     {ok, State3} = rebar3_format_prv:do(State3),
     case os:cmd("git --no-pager diff --no-index -- after formatted") of
-      "" -> ok;
+      "" ->
+          ok;
       Diff ->
           Unicode = unicode:characters_to_binary(Diff),
           ct:pal("Differences:~n~s", [Unicode]),

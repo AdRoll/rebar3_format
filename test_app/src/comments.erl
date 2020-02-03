@@ -2,6 +2,8 @@
 -export([fact/1]).   % export attribute comment
 -some(thing).        % some attribute comment
 
+-format #{inline_clause_bodies => true}.
+
 % Regular comment
 -export([
   dummy_fn/1,

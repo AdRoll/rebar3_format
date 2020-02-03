@@ -7,10 +7,12 @@
 -export([another/0, one/1, bites/0, the/0, dust/0]).
 
 -spec ugly(any(), Val :: any()) -> Val :: any().
-ugly(_, Val) -> Val.
+ugly(_, Val) ->
+    Val.
 
 -spec nospaces(any()) -> ok.
-nospaces(_) -> it, is, ok.
+nospaces(_) ->
+    it, is, ok.
 
 -spec newlines(Num :: integer()) -> list().
 newlines(Num) ->
@@ -24,18 +26,26 @@ newlines(Num) ->
 %% @doc No specs!
 cases(V) when is_list(V) ->
     case V of
-      [] -> ok;
-      _ -> {error, "Uops!"}
+      [] ->
+          ok;
+      _ ->
+          {error, "Uops!"}
     end;
-cases(_) -> ok.
+cases(_) ->
+    ok.
 
-another() -> one(fun bites/0), the(), dust().
+another() ->
+    one(fun bites/0), the(), dust().
 
-one(F) -> F().
+one(F) ->
+    F().
 
-bites() -> the() orelse dust().
+bites() ->
+    the() orelse dust().
 
-the() -> false.
+the() ->
+    false.
 
-dust() -> true.
+dust() ->
+    true.
 

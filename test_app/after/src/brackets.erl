@@ -13,13 +13,15 @@ one_big_argument(A_Really_Really_Very_Long_Argument_Name) ->
     [A_Really_Really_Very_Long_Argument_Name, in,
      a, list].
 
-short_list() -> [this, is, a, short, list].
+short_list() ->
+    [this, is, a, short, list].
 
 long_list() ->
     [this, list, is, quite, long, therefore, it,
      needs, indentation].
 
-short_tuple() -> {this, is, a, short, list}.
+short_tuple() ->
+    {this, is, a, short, list}.
 
 long_tuple() ->
     {this, tuple, is, quite, long, therefore, it,

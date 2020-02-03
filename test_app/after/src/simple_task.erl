@@ -8,7 +8,9 @@
 
 -behaviour(task).
 
-stop(_Name) -> ok.
+stop(_Name) ->
+    ok.
 
-start(Spec) -> task:name(Spec).
+start(Spec) ->
+    task:name(Spec).
 

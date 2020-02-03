@@ -2,16 +2,20 @@
 
 -compile(export_all).
 
-strange_infix_operators(A, B) -> bnot (-(A rem B)).
+strange_infix_operators(A, B) ->
+    bnot (-(A rem B)).
 
 -define(OUT_OF_CONTEXT_CLAUSE, true -> false ).
 
 -record(rec, {key, value}).
 
 named_fun_expr() ->
-    fun This(is) -> a;
-        This(recursive) -> function;
-        This(called) -> This(is)
+    fun This(is) ->
+            a;
+        This(recursive) ->
+            function;
+        This(called) ->
+            This(is)
     end.
 
 catch_expr() ->
@@ -35,16 +39,24 @@ parentheses() ->
       to,
       [{[<<"(      you or me or them?)">>]}]]}.
 
-receive_expr() -> receive with -> {no, timeout} end.
+receive_expr() ->
+    receive
+      with ->
+          {no, timeout}
+    end.
 
-record_index_expr(List) -> lists:keyfind(a, #rec.key, List).
+record_index_expr(List) ->
+    lists:keyfind(a, #rec.key, List).
 
 try_expr_after() ->
     try to:open({the, door}) of
-      my -> room or your;
-      room -> {my, friend}
+      my ->
+          room or your;
+      room ->
+          {my, friend}
     catch
-      {you_cant, Open} when Open -> it:was(Open)
+      {you_cant, Open} when Open ->
+          it:was(Open)
     after
       close:the(door, anyway)
     end,
@@ -68,6 +80,7 @@ multi_try_expr() ->
       there:are(2),
       expressions:in(this_block)
     catch
-      A:Catch:Expression -> formatter:should(indent, A, Catch, Expression)
+      A:Catch:Expression ->
+          formatter:should(indent, A, Catch, Expression)
     end.
 
