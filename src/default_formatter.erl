@@ -50,7 +50,7 @@
          paper = ?PAPER :: integer(),
          ribbon = ?RIBBON :: integer(),
          user = ?NOUSER :: term(),
-         inline_items = false :: boolean(),
+         inline_items = none :: all | none | {when_over, pos_integer()},
          inline_expressions = false :: boolean(),
          empty_lines = [] :: [pos_integer()],
          encoding = epp:default_encoding() :: epp:source_encoding()}).
@@ -89,13 +89,10 @@ reset_prec(Ctxt) ->
 %%       <dd>Specifies the number of spaces to use for breaking indentation.
 %%       The default value is 2.</dd>
 %%
-%%   <dt>{inline_items, boolean()}</dt>
+%%   <dt>{inline_items, all | none | {when_over, pos_integer()}}</dt>
 %%       <dd>Specifies the desired behavior when using multiple lines for a
 %%       multi-item structure (i.e. tuple, list, map, etc.).
-%%       When this flag is on, the formatter will try to fit as many items
-%%       in each line as permitted by 'paper' and 'ribbon'.
-%%       Otherwise, the formatter will place each item in its own line.
-%%       The default value is false.</dd>
+%%       The default value is '{when_over, 25}'.</dd>
 %%
 %%   <dt>{inline_expressions, boolean()}</dt>
 %%       <dd>Specifies wether multiple sequential expressions within the
@@ -155,7 +152,7 @@ layout(Node, EmptyLines, Options) ->
               break_indent = maps:get(break_indent, Options, ?BREAK_INDENT),
               sub_indent = maps:get(sub_indent, Options, ?SUB_INDENT),
               inline_expressions = maps:get(inline_expressions, Options, false),
-              inline_items = maps:get(inline_items, Options, false),
+              inline_items = maps:get(inline_items, Options, {when_over, 25}),
               empty_lines = EmptyLines,
               encoding = maps:get(encoding, Options, epp:default_encoding())}).
 
@@ -957,9 +954,15 @@ number_from_text(Text, Default) ->
 
 lay_items(Exprs, Ctxt, Fun) -> lay_items(Exprs, lay_text_float(","), Ctxt, Fun).
 
-lay_items(Exprs, Separator, Ctxt = #ctxt{inline_items = true}, Fun) ->
+lay_items(Exprs, Separator, Ctxt = #ctxt{inline_items = {when_over, N}}, Fun)
+    when length(Exprs) > N ->
+    lay_items(Exprs, Separator, Ctxt#ctxt{inline_items = all}, Fun);
+lay_items(Exprs, Separator, Ctxt = #ctxt{inline_items = {when_over, N}}, Fun)
+    when length(Exprs) =< N ->
+    lay_items(Exprs, Separator, Ctxt#ctxt{inline_items = none}, Fun);
+lay_items(Exprs, Separator, Ctxt = #ctxt{inline_items = all}, Fun) ->
     par(seq(Exprs, Separator, Ctxt, Fun));
-lay_items(Exprs, Separator, Ctxt = #ctxt{inline_items = false}, Fun) ->
+lay_items(Exprs, Separator, Ctxt = #ctxt{inline_items = none}, Fun) ->
     sep(seq(Exprs, Separator, Ctxt, Fun)).
 
 lay_clause_expressions(Exprs, Ctxt = #ctxt{inline_expressions = true}, Fun) ->

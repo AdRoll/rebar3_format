@@ -60,12 +60,16 @@ The plugin supports the following configuration options in the `format` section 
         + `sub_indent`(`pos_integer()`):
             * Specifies the preferred number of characters to use to indent a line that "follows" the current one (for instance, a long clause head or a long function application).
             * The default value is `2`.
-        + `inline_items` (`boolean()`):
+        + `inline_items` (`all | none | {when_over, pos_integer()}`):
             * Specifies the desired behavior when using multiple lines for a multi-item structure (i.e. tuple, list, map, etc.).
-            * When this flag is on, the formatter will try to fit as many items in each line as permitted by `paper` and `ribbon`.
-            * When the flag is off, the formatter will place each item in its own line.
-            * The default value is `false`.
+            * When this option is `all`, the formatter will try to fit as many items in each line as permitted by `paper` and `ribbon`.
+            * When the flag is `none`, the formatter will place each item in its own line.
+            * When the flag is `{when_over, N}` the formatter will work as `none` for lists with up to `N` elements, and it will inline longer lists.
+            * The default value is `{when_over, 25}` to properly accommodate large binaries or lists.
         + `inline_expressions` (`boolean()`):
+            * Specifies if sequential expressions in a clause should be placed in the same line if `paper` and `ribbon` allows it or if each expression should be placed in its own line.
+            * The default value is `false`.
+        + `inline_clause_bodies` (`boolean()`):
             * Specifies if sequential expressions in a clause should be placed in the same line if `paper` and `ribbon` allows it or if each expression should be placed in its own line.
             * The default value is `false`.
         + `preserve_empty_lines` (`boolean()`):
