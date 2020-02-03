@@ -9,7 +9,7 @@
 %% the module `erl_syntax'.
 -module(otp_formatter).
 
--format(#{inline_clause_bodies => true}).
+-format #{inline_clause_bodies => true}.
 
 -behaviour(rebar3_formatter).
 

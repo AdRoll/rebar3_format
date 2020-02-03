@@ -375,6 +375,11 @@ lay_no_comments(Node, Ctxt) ->
                     As = unfold_function_names(FuncNames),
                     beside(lay(N, Ctxt1),
                            beside(text("("), beside(lay(As, Ctxt1), lay_text_float(")"))));
+                format ->
+                    [Opts] = Args, % Always a single map
+                    D1 = lay(N, Ctxt),
+                    As = lay(Opts, Ctxt),
+                    beside(D1, beside(lay_text_float(" "), As));
                 _ when Args =:= none ->
                     lay(N, Ctxt1);
                 _ ->
