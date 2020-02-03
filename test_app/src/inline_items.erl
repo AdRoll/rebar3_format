@@ -1,6 +1,6 @@
 %% @doc All the lists of items in this module should be placed
 %%      in a single line if they're small enough, but one item
-%%      per line if they're large.s
+%%      per line if they're large.
 -module inline_items.
 
 -record(short_rec, {x, y, z}).
@@ -25,6 +25,8 @@
 
 -export [long_tuple/0, long_list/0, long_fun/0, long_bin/0, long_guard/1, long_lc/0, long_bc/0,
          long_arglist/7, long_rec/0, long_map/0].
+
+-export [short/0, exact/0, long/0].
 
 -spec short_tuple() -> {T, T, T} when T :: {x, y, z}.
 short_tuple() ->
@@ -161,3 +163,13 @@ long_map() -> #{
     very_very_long_name_1 => very_very_long_name_1,
     very_very_long_name_2 => very_very_long_name_2,
     very_very_long_name_3 => very_very_long_name_3}.
+
+short() ->
+    [these,items,should,'not',be,inlined,since,they,are,less,than,25].
+
+exact() ->
+    [these, items, should, 'not', be, inlined, $(, i, ".", e, ". ", each, item, should, occupy, a, signle, line, $), since, they, are, exactly, 25, $.].
+
+long() ->
+    [these, items, should, be, inlined, they, are, more, than, 25, $., 'We', can, be, sure, about, that, because, we, added, a, very, long, number, 'of', items, to, this, list].
+
