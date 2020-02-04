@@ -1,5 +1,33 @@
 # Changelog
 
+## [0.2.0](https://github.com/AdRoll/rebar3_format/tree/0.2.0) (2020-02-04)
+
+[Full Changelog](https://github.com/AdRoll/rebar3_format/compare/0.1.0...0.2.0)
+
+**Fixed bugs:**
+
+- Remove space before :: [\#61](https://github.com/AdRoll/rebar3_format/issues/61)
+
+**Closed issues:**
+
+- Consider using themes/styles instead of multiple config options [\#64](https://github.com/AdRoll/rebar3_format/issues/64)
+- Move ribbon's default up to 90 or 95 [\#63](https://github.com/AdRoll/rebar3_format/issues/63)
+- Break on receive's after [\#62](https://github.com/AdRoll/rebar3_format/issues/62)
+- Consider splitting inline\_items into two options \(one for large binaries / lists\) [\#60](https://github.com/AdRoll/rebar3_format/issues/60)
+- add a break after "try" for multiline try/catch blocks [\#59](https://github.com/AdRoll/rebar3_format/issues/59)
+- Option to indent/inline all clauses consistently [\#51](https://github.com/AdRoll/rebar3_format/issues/51)
+
+**Merged pull requests:**
+
+- Format tag style [\#72](https://github.com/AdRoll/rebar3_format/pull/72) ([elbrujohalcon](https://github.com/elbrujohalcon))
+- Fix \#51: Option to avoid one-liners [\#71](https://github.com/AdRoll/rebar3_format/pull/71) ([elbrujohalcon](https://github.com/elbrujohalcon))
+- Fix \#60: Perfect inline\_items [\#70](https://github.com/AdRoll/rebar3_format/pull/70) ([elbrujohalcon](https://github.com/elbrujohalcon))
+- Fix \#59: Indent try body [\#69](https://github.com/AdRoll/rebar3_format/pull/69) ([elbrujohalcon](https://github.com/elbrujohalcon))
+- Fix default\_formatter to use \_our\_ defaults [\#68](https://github.com/AdRoll/rebar3_format/pull/68) ([elbrujohalcon](https://github.com/elbrujohalcon))
+- \[Fix \#60\] Move ribbon's default to 90 [\#67](https://github.com/AdRoll/rebar3_format/pull/67) ([elbrujohalcon](https://github.com/elbrujohalcon))
+- \[Fix \#64\] Implement rebar3\_formatter callback [\#66](https://github.com/AdRoll/rebar3_format/pull/66) ([elbrujohalcon](https://github.com/elbrujohalcon))
+- Fixing github url [\#65](https://github.com/AdRoll/rebar3_format/pull/65) ([pbrudnick](https://github.com/pbrudnick))
+
 ## [0.1.0](https://github.com/AdRoll/rebar3_format/tree/0.1.0) (2020-01-21)
 
 [Full Changelog](https://github.com/AdRoll/rebar3_format/compare/0.0.3...0.1.0)
