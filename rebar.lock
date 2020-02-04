@@ -1,6 +1,8 @@
 {"1.1.0",
-[{<<"katana_code">>,{pkg,<<"katana_code">>,<<"0.2.1">>},0}]}.
+[{<<"katana_code">>,{pkg,<<"katana_code">>,<<"0.2.1">>},0},
+ {<<"redbug">>,{pkg,<<"redbug">>,<<"1.2.1">>},0}]}.
 [
 {pkg_hash,[
- {<<"katana_code">>, <<"B2195859DF57D8BEBF619A9FD3327CD7D01563A98417156D0F4C5FAB435F2630">>}]}
+ {<<"katana_code">>, <<"B2195859DF57D8BEBF619A9FD3327CD7D01563A98417156D0F4C5FAB435F2630">>},
+ {<<"redbug">>, <<"9153EE50E42C39CE3F6EFA65EE746F4A52896DA66862CFB59E7C0F838B7B8414">>}]}
 ].

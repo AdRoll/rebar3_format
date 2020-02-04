@@ -1064,10 +1064,10 @@ lay_items(Exprs, Ctxt, Fun) ->
 
 lay_items(Exprs, Separator, Ctxt = #ctxt{inline_items = {when_over, N}}, Fun)
     when length(Exprs) > N ->
-    lay_items(Exprs, Separator, Ctxt#ctxt{inline_items = all}, Fun);
+    par(seq(Exprs, Separator, Ctxt, Fun));
 lay_items(Exprs, Separator, Ctxt = #ctxt{inline_items = {when_over, N}}, Fun)
     when length(Exprs) =< N ->
-    lay_items(Exprs, Separator, Ctxt#ctxt{inline_items = none}, Fun);
+    sep(seq(Exprs, Separator, Ctxt, Fun));
 lay_items(Exprs, Separator, Ctxt = #ctxt{inline_items = all}, Fun) ->
     par(seq(Exprs, Separator, Ctxt, Fun));
 lay_items(Exprs, Separator, Ctxt = #ctxt{inline_items = none}, Fun) ->
