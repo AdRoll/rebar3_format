@@ -103,4 +103,3 @@ format(Files, Formatter, Opts) ->
           rebar_api:warn("Error parsing files: ~p~nStack: ~p", [Error, Stack]),
           {error, Error}
     end.
-

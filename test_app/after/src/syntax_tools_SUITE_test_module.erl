@@ -565,4 +565,3 @@ join([], Sep) when is_list(Sep) ->
     [];
 join([H | T], Sep) ->
     H ++ lists:append([Sep ++ X || X <- T]).
-

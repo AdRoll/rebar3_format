@@ -393,4 +393,3 @@ long() ->
     [these, items, should, be, inlined, they, are, more, than, 25, $., 'We',
      can, be, sure, about, that, because, we, added, a, very, long, number,
      'of', items, to, this, list].
-

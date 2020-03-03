@@ -17,4 +17,3 @@ break_on_try() ->
     after
       this:neither()
     end.
-

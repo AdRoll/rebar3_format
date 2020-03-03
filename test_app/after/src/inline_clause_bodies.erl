@@ -126,4 +126,3 @@ try_expr(Inline) ->
            rebar3,
            formatter]
     end.
-

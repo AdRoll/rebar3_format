@@ -85,10 +85,10 @@ format(File, AST, Formatter, Comments, Opts) ->
                       filename:join(filename:absname(OutputDir), File)
                 end,
     ok = filelib:ensure_dir(FinalFile),
-    ExtendedAST = AST ++ [{eof, 0}],
-    WithComments = erl_recomment:recomment_forms(erl_syntax:form_list(ExtendedAST), Comments),
+    WithComments = erl_recomment:recomment_forms(erl_syntax:form_list(AST), Comments),
     Formatted = Formatter:format(WithComments, empty_lines(File), Opts),
-    ok = file:write_file(FinalFile, Formatted),
+    Final = insert_last_line(Formatted),
+    ok = file:write_file(FinalFile, Final),
     FinalFile.
 
 empty_lines(File) ->
@@ -107,3 +107,11 @@ empty_lines(File) ->
                            List),
     lists:reverse(Res).
 
+insert_last_line(Formatted) ->
+    {ok, Re} = re:compile("[\n]+$"),
+    case re:run(Formatted, Re) of
+      {match, _} ->
+          re:replace(Formatted, Re, "\n");
+      nomatch ->
+          <<Formatted/binary, "\n">>
+    end.

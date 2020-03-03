@@ -26,4 +26,3 @@ another_hidden_function() ->
     is_hidden.
 
 -endif.
-
