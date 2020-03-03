@@ -9,4 +9,3 @@ start(_Type, _StartArgs) ->
 
 stop(_) ->
     ok.
-

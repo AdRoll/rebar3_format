@@ -19,4 +19,3 @@ test_app(_Config) ->
           ct:pal("Differences:~n~s", [Unicode]),
           ct:fail(Unicode)
     end.
-

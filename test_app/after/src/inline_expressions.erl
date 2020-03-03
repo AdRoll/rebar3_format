@@ -25,4 +25,3 @@ even() ->
 white() ->
     lines:should(not be:preserved()),
     Since = preserve_empty_lines:is(false).
-

@@ -49,4 +49,3 @@ multiple_calls_more() ->
     repeat(),
     repeat(),
     repeat().
-

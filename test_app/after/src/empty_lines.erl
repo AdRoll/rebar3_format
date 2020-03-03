@@ -24,5 +24,6 @@ empty(Lines) ->
     should:nt(be, preserved, if_they:appear(within, a:single(expression))),
     but:we_preserve(Lines),
 
-    between:them().
+    between:them(),
 
+    and_remove(at_the_end_of_the_file).

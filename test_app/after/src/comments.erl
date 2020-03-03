@@ -44,4 +44,3 @@ dummy_fn(A) ->
 multiline() ->
     X = "\nThis is\na multiline\nstring\n",
     {ok, X}.
-

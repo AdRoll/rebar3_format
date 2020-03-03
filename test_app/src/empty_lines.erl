@@ -33,4 +33,18 @@ empty(Lines) ->
 
     but:we_preserve(Lines),
 
-    between:them().
+    between:them(),
+
+    and_remove(at_the_end_of_the_file).
+
+
+
+
+
+
+
+
+
+
+
+

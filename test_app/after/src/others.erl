@@ -83,4 +83,3 @@ multi_try_expr() ->
       A:Catch:Expression ->
           formatter:should(indent, A, Catch, Expression)
     end.
-
