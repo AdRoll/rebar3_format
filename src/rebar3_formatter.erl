@@ -17,7 +17,6 @@
 -spec format(file:filename_all(), module(), opts()) -> ok.
 format(File, Formatter, Opts) ->
     FileOpts = apply_per_file_opts(File, Opts),
-    % io:format("~p", [FileOpts]),
     case maps:get(ignore, FileOpts, false) of
       true -> ok;
       false ->
