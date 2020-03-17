@@ -16,14 +16,19 @@
 %%      Use <code>Opts</code> to configure the formatter.
 -spec format(file:filename_all(), module(), opts()) -> ok.
 format(File, Formatter, Opts) ->
-    AST = get_ast(File),
-    QuickAST = get_quick_ast(File),
-    Comments = get_comments(File),
     FileOpts = apply_per_file_opts(File, Opts),
-    NewFile = format(File, AST, Formatter, Comments, FileOpts),
-    case get_quick_ast(NewFile) of
-      QuickAST -> ok;
-      _ -> erlang:error({modified_ast, File, NewFile})
+    % io:format("~p", [FileOpts]),
+    case maps:get(ignore, FileOpts, false) of
+      true -> ok;
+      false ->
+          AST = get_ast(File),
+          QuickAST = get_quick_ast(File),
+          Comments = get_comments(File),
+          NewFile = format(File, AST, Formatter, Comments, FileOpts),
+          case get_quick_ast(NewFile) of
+            QuickAST -> ok;
+            _ -> erlang:error({modified_ast, File, NewFile})
+          end
     end.
 
 get_ast(File) ->
