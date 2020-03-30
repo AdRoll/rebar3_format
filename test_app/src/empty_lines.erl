@@ -33,18 +33,31 @@ empty(Lines) ->
 
     but:we_preserve(Lines),
 
-    between:them(),
+    between:them().
 
-    and_remove(at_the_end_of_the_file).
-
-
-
-
-
-
+a_fun(With, Some, Arguments) ->
+    an:expression(that,
+                  occupies,
+                  Some,
+                  #{lines => since, it => uses, a => [long, list], 'of' => Arguments}),
 
 
+    %% ^ a couple of empty lines below the aforementioned long expression
+    another:expression(With, smaller, size),
 
 
+    %% Comment lines should count as lines for this sort of thing
+    %% So the previous empty lines should be shrinked to 1
 
+    %% But comments themselves are stacked, so if you want to keep an empty line
+    %% You should still comment it out, like this:
+    %%
+    %% ^ an empty line that is preserved
+    an:expression(that,
 
+                  has,
+                  Some,
+
+                  {empty, lines, inside},
+                  #{and_it => uses, a => [long, list], 'of' => Arguments}),
+    no_empty_line_above_me.
