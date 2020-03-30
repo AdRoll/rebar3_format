@@ -1092,7 +1092,13 @@ lay_clause_expressions([], _, _) ->
 is_last_and_before_empty_line(H, [], #ctxt{empty_lines = EmptyLines}) ->
     lists:member(get_pos(H) + 1, EmptyLines);
 is_last_and_before_empty_line(H, [H2 | _], #ctxt{empty_lines = EmptyLines}) ->
-    get_pos(H2) - get_pos(H) >= 2 andalso lists:member(get_pos(H) + 1, EmptyLines).
+    H2Pos = case erl_syntax:get_precomments(H2) of
+              [] ->
+                  get_pos(H2);
+              [Comment | _] ->
+                  get_pos(Comment)
+            end,
+    H2Pos - get_pos(H) >= 2 andalso lists:member(H2Pos - 1, EmptyLines).
 
 get_pos(Node) ->
     case erl_syntax:get_pos(Node) of
