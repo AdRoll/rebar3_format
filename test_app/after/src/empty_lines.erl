@@ -25,7 +25,7 @@ empty(Lines) ->
 
     but:we_preserve(Lines),
 
-    between:them(),
+    between:them().
 
 a_fun(With, Some, Arguments) ->
     an:expression(that,
