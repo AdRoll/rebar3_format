@@ -22,4 +22,3 @@ name({Name, _MFA}) ->
 -spec mfa(task_spec()) -> mfa().
 mfa({_, MFA}) ->
     MFA.
-

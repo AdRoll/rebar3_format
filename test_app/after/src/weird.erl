@@ -48,4 +48,3 @@ the() ->
 
 dust() ->
     true.
-

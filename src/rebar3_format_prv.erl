@@ -60,7 +60,7 @@ get_files(State) ->
                      case proplists:get_value(files, rebar_state:get(State, format, []), undefined)
                          of
                        undefined ->
-                           ["src/**/*.?rl"];
+                           ["src/**/*.[he]rl"];
                        Wildcards ->
                            Wildcards
                      end
@@ -103,4 +103,3 @@ format(Files, Formatter, Opts) ->
           rebar_api:warn("Error parsing files: ~p~nStack: ~p", [Error, Stack]),
           {error, Error}
     end.
-

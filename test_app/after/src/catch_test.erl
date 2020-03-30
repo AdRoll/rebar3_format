@@ -20,4 +20,3 @@ also_can_err() ->
       E:R ->
           error
     end.
-

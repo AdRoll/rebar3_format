@@ -1113,5 +1113,4 @@ lay_double_colon(D1, D2, Ctxt, with_preceding_space) ->
 lay_double_colon(D1, D2, Ctxt, without_preceding_space) ->
     par([D1, lay_text_float("::"), D2], Ctxt#ctxt.break_indent).
 
-
 %% =====================================================================

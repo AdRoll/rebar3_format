@@ -33,4 +33,3 @@ another_fun() ->
 -attribute(last).
 
 -endif.
-

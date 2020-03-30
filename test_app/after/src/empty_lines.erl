@@ -25,7 +25,7 @@ empty(Lines) ->
 
     but:we_preserve(Lines),
 
-    between:them().
+    between:them(),
 
 a_fun(With, Some, Arguments) ->
     an:expression(that,
@@ -48,4 +48,3 @@ a_fun(With, Some, Arguments) ->
                   {empty, lines, inside},
                   #{and_it => uses, a => [long, list], 'of' => Arguments}),
     no_empty_line_above_me.
-

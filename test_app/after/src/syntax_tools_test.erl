@@ -161,4 +161,3 @@ foo5(A) ->
       error:?macro_simple5 ->
           nope
     end.
-

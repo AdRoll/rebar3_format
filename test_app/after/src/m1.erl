@@ -16,4 +16,3 @@ bar(A) ->
 
 baz(A, B) ->
     [m2:foo(A, B), m2:bar(A, B)].
-

@@ -13,4 +13,3 @@ stop(_Name) ->
 
 start(Spec) ->
     task:name(Spec).
-

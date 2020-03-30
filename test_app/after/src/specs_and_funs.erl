@@ -15,4 +15,3 @@ two(F) ->
     F(fun (X) ->
               X
       end).
-

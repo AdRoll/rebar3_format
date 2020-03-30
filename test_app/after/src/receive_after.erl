@@ -8,4 +8,3 @@ sleep(T) ->
       after T ->
                 io:format("Waking up after ~p milliseconds to keep on working as usual!!~n", [T])
     end.
-
