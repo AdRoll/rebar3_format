@@ -1,5 +1,30 @@
 # Changelog
 
+## [0.2.2](https://github.com/AdRoll/rebar3_format/tree/0.2.2) (2020-04-09)
+
+[Full Changelog](https://github.com/AdRoll/rebar3_format/compare/0.2.1...0.2.2)
+
+**Fixed bugs:**
+
+- Preservation of empty lines is broken [\#83](https://github.com/AdRoll/rebar3_format/issues/83)
+- Redundant trailing newline added [\#82](https://github.com/AdRoll/rebar3_format/issues/82)
+
+**Closed issues:**
+
+- Verify or ci mode [\#92](https://github.com/AdRoll/rebar3_format/issues/92)
+- Error parsing files: undef [\#80](https://github.com/AdRoll/rebar3_format/issues/80)
+- Parser tries to format .xrl file [\#78](https://github.com/AdRoll/rebar3_format/issues/78)
+- Error parsing files: undef \(ktn\_dodger:parse\_file\) [\#76](https://github.com/AdRoll/rebar3_format/issues/76)
+- Do not require redbug for production usage [\#73](https://github.com/AdRoll/rebar3_format/issues/73)
+
+**Merged pull requests:**
+
+- Fix \#73: Remove redbug from deps [\#97](https://github.com/AdRoll/rebar3_format/pull/97) ([elbrujohalcon](https://github.com/elbrujohalcon))
+- Fix \#92: Add --verify [\#96](https://github.com/AdRoll/rebar3_format/pull/96) ([elbrujohalcon](https://github.com/elbrujohalcon))
+- Fix \#83: Fix preservation of empty lines [\#95](https://github.com/AdRoll/rebar3_format/pull/95) ([elbrujohalcon](https://github.com/elbrujohalcon))
+- Handle line endings properly [\#85](https://github.com/AdRoll/rebar3_format/pull/85) ([maciej-szlosarczyk](https://github.com/maciej-szlosarczyk))
+- Update default wildcard to only .erl/.hrl files [\#79](https://github.com/AdRoll/rebar3_format/pull/79) ([hengestone](https://github.com/hengestone))
+
 ## [0.2.1](https://github.com/AdRoll/rebar3_format/tree/0.2.1) (2020-02-04)
 
 [Full Changelog](https://github.com/AdRoll/rebar3_format/compare/0.1.0...0.2.1)
