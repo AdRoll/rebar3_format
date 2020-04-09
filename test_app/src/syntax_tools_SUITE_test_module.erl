@@ -48,12 +48,12 @@ foo2(Type1, {a,#{ "a" := _}}, #{get := value, value := B}) when is_map(Type1) ->
                   | {'global', Name :: atom()}
                   | {'via', Module :: module(), Name :: any()}
                   | pid().
--type child_spec() :: #{name => child_id(),     % mandatory
-			start => mfargs(),      % mandatory
-			restart => restart(),   % optional
-			shutdown => shutdown(), % optional
-			type => worker(),       % optional
-			modules => modules()}   % optional
+-type child_spec() :: #{name := child_id(),
+			start := mfargs(),
+			restart => restart(),
+			shutdown => shutdown(),
+			type => worker(),
+			modules => modules()}
                     | {Id :: child_id(),
                        StartFunc :: mfargs(),
                        Restart :: restart(),

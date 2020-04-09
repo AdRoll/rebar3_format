@@ -9,8 +9,23 @@ test_app(_Config) ->
     ok = file:set_cwd("../../../../test_app"),
     {ok, State1} = rebar3_format:init(rebar_state:new()),
     State2 = rebar_state:set(State1, format, [{files, ["src/*.erl", "include/*.hrl"]}]),
-    State3 = rebar_state:command_parsed_args(State2, {[{output, "formatted"}], something}),
-    {ok, State3} = rebar3_format_prv:do(State3),
+    {error, _} = verify(State2),
+    {ok, _} = format(State2),
+    {error, _} = verify(State2),
+    ok = file:set_cwd("formatted"),
+    {ok, _} = verify(State2),
+    ok = file:set_cwd(".."),
+    ok = git_diff().
+
+verify(State) ->
+    rebar3_format_prv:do(rebar_state:command_parsed_args(State,
+                                                         {[{verify, true}], something})).
+
+format(State) ->
+    rebar3_format_prv:do(rebar_state:command_parsed_args(State,
+                                                         {[{output, "formatted"}], something})).
+
+git_diff() ->
     case os:cmd("git --no-pager diff --no-index -- after formatted") of
       "" ->
           ok;
