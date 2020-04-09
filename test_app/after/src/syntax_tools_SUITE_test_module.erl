@@ -71,8 +71,8 @@ foo2(Type1, {a, #{"a" := _}}, #{get := value, value := B}) when is_map(Type1) ->
                    {global, Name :: atom()} |
                    {via, Module :: module(), Name :: any()} |
                    pid().
--type child_spec() :: #{name => child_id(),
-                        start => mfargs(),
+-type child_spec() :: #{name := child_id(),
+                        start := mfargs(),
                         restart => restart(),
                         shutdown => shutdown(),
                         type => worker(),
@@ -82,15 +82,7 @@ foo2(Type1, {a, #{"a" := _}}, #{get := value, value := B}) when is_map(Type1) ->
                        Restart :: restart(),
                        Shutdown :: shutdown(),
                        Type :: worker(),
-                       Modules :: modules()}.     % mandatory
-                                                   % mandatory
-
-                                                % optional
- % optional
-
-                                                % optional
-   % optional
-
+                       Modules :: modules()}.
 -type startchild_err() :: already_present | {already_started, Child :: child()} | term().
 -type startchild_ret() :: {ok, Child :: child()} |
                           {ok, Child :: child(), Info :: term()} |

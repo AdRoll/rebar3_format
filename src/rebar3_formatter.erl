@@ -3,29 +3,42 @@
 
 -export([format/3]).
 
--type opts() :: #{output_dir => undefined | file:filename_all(),
+-type opts() :: #{output_dir => none | current | file:filename_all(),
                   encoding => none | epp:source_encoding(),
                   _ => _}.
+-type result() :: changed | unchanged.
 
--export_type([opts/0]).
+-export_type([opts/0, result/0]).
 
 -callback format(erl_syntax:forms(), [pos_integer()], opts()) -> string().
 
 %% @doc Format a file.
 %%      Apply formatting rules to a file containing erlang code.
 %%      Use <code>Opts</code> to configure the formatter.
--spec format(file:filename_all(), module(), opts()) -> ok.
+-spec format(file:filename_all(), module(), opts()) -> result().
 format(File, Formatter, Opts) ->
     AST = get_ast(File),
     QuickAST = get_quick_ast(File),
     Comments = get_comments(File),
     FileOpts = apply_per_file_opts(File, Opts),
-    NewFile = format(File, AST, Formatter, Comments, FileOpts),
-    case get_quick_ast(NewFile) of
-      QuickAST ->
-          ok;
-      _ ->
-          erlang:error({modified_ast, File, NewFile})
+    {ok, Original} = file:read_file(File),
+    Formatted = format(File, AST, Formatter, Comments, FileOpts),
+    Result = case Formatted of
+               Original ->
+                   unchanged;
+               _ ->
+                   changed
+             end,
+    case maybe_save_file(maps:get(output_dir, FileOpts), File, Formatted) of
+      none ->
+          Result;
+      NewFile ->
+          case get_quick_ast(NewFile) of
+            QuickAST ->
+                Result;
+            _ ->
+                erlang:error({modified_ast, File, NewFile})
+          end
     end.
 
 get_ast(File) ->
@@ -78,18 +91,9 @@ apply_per_file_opts(File, Opts) ->
                 FileOpts).
 
 format(File, AST, Formatter, Comments, Opts) ->
-    FinalFile = case maps:get(output_dir, Opts) of
-                  undefined ->
-                      File;
-                  OutputDir ->
-                      filename:join(filename:absname(OutputDir), File)
-                end,
-    ok = filelib:ensure_dir(FinalFile),
     WithComments = erl_recomment:recomment_forms(erl_syntax:form_list(AST), Comments),
     Formatted = Formatter:format(WithComments, empty_lines(File), Opts),
-    Final = insert_last_line(Formatted),
-    ok = file:write_file(FinalFile, Final),
-    FinalFile.
+    insert_last_line(iolist_to_binary(Formatted)).
 
 empty_lines(File) ->
     {ok, Data} = file:read_file(File),
@@ -115,3 +119,14 @@ insert_last_line(Formatted) ->
       nomatch ->
           <<Formatted/binary, "\n">>
     end.
+
+maybe_save_file(none, _File, _Formatted) ->
+    none;
+maybe_save_file(current, File, Formatted) ->
+    ok = file:write_file(File, Formatted),
+    File;
+maybe_save_file(OutputDir, File, Formatted) ->
+    OutFile = filename:join(filename:absname(OutputDir), File),
+    ok = filelib:ensure_dir(OutFile),
+    ok = file:write_file(OutFile, Formatted),
+    OutFile.

@@ -92,7 +92,7 @@ remove_tabs(Formatted) ->
     binary:replace(Formatted, <<"\t">>, <<"        ">>, [global]).
 
 remove_trailing_spaces(Formatted) ->
-    re:replace(Formatted, <<" +\n">>, <<"\n">>, [global, {return, binary}]).
+    re:replace(Formatted, <<" +\n">>, <<"\n">>, [global, {return, list}]).
 
 %% =====================================================================
 %% @doc Creates an abstract document layout for a syntax tree. The
