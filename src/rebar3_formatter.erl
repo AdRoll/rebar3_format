@@ -115,7 +115,7 @@ insert_last_line(Formatted) ->
     {ok, Re} = re:compile("[\n]+$"),
     case re:run(Formatted, Re) of
       {match, _} ->
-          re:replace(Formatted, Re, "\n");
+          re:replace(Formatted, Re, "\n", [{return, binary}]);
       nomatch ->
           <<Formatted/binary, "\n">>
     end.
