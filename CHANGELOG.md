@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.2.2](https://github.com/AdRoll/rebar3_format/tree/0.2.2) (2020-04-14)
+
+[Full Changelog](https://github.com/AdRoll/rebar3_format/compare/0.2.2...0.2.2)
+
+**Merged pull requests:**
+
+- Fix \#92: Verify should work even when adding new lines [\#99](https://github.com/AdRoll/rebar3_format/pull/99) ([elbrujohalcon](https://github.com/elbrujohalcon))
+
 ## [0.2.2](https://github.com/AdRoll/rebar3_format/tree/0.2.2) (2020-04-09)
 
 [Full Changelog](https://github.com/AdRoll/rebar3_format/compare/0.2.1...0.2.2)
@@ -19,11 +27,12 @@
 
 **Merged pull requests:**
 
-- Fix \#73: Remove redbug from deps [\#97](https://github.com/AdRoll/rebar3_format/pull/97) ([elbrujohalcon](https://github.com/elbrujohalcon))
-- Fix \#92: Add --verify [\#96](https://github.com/AdRoll/rebar3_format/pull/96) ([elbrujohalcon](https://github.com/elbrujohalcon))
+- Bump Version to 0.2.2 [\#98](https://github.com/AdRoll/rebar3_format/pull/98) ([elbrujohalcon](https://github.com/elbrujohalcon))
 - Fix \#83: Fix preservation of empty lines [\#95](https://github.com/AdRoll/rebar3_format/pull/95) ([elbrujohalcon](https://github.com/elbrujohalcon))
 - Handle line endings properly [\#85](https://github.com/AdRoll/rebar3_format/pull/85) ([maciej-szlosarczyk](https://github.com/maciej-szlosarczyk))
 - Update default wildcard to only .erl/.hrl files [\#79](https://github.com/AdRoll/rebar3_format/pull/79) ([hengestone](https://github.com/hengestone))
+- Fix \#73: Remove redbug from deps [\#97](https://github.com/AdRoll/rebar3_format/pull/97) ([elbrujohalcon](https://github.com/elbrujohalcon))
+- Fix \#92: Add --verify [\#96](https://github.com/AdRoll/rebar3_format/pull/96) ([elbrujohalcon](https://github.com/elbrujohalcon))
 
 ## [0.2.1](https://github.com/AdRoll/rebar3_format/tree/0.2.1) (2020-02-04)
 
