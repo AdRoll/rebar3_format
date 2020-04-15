@@ -375,6 +375,11 @@ lay_no_comments(Node, Ctxt) ->
                     As = unfold_function_names(FuncNames),
                     beside(lay(N, Ctxt1),
                            beside(text("("), beside(lay(As, Ctxt1), lay_text_float(")"))));
+                on_load ->
+                    [FuncNs] = Args,
+                    FuncName = erl_syntax:concrete(dodge_macros(FuncNs)),
+                    As = unfold_function_name(FuncName),
+                    beside(lay(N, Ctxt1), beside(lay_text_float(" "), lay(As, Ctxt1)));
                 format ->
                     [Opts] = Args, % Always a single map
                     D1 = lay(N, Ctxt),
@@ -767,10 +772,10 @@ get_func_node(Node) ->
     end.
 
 unfold_function_names(Ns) ->
-    F = fun ({Atom, Arity}) ->
-                erl_syntax:arity_qualifier(erl_syntax:atom(Atom), erl_syntax:integer(Arity))
-        end,
-    erl_syntax:list([F(N) || N <- Ns]).
+    erl_syntax:list(lists:map(fun unfold_function_name/1, Ns)).
+
+unfold_function_name({Atom, Arity}) ->
+    erl_syntax:arity_qualifier(erl_syntax:atom(Atom), erl_syntax:integer(Arity)).
 
 %% Macros are not handled well.
 dodge_macros(Type) ->
