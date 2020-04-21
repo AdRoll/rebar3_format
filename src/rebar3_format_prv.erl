@@ -104,8 +104,7 @@ get_opts(State) ->
     proplists:get_value(options, rebar_state:get(State, format, []), #{}).
 
 -spec format([file:filename_all()], module(), rebar3_formatter:opts()) -> ok |
-                                                                          {error,
-                                                                           {atom(), string()}}.
+                                                                          {error, term()}.
 format(Files, Formatter, Opts) ->
     try lists:filter(fun (File) ->
                              rebar_api:debug("Formatting ~p with ~p", [File, Opts]),
