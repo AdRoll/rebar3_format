@@ -104,8 +104,7 @@ get_opts(State) ->
     proplists:get_value(options, rebar_state:get(State, format, []), #{}).
 
 -spec format([file:filename_all()], module(), rebar3_formatter:opts()) -> ok |
-                                                                          {error,
-                                                                           {atom(), string()}}.
+                                                                          {error, term()}.
 format(Files, Formatter, Opts) ->
     try lists:filter(fun (File) ->
                              rebar_api:debug("Formatting ~p with ~p", [File, Opts]),
@@ -123,8 +122,8 @@ format(Files, Formatter, Opts) ->
                 {error, {unformatted_files, ChangedFiles}}
           end
     catch
-      _:{cant_parse, File, {_, erl_parse, Error}} ->
-          rebar_api:debug("Couldn't parse ~s: ~p", [File, Error]),
+      _:{cant_parse, File, {Line, erl_parse, Error}} ->
+          rebar_api:warn("Couldn't parse ~s:~p ~p", [Line, File, Error]),
           {error, {erl_parse, File, Error}};
       _:Error:Stack ->
           rebar_api:warn("Error parsing files: ~p~nStack: ~p", [Error, Stack]),
