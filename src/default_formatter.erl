@@ -353,31 +353,26 @@ lay_no_comments(Node, Ctxt) ->
                     [SpecTuple] = Args,
                     [FuncName, FuncTypes] = erl_syntax:tuple_elements(SpecTuple),
                     Name = get_func_node(FuncName),
-                    Types = dodge_macros(FuncTypes),
-                    D1 = lay_clauses(erl_syntax:concrete(Types), spec, Ctxt1),
+                    Types = concrete_dodging_macros(FuncTypes),
+                    D1 = lay_clauses(Types, spec, Ctxt1),
                     beside(follow(lay(N, Ctxt1), lay(Name, Ctxt1), Ctxt1#ctxt.break_indent), D1);
                 Tag when Tag =:= type; Tag =:= opaque ->
                     [TypeTuple] = Args,
-                    [Name, Type0, Elements] = erl_syntax:tuple_elements(TypeTuple),
-                    TypeName = dodge_macros(Name),
-                    Type = dodge_macros(Type0),
-                    As0 = dodge_macros(Elements),
-                    As = erl_syntax:concrete(As0),
-                    D1 = lay_application(TypeName, As, Ctxt1),
-                    D2 = lay(erl_syntax:concrete(Type), Ctxt1),
+                    [Name, Type, Elements] = erl_syntax:tuple_elements(TypeTuple),
+                    As = concrete_dodging_macros(Elements),
+                    D1 = lay_application(Name, As, Ctxt1),
+                    D2 = lay(concrete_dodging_macros(Type), Ctxt1),
                     beside(follow(lay(N, Ctxt1),
                                   beside(D1, lay_text_float(" :: ")),
                                   Ctxt1#ctxt.break_indent),
                            D2);
                 Tag when Tag =:= export_type; Tag =:= optional_callbacks ->
-                    [FuncNs] = Args,
-                    FuncNames = erl_syntax:concrete(dodge_macros(FuncNs)),
+                    [FuncNames] = Args,
                     As = unfold_function_names(FuncNames),
                     beside(lay(N, Ctxt1),
                            beside(text("("), beside(lay(As, Ctxt1), lay_text_float(")"))));
                 on_load ->
-                    [FuncNs] = Args,
-                    FuncName = erl_syntax:concrete(dodge_macros(FuncNs)),
+                    [FuncName] = Args,
                     As = unfold_function_name(FuncName),
                     beside(lay(N, Ctxt1), beside(lay_text_float(" "), lay(As, Ctxt1)));
                 format ->
@@ -772,26 +767,55 @@ get_func_node(Node) ->
     end.
 
 unfold_function_names(Ns) ->
-    erl_syntax:list(lists:map(fun unfold_function_name/1, Ns)).
+    erl_syntax_lib:map_subtrees(fun unfold_function_name/1, Ns).
 
-unfold_function_name({Atom, Arity}) ->
-    erl_syntax:arity_qualifier(erl_syntax:atom(Atom), erl_syntax:integer(Arity)).
+unfold_function_name(Tuple) ->
+    [Name, Arity] = erl_syntax:tuple_elements(Tuple),
+    case erl_syntax:type(Name) of
+      atom ->
+          erl_syntax:arity_qualifier(Name, Arity);
+      macro ->
+          MacroName = erl_syntax:macro_name(Name),
+          VarName0 = erl_syntax:variable_name(MacroName),
+          VarName = list_to_atom("?" ++ atom_to_list(VarName0)),
+          Var = erl_syntax:variable(VarName),
+          erl_syntax:arity_qualifier(Var, Arity)
+    end.
+
+concrete_dodging_macros(Nodes) ->
+    undodge_macros(erl_syntax:concrete(dodge_macros(Nodes))).
 
 %% Macros are not handled well.
 dodge_macros(Type) ->
-    F = fun (T) ->
-                case erl_syntax:type(T) of
-                  macro ->
-                      Var = erl_syntax:macro_name(T),
-                      VarName0 = erl_syntax:variable_name(Var),
-                      VarName = list_to_atom("?" ++ atom_to_list(VarName0)),
-                      Atom = erl_syntax:atom(VarName),
-                      Atom;
-                  _ ->
-                      T
-                end
-        end,
-    erl_syntax_lib:map(F, Type).
+    erl_syntax_lib:map(fun dodge_macro/1, Type).
+
+dodge_macro(T) ->
+    case erl_syntax:type(T) of
+      macro ->
+          Var = erl_syntax:macro_name(T),
+          VarName = erl_syntax:variable_name(Var),
+          erl_syntax:atom(VarName);
+      _ ->
+          T
+    end.
+
+undodge_macros(Type) when is_list(Type) ->
+    lists:map(fun undodge_macros/1, Type);
+undodge_macros(Type) ->
+    erl_syntax_lib:map(fun undodge_macro/1, Type).
+
+undodge_macro(T) ->
+    case erl_syntax:type(T) of
+      atom ->
+          case get_node_text(T) of
+            "?" ->
+                erl_syntax:macro(erl_syntax:variable(erl_syntax:atom_name(T)));
+            _ ->
+                T
+          end;
+      _ ->
+          T
+    end.
 
 lay_text_float(Str) ->
     floating(text(Str)).
@@ -965,11 +989,18 @@ lay_type_par_text(Name, Value, Text, Ctxt) ->
     par([D1, lay_text_float(Text), D2], Ctxt1#ctxt.break_indent).
 
 lay_application(Name, Arguments, Ctxt) ->
-    {PrecL, Prec} = func_prec(), %
-    D1 = lay(Name, set_prec(Ctxt, PrecL)),
-    As = lay_items(Arguments, reset_prec(Ctxt), fun lay/2),
-    D = beside(D1, beside(text("("), beside(As, lay_text_float(")")))),
-    maybe_parentheses(D, Prec, Ctxt).
+    case erl_syntax:type(Name) of
+      macro ->
+          [Arg | Args] = Arguments,
+          MacroVar = erl_syntax:variable([$? | atom_to_list(erl_syntax:variable_name(Arg))]),
+          lay_application(MacroVar, Args, Ctxt);
+      _ ->
+          {PrecL, Prec} = func_prec(), %
+          D1 = lay(Name, set_prec(Ctxt, PrecL)),
+          As = lay_items(Arguments, reset_prec(Ctxt), fun lay/2),
+          D = beside(D1, beside(text("("), beside(As, lay_text_float(")")))),
+          maybe_parentheses(D, Prec, Ctxt)
+    end.
 
 seq([H], _Separator, Ctxt, Fun) ->
     [Fun(H, Ctxt)];
@@ -1039,16 +1070,11 @@ tidy_float(Node) ->
 %%      The goal is to preserve things like 16#FADE or -1e-1 instead of turning
 %%      them into integers or "pretty printed" floats.
 tidy_number(Node, Default) ->
-    case erl_syntax:get_pos(Node) of
-      L when is_list(L) ->
-          case proplists:get_value(text, L, undefined) of
-            undefined ->
-                Default;
-            Text ->
-                number_from_text(Text, Default)
-          end;
-      _ ->
-          Default
+    case get_node_text(Node) of
+      undefined ->
+          Default;
+      Text ->
+          number_from_text(Text, Default)
     end.
 
 %% @doc This function covers the corner case when erl_parse:parse_form/1
@@ -1111,6 +1137,14 @@ get_pos(Node) ->
           I;
       L when is_list(L) ->
           proplists:get_value(location, L, 0)
+    end.
+
+get_node_text(Node) ->
+    case erl_syntax:get_pos(Node) of
+      L when is_list(L) ->
+          proplists:get_value(text, L, undefined);
+      _ ->
+          undefined
     end.
 
 lay_double_colon(D1, D2, Ctxt, with_preceding_space) ->
