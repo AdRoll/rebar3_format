@@ -73,7 +73,7 @@ b() ->
 
 -define(I, integer).
 
--spec c(Atom :: atom(), Integer :: '?<macro> ('(I)) -> {atom(), integer()};
+-spec c(Atom :: atom(), Integer :: ?I()) -> {atom(), integer()};
        (X, Y) -> {atom(), float()} when X :: atom(), Y :: float();
        (integer(), atom()) -> {integer(), atom()}.
 c(A, B) ->
