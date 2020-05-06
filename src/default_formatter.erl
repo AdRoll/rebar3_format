@@ -198,7 +198,7 @@ lay_no_comments(Node, Ctxt) ->
       float ->
           text(tidy_float(Node));
       char ->
-          text(erl_syntax:char_literal(Node, Ctxt#ctxt.encoding));
+          text(tidy_char(Node, Ctxt#ctxt.encoding));
       string ->
           lay_string(erl_syntax:string_literal(Node, Ctxt#ctxt.encoding), Ctxt);
       nil ->
@@ -1064,6 +1064,14 @@ tidy_integer(Node) ->
 
 tidy_float(Node) ->
     tidy_number(Node, io_lib:format("~p", [erl_syntax:float_value(Node)])).
+
+tidy_char(Node, Encoding) ->
+    case get_node_text(Node) of
+      undefined ->
+          erl_syntax:char_literal(Node, Encoding);
+      Text ->
+          Text
+    end.
 
 %% @doc If we captured the original text for the number, then we use it.
 %%      Otherwise, we use the value returned by the parser.
