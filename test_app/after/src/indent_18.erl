@@ -1,8 +1,9 @@
 -module(indent_18).
 
--format(#{break_indent => 1,
+-format #{break_indent => 1,
+          inline_clause_bodies => true,
           paper => 50,
-          sub_indent => 8}).
+          sub_indent => 8}.
 
 -record(record,
         {fields =
@@ -109,4 +110,3 @@ try_expr() ->
  after
          should:be(indented_using:sub_indent(8))
  end.
-

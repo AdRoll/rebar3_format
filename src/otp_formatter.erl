@@ -9,6 +9,8 @@
 %% the module `erl_syntax'.
 -module(otp_formatter).
 
+-format #{inline_clause_bodies => true}.
+
 -behaviour(rebar3_formatter).
 
 -export([format/1,
@@ -184,7 +186,7 @@ set_ctxt_user(Ctxt, X) -> Ctxt#ctxt{user = X}.
 format(Node) -> format(Node, [], #{}).
 
 %% =====================================================================
-%% @spec format(Tree::syntaxTree(), _, Options::rebar3_formatter:opts()) -> string()
+%% @spec format(Tree::syntaxTree(), [pos_integer()], Options::rebar3_formatter:opts()) -> string()
 %%
 %% @type syntaxTree() = erl_syntax:syntaxTree().
 %%
@@ -1165,6 +1167,5 @@ number_from_text(Text, Default) ->
       {error, no_integer} -> Default;
       {_, _} -> Text
     end.
-
 
 %% =====================================================================

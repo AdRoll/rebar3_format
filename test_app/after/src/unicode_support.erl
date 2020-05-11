@@ -11,4 +11,3 @@ unicode_strings() ->
     Str1 = "Hwæt! Wē Gār‐Dena in geār‐dagum",
     Str2 = "þēod‐cyninga þrym gefrūnon,",
     Str1 ++ Str2.
-

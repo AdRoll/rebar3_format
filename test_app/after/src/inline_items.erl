@@ -1,6 +1,6 @@
 %% @doc All the lists of items in this module should be placed
 %%      in a single line if they're small enough, but one item
-%%      per line if they're large.s
+%%      per line if they're large.
 -module(inline_items).
 
 -record(short_rec, {x, y, z}).
@@ -16,7 +16,7 @@
          very_very_long_name_3 = very_very_long_name_3 ::
              very_very_long_name_3}).
 
--format(#{paper => 80}).
+-format #{paper => 80}.
 
 -export([short_tuple/0, short_list/0, short_fun/0]).
 -export([short_bin/0, short_guard/1, short_lc/0]).
@@ -32,6 +32,7 @@
          long_arglist/7,
          long_rec/0,
          long_map/0]).
+-export([short/0, exact/0, long/0]).
 
 -spec short_tuple() -> {T, T, T} when T :: {x, y, z}.
 short_tuple() ->
@@ -46,7 +47,10 @@ short_list() ->
     [X, Y, [x | y:z()]].
 
 -spec short_fun() -> fun((X, Y, Z) -> {X, Y, Z}).
-short_fun() -> fun (X, Y, Z) -> {X, Y, Z} end.
+short_fun() ->
+    fun (X, Y, Z) ->
+            {X, Y, Z}
+    end.
 
 -spec short_bin() -> binary().
 short_bin() ->
@@ -57,24 +61,31 @@ short_bin() ->
 -spec short_guard(integer()) -> integer().
 short_guard(X) when is_integer(X), X < 2 ->
     case X of
-      X when X >= -1 -> X + 1;
-      X -> X
+      X when X >= -1 ->
+          X + 1;
+      X ->
+          X
     end.
 
 -spec short_lc() -> [{_, _, _}].
-short_lc() -> [{X, Y, Z} || {X, Y, Z} <- x:y(z), Z < Y].
+short_lc() ->
+    [{X, Y, Z} || {X, Y, Z} <- x:y(z), Z < Y].
 
 -spec short_bc() -> binary().
-short_bc() -> << <<X, Y, Z>>  || <<X, Y, Z>> <= x:y(z), Z < Y >>.
+short_bc() ->
+    << <<X, Y, Z>>  || <<X, Y, Z>> <= x:y(z), Z < Y >>.
 
 -spec short_arglist(number(), number(), number()) -> number().
-short_arglist(X, Y, Z) -> X + Y + Z.
+short_arglist(X, Y, Z) ->
+    X + Y + Z.
 
 -spec short_rec() -> #short_rec{x :: x, y :: y, z :: z}.
-short_rec() -> #short_rec{x = x, y = y, z = z}.
+short_rec() ->
+    #short_rec{x = x, y = y, z = z}.
 
 -spec short_map() -> #{x => x, y => y, z := z}.
-short_map() -> #{x => x, y => y, z => z}.
+short_map() ->
+    #{x => x, y => y, z => z}.
 
 -spec long_tuple() -> {T, T, T} when T :: {x, y, z}.
 long_tuple() ->
@@ -256,7 +267,8 @@ long_guard(VeryVeryLongName)
        VeryVeryLongName < 1, VeryVeryLongName > 0;
        VeryVeryLongName == 0 ->
            VeryVeryLongName + 1;
-       VeryVeryLongName -> VeryVeryLongName
+       VeryVeryLongName ->
+           VeryVeryLongName
     end.
 
 -spec long_lc() -> [{_, _, _}].
@@ -336,3 +348,48 @@ long_map() ->
       very_very_long_name_2 => very_very_long_name_2,
       very_very_long_name_3 => very_very_long_name_3}.
 
+short() ->
+    [these,
+     items,
+     should,
+     'not',
+     be,
+     inlined,
+     since,
+     they,
+     are,
+     less,
+     than,
+     25].
+
+exact() ->
+    [these,
+     items,
+     should,
+     'not',
+     be,
+     inlined,
+     $(,
+     i,
+     ".",
+     e,
+     ". ",
+     each,
+     item,
+     should,
+     occupy,
+     a,
+     signle,
+     line,
+     $),
+     since,
+     they,
+     are,
+     exactly,
+     25,
+     $.].
+
+long() ->
+    [these, items, should, be, inlined, they, are, more, than, 25, $., 'We',
+     can, be, sure, about, that, because, we, added, a, very, long, number,
+     'of', items, to, this, list].

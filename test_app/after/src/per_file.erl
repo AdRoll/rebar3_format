@@ -2,8 +2,8 @@
 
 -export([this/0]).
 
--format(#{paper =>
-              20}).
+-format #{paper =>
+              20}.
 
 this() ->
     [file,
@@ -12,4 +12,3 @@ this() ->
      very,
      very,
      narrow].
-

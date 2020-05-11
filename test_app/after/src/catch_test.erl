@@ -9,13 +9,14 @@ can_err(E) ->
           ok,
           something_larger_than_ok
     catch
-      C:R:Stacktrace -> error
+      C:R:Stacktrace ->
+          error
     end.
 
 also_can_err() ->
     try
       launch_missiles
     catch
-      E:R -> error
+      E:R ->
+          error
     end.
-

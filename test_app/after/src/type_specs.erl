@@ -65,14 +65,17 @@ f({R, R}) ->
     {1, 1}.
 
 -spec type_specs:b() -> pos_integer().
-b() -> case foo:bar() of #{a := 2} -> 19 end.
+b() ->
+    case foo:bar() of
+      #{a := 2} ->
+          19
+    end.
 
 -define(I, integer).
 
--spec c(Atom :: atom(), Integer :: '?<macro> ('(I)) -> {atom(), integer()};
+-spec c(Atom :: atom(), Integer :: ?I()) -> {atom(), integer()};
        (X, Y) -> {atom(), float()} when X :: atom(), Y :: float();
        (integer(), atom()) -> {integer(), atom()}.
 c(A, B) ->
     _ = ?I,
     {A, B}.
-

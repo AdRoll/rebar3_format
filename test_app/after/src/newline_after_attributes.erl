@@ -14,7 +14,8 @@
 -attribute(z).
 
 -spec a_fun() -> t(boolean()).
-a_fun() -> {true}.
+a_fun() ->
+    {true}.
 
 -ifdef(MORE).
 
@@ -24,11 +25,11 @@ a_fun() -> {true}.
 -endif.
 
 -spec another_fun() -> t(number()).
-another_fun() -> {1}.
+another_fun() ->
+    {1}.
 
 -ifdef(LAST).
 
 -attribute(last).
 
 -endif.
-

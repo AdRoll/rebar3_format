@@ -1,5 +1,67 @@
 # Changelog
 
+## [0.2.2](https://github.com/AdRoll/rebar3_format/tree/0.2.2) (2020-04-14)
+
+[Full Changelog](https://github.com/AdRoll/rebar3_format/compare/0.2.2...0.2.2)
+
+**Merged pull requests:**
+
+- Fix \#92: Verify should work even when adding new lines [\#99](https://github.com/AdRoll/rebar3_format/pull/99) ([elbrujohalcon](https://github.com/elbrujohalcon))
+
+## [0.2.2](https://github.com/AdRoll/rebar3_format/tree/0.2.2) (2020-04-09)
+
+[Full Changelog](https://github.com/AdRoll/rebar3_format/compare/0.2.1...0.2.2)
+
+**Fixed bugs:**
+
+- Preservation of empty lines is broken [\#83](https://github.com/AdRoll/rebar3_format/issues/83)
+- Redundant trailing newline added [\#82](https://github.com/AdRoll/rebar3_format/issues/82)
+
+**Closed issues:**
+
+- Verify or ci mode [\#92](https://github.com/AdRoll/rebar3_format/issues/92)
+- Error parsing files: undef [\#80](https://github.com/AdRoll/rebar3_format/issues/80)
+- Parser tries to format .xrl file [\#78](https://github.com/AdRoll/rebar3_format/issues/78)
+- Error parsing files: undef \(ktn\_dodger:parse\_file\) [\#76](https://github.com/AdRoll/rebar3_format/issues/76)
+- Do not require redbug for production usage [\#73](https://github.com/AdRoll/rebar3_format/issues/73)
+
+**Merged pull requests:**
+
+- Bump Version to 0.2.2 [\#98](https://github.com/AdRoll/rebar3_format/pull/98) ([elbrujohalcon](https://github.com/elbrujohalcon))
+- Fix \#83: Fix preservation of empty lines [\#95](https://github.com/AdRoll/rebar3_format/pull/95) ([elbrujohalcon](https://github.com/elbrujohalcon))
+- Handle line endings properly [\#85](https://github.com/AdRoll/rebar3_format/pull/85) ([maciej-szlosarczyk](https://github.com/maciej-szlosarczyk))
+- Update default wildcard to only .erl/.hrl files [\#79](https://github.com/AdRoll/rebar3_format/pull/79) ([hengestone](https://github.com/hengestone))
+- Fix \#73: Remove redbug from deps [\#97](https://github.com/AdRoll/rebar3_format/pull/97) ([elbrujohalcon](https://github.com/elbrujohalcon))
+- Fix \#92: Add --verify [\#96](https://github.com/AdRoll/rebar3_format/pull/96) ([elbrujohalcon](https://github.com/elbrujohalcon))
+
+## [0.2.1](https://github.com/AdRoll/rebar3_format/tree/0.2.1) (2020-02-04)
+
+[Full Changelog](https://github.com/AdRoll/rebar3_format/compare/0.1.0...0.2.1)
+
+**Fixed bugs:**
+
+- Remove space before :: [\#61](https://github.com/AdRoll/rebar3_format/issues/61)
+
+**Closed issues:**
+
+- Consider using themes/styles instead of multiple config options [\#64](https://github.com/AdRoll/rebar3_format/issues/64)
+- Move ribbon's default up to 90 or 95 [\#63](https://github.com/AdRoll/rebar3_format/issues/63)
+- Break on receive's after [\#62](https://github.com/AdRoll/rebar3_format/issues/62)
+- Consider splitting inline\_items into two options \(one for large binaries / lists\) [\#60](https://github.com/AdRoll/rebar3_format/issues/60)
+- add a break after "try" for multiline try/catch blocks [\#59](https://github.com/AdRoll/rebar3_format/issues/59)
+- Option to indent/inline all clauses consistently [\#51](https://github.com/AdRoll/rebar3_format/issues/51)
+
+**Merged pull requests:**
+
+- Format tag style [\#72](https://github.com/AdRoll/rebar3_format/pull/72) ([elbrujohalcon](https://github.com/elbrujohalcon))
+- Fix \#51: Option to avoid one-liners [\#71](https://github.com/AdRoll/rebar3_format/pull/71) ([elbrujohalcon](https://github.com/elbrujohalcon))
+- Fix \#60: Perfect inline\_items [\#70](https://github.com/AdRoll/rebar3_format/pull/70) ([elbrujohalcon](https://github.com/elbrujohalcon))
+- Fix \#59: Indent try body [\#69](https://github.com/AdRoll/rebar3_format/pull/69) ([elbrujohalcon](https://github.com/elbrujohalcon))
+- Fix default\_formatter to use \_our\_ defaults [\#68](https://github.com/AdRoll/rebar3_format/pull/68) ([elbrujohalcon](https://github.com/elbrujohalcon))
+- \[Fix \#60\] Move ribbon's default to 90 [\#67](https://github.com/AdRoll/rebar3_format/pull/67) ([elbrujohalcon](https://github.com/elbrujohalcon))
+- \[Fix \#64\] Implement rebar3\_formatter callback [\#66](https://github.com/AdRoll/rebar3_format/pull/66) ([elbrujohalcon](https://github.com/elbrujohalcon))
+- Fixing github url [\#65](https://github.com/AdRoll/rebar3_format/pull/65) ([pbrudnick](https://github.com/pbrudnick))
+
 ## [0.1.0](https://github.com/AdRoll/rebar3_format/tree/0.1.0) (2020-01-21)
 
 [Full Changelog](https://github.com/AdRoll/rebar3_format/compare/0.0.3...0.1.0)
