@@ -1,6 +1,6 @@
 -module(ignored_file).
 
--format(#{ignore => true}).
+-format ignore.
 
 -export([bad_formatted_func/0]).
 

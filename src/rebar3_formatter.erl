@@ -18,27 +18,33 @@
 -spec format(file:filename_all(), module(), opts()) -> result().
 format(File, Formatter, Opts) ->
     AST = get_ast(File),
-    QuickAST = get_quick_ast(File),
     Comments = get_comments(File),
-    FileOpts = apply_per_file_opts(File, Opts),
-    {ok, Original} = file:read_file(File),
-    Formatted = format(File, AST, Formatter, Comments, FileOpts),
-    Result = case Formatted of
-               Original ->
-                   unchanged;
-               _ ->
-                   changed
-             end,
-    case maybe_save_file(maps:get(output_dir, FileOpts), File, Formatted) of
-      none ->
-          Result;
-      NewFile ->
-          case get_quick_ast(NewFile) of
-            QuickAST ->
-                Result;
-            _ ->
-                erlang:error({modified_ast, File, NewFile})
-          end
+    case apply_per_file_opts(File, Opts) of
+        ignore ->
+            unchanged;
+        FileOpts ->
+            {ok, Original} = file:read_file(File),
+            Formatted = format(File, AST, Formatter, Comments, FileOpts),
+            Result = case Formatted of
+                    Original ->
+                        unchanged;
+                    _ ->
+                        changed
+                    end,
+            case maybe_save_file(maps:get(output_dir, FileOpts), File, Formatted) of
+                none ->
+                    Result;
+                NewFile ->
+                    check_quick_ast(File, NewFile, Result)
+            end
+    end.
+
+check_quick_ast(File1, File2, Status) ->
+    case get_quick_ast(File1) == get_quick_ast(File2) of
+        true ->
+            Status;
+        false ->
+            erlang:error({modified_ast, File1, File2})
     end.
 
 get_ast(File) ->
@@ -84,12 +90,17 @@ get_comments(File) ->
 apply_per_file_opts(File, Opts) ->
     {ok, AST} = epp_dodger:quick_parse_file(File),
     FileOpts = [Opt || {attribute, _, format, Opt} <- AST],
-    lists:foldl(fun (Map, Acc) ->
-                        maps:merge(Acc, Map)
-                end,
-                Opts,
-                FileOpts).
+    case lists:member(ignore, FileOpts) of
+        true ->
+            ignore;
+        false ->
+            MergeF = fun (Map, Acc) -> maps:merge(Acc, Map) end,
+            lists:foldl(MergeF, Opts, FileOpts)
+    end.
 
+format(File, _AST, _Formatter, _Comments, ignore) ->
+    {ok, Contents} = file:read_file(File),
+    Contents;
 format(File, AST, Formatter, Comments, Opts) ->
     WithComments = erl_recomment:recomment_forms(erl_syntax:form_list(AST), Comments),
     Formatted = Formatter:format(WithComments, empty_lines(File), Opts),
