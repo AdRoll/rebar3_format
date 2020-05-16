@@ -19,24 +19,21 @@
 format(File, Formatter, Opts) ->
     AST = get_ast(File),
     Comments = get_comments(File),
-    case apply_per_file_opts(File, Opts) of
-        ignore ->
-            unchanged;
-        FileOpts ->
-            {ok, Original} = file:read_file(File),
-            Formatted = format(File, AST, Formatter, Comments, FileOpts),
-            Result = case Formatted of
-                    Original ->
-                        unchanged;
-                    _ ->
-                        changed
-                    end,
-            case maybe_save_file(maps:get(output_dir, FileOpts), File, Formatted) of
-                none ->
-                    Result;
-                NewFile ->
-                    check_quick_ast(File, NewFile, Result)
-            end
+    FileOpts = apply_per_file_opts(File, Opts),
+    {ok, Original} = file:read_file(File),
+    Formatted = format(File, AST, Formatter, Comments, FileOpts),
+    Result = case Formatted of
+            Original ->
+                unchanged;
+            _ ->
+                changed
+            end,
+    OutputDir = maps:get(output_dir, FileOpts),
+    case maybe_save_file(OutputDir, File, Formatted) of
+        none ->
+            Result;
+        NewFile ->
+            check_quick_ast(File, NewFile, Result)
     end.
 
 check_quick_ast(File1, File2, Status) ->
@@ -92,13 +89,13 @@ apply_per_file_opts(File, Opts) ->
     FileOpts = [Opt || {attribute, _, format, Opt} <- AST],
     case lists:member(ignore, FileOpts) of
         true ->
-            ignore;
+            maps:put(ignore, true, Opts);
         false ->
             MergeF = fun (Map, Acc) -> maps:merge(Acc, Map) end,
             lists:foldl(MergeF, Opts, FileOpts)
     end.
 
-format(File, _AST, _Formatter, _Comments, ignore) ->
+format(File, _AST, _Formatter, _Comments, #{ignore := true}) ->
     {ok, Contents} = file:read_file(File),
     Contents;
 format(File, AST, Formatter, Comments, Opts) ->
