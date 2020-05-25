@@ -13,21 +13,9 @@
 
 -behaviour(rebar3_formatter).
 
--export([format/1,
-         format/3,
-         best/1,
-         best/2,
-         layout/1,
-         layout/2,
-         get_ctxt_precedence/1,
-         set_ctxt_precedence/2,
-         get_ctxt_paperwidth/1,
-         set_ctxt_paperwidth/2,
-         get_ctxt_linewidth/1,
-         set_ctxt_linewidth/2,
-         get_ctxt_hook/1,
-         set_ctxt_hook/2,
-         get_ctxt_user/1,
+-export([format/1, format/3, best/1, best/2, layout/1, layout/2, get_ctxt_precedence/1,
+         set_ctxt_precedence/2, get_ctxt_paperwidth/1, set_ctxt_paperwidth/2, get_ctxt_linewidth/1,
+         set_ctxt_linewidth/2, get_ctxt_hook/1, set_ctxt_hook/2, get_ctxt_user/1,
          set_ctxt_user/2]).
 
 -import(prettypr,

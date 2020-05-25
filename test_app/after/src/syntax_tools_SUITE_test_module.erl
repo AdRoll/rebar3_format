@@ -1,36 +1,10 @@
 -module(syntax_tools_SUITE_test_module).
 
 -export([foo1/1, foo2/3, start_child/2]).
--export([len/1,
-         equal/2,
-         concat/2,
-         chr/2,
-         rchr/2,
-         str/2,
-         rstr/2,
-         span/2,
-         cspan/2,
-         substr/2,
-         substr/3,
-         tokens/2,
-         chars/2,
-         chars/3]).
--export([copies/2,
-         words/1,
-         words/2,
-         strip/1,
-         strip/2,
-         strip/3,
-         sub_word/2,
-         sub_word/3,
-         left/2,
-         left/3,
-         right/2,
-         right/3,
-         sub_string/2,
-         sub_string/3,
-         centre/2,
-         centre/3,
+-export([len/1, equal/2, concat/2, chr/2, rchr/2, str/2, rstr/2, span/2, cspan/2,
+         substr/2, substr/3, tokens/2, chars/2, chars/3]).
+-export([copies/2, words/1, words/2, strip/1, strip/2, strip/3, sub_word/2, sub_word/3,
+         left/2, left/3, right/2, right/3, sub_string/2, sub_string/3, centre/2, centre/3,
          join/2]).
 -export([to_upper/1, to_lower/1]).
 
