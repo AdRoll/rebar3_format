@@ -86,7 +86,7 @@ get_comments(File) ->
 %%      is much more manageable than the one returned by parse_file/1
 apply_per_file_opts(File, Opts) ->
     {ok, AST} = epp_dodger:quick_parse_file(File),
-    IgnoredFiles = maps:get(ignored_files, Opts),
+    IgnoredFiles = maps:get(ignored_files, Opts, []),
     FileOpts = [Opt || {attribute, _, format, Opt} <- AST],
     InIgnoredFiles = lists:member(File, IgnoredFiles),
     case lists:member(ignore, FileOpts) orelse InIgnoredFiles of
