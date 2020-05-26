@@ -23,25 +23,25 @@ format(File, Formatter, Opts) ->
     {ok, Original} = file:read_file(File),
     Formatted = format(File, AST, Formatter, Comments, FileOpts),
     Result = case Formatted of
-            Original ->
-                unchanged;
-            _ ->
-                changed
-            end,
+               Original ->
+                   unchanged;
+               _ ->
+                   changed
+             end,
     OutputDir = maps:get(output_dir, FileOpts),
     case maybe_save_file(OutputDir, File, Formatted) of
-        none ->
-            Result;
-        NewFile ->
-            check_quick_ast(File, NewFile, Result)
+      none ->
+          Result;
+      NewFile ->
+          check_quick_ast(File, NewFile, Result)
     end.
 
 check_quick_ast(File1, File2, Status) ->
     case get_quick_ast(File1) == get_quick_ast(File2) of
-        true ->
-            Status;
-        false ->
-            erlang:error({modified_ast, File1, File2})
+      true ->
+          Status;
+      false ->
+          erlang:error({modified_ast, File1, File2})
     end.
 
 get_ast(File) ->
@@ -86,13 +86,17 @@ get_comments(File) ->
 %%      is much more manageable than the one returned by parse_file/1
 apply_per_file_opts(File, Opts) ->
     {ok, AST} = epp_dodger:quick_parse_file(File),
+    IgnoredFiles = maps:get(ignored_files, Opts),
     FileOpts = [Opt || {attribute, _, format, Opt} <- AST],
-    case lists:member(ignore, FileOpts) of
-        true ->
-            maps:put(ignore, true, Opts);
-        false ->
-            MergeF = fun (Map, Acc) -> maps:merge(Acc, Map) end,
-            lists:foldl(MergeF, Opts, FileOpts)
+    InIgnoredFiles = lists:member(File, IgnoredFiles),
+    case lists:member(ignore, FileOpts) orelse InIgnoredFiles of
+      true ->
+          maps:put(ignore, true, Opts);
+      false ->
+          MergeF = fun (Map, Acc) ->
+                           maps:merge(Acc, Map)
+                   end,
+          lists:foldl(MergeF, Opts, FileOpts)
     end.
 
 format(File, _AST, _Formatter, _Comments, #{ignore := true}) ->

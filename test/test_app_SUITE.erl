@@ -8,7 +8,9 @@ all() ->
 test_app(_Config) ->
     ok = file:set_cwd("../../../../test_app"),
     {ok, State1} = rebar3_format:init(rebar_state:new()),
-    State2 = rebar_state:set(State1, format, [{files, ["src/*.erl", "include/*.hrl"]}]),
+    Files = {files, ["src/*.erl", "include/*.hrl"]},
+    IgnoredFiles = {ignore, ["src/*_ignore.erl", "src/ignored_file_config.erl"]},
+    State2 = rebar_state:set(State1, format, [Files, IgnoredFiles]),
     {error, _} = verify(State2),
     {ok, _} = format(State2),
     {error, _} = verify(State2),

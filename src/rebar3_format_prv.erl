@@ -34,7 +34,9 @@ do(State) ->
     Action = get_action(Args),
     OutputDirOpt = get_output_dir(Action, Args),
     Formatter = get_formatter(State),
-    Opts = maps:put(action, Action, maps:put(output_dir, OutputDirOpt, get_opts(State))),
+    Opts0 = maps:put(action, Action, maps:put(output_dir, OutputDirOpt, get_opts(State))),
+    IgnoredFiles = get_ignored_files(State),
+    Opts = maps:put(ignored_files, IgnoredFiles, Opts0),
     rebar_api:debug("Formatter options: ~p", [Opts]),
     Files = get_files(Args, State),
     rebar_api:debug("Found ~p files: ~p", [length(Files), Files]),
@@ -72,8 +74,8 @@ get_files(Args, State) ->
                  {files, Wildcard} ->
                      [Wildcard];
                  false ->
-                     case proplists:get_value(files, rebar_state:get(State, format, []), undefined)
-                         of
+                     FormatConfig = rebar_state:get(State, format, []),
+                     case proplists:get_value(files, FormatConfig, undefined) of
                        undefined ->
                            ["src/**/*.[he]rl"];
                        Wildcards ->
@@ -81,6 +83,12 @@ get_files(Args, State) ->
                      end
                end,
     [File || Pattern <- Patterns, File <- filelib:wildcard(Pattern)].
+
+-spec get_ignored_files(rebar_state:t()) -> [file:filename_all()].
+get_ignored_files(State) ->
+    FormatConfig = rebar_state:get(State, format, []),
+    Patterns = proplists:get_value(ignore, FormatConfig, []),
+    [IgnoredFile || Pat <- Patterns, IgnoredFile <- filelib:wildcard(Pat)].
 
 -spec get_output_dir(format | verify, proplists:proplist()) -> none |
                                                                current |
