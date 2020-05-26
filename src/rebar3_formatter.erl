@@ -18,6 +18,7 @@
 -spec format(file:filename_all(), module(), opts()) -> result().
 format(File, Formatter, Opts) ->
     AST = get_ast(File),
+    QuickAST = get_quick_ast(File),
     Comments = get_comments(File),
     FileOpts = apply_per_file_opts(File, Opts),
     {ok, Original} = file:read_file(File),
@@ -33,15 +34,12 @@ format(File, Formatter, Opts) ->
       none ->
           Result;
       NewFile ->
-          check_quick_ast(File, NewFile, Result)
-    end.
-
-check_quick_ast(File1, File2, Status) ->
-    case get_quick_ast(File1) == get_quick_ast(File2) of
-      true ->
-          Status;
-      false ->
-          erlang:error({modified_ast, File1, File2})
+          case get_quick_ast(NewFile) of
+            QuickAST ->
+                Result;
+            _ ->
+                erlang:error({modified_ast, File, NewFile})
+          end
     end.
 
 get_ast(File) ->
