@@ -1,4 +1,4 @@
--module(brackets).
+-module(brackets_ignore).
 
 -format(#{paper => 50, inline_items => all}).
 
