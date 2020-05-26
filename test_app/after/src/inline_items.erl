@@ -22,16 +22,8 @@
 -export([short_bin/0, short_guard/1, short_lc/0]).
 -export([short_bc/0, short_arglist/3, short_rec/0]).
 -export([short_map/0]).
--export([long_tuple/0,
-         long_list/0,
-         long_fun/0,
-         long_bin/0,
-         long_guard/1,
-         long_lc/0,
-         long_bc/0,
-         long_arglist/7,
-         long_rec/0,
-         long_map/0]).
+-export([long_tuple/0, long_list/0, long_fun/0, long_bin/0, long_guard/1,
+         long_lc/0, long_bc/0, long_arglist/7, long_rec/0, long_map/0]).
 -export([short/0, exact/0, long/0]).
 
 -spec short_tuple() -> {T, T, T} when T :: {x, y, z}.

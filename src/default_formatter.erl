@@ -44,6 +44,7 @@
                     try_expr |
                     {function, prettypr:document()} |
                     spec.
+-type inlining() :: all | none | {when_over, pos_integer()}.
 
 -record(ctxt,
         {prec = 0 :: integer(),
@@ -53,7 +54,9 @@
          paper = ?PAPER :: integer(),
          ribbon = ?RIBBON :: integer(),
          user = ?NOUSER :: term(),
-         inline_items = {when_over, 25} :: all | none | {when_over, pos_integer()},
+         inline_items = {when_over, 25} :: inlining(),
+         inline_attributes = all :: inlining(),
+         force_inlining = false :: boolean(),
          inline_clause_bodies = false :: boolean(),
          inline_expressions = false :: boolean(),
          empty_lines = [] :: [pos_integer()],
@@ -121,6 +124,7 @@ layout(Node, EmptyLines, Options) ->
               inline_clause_bodies = maps:get(inline_clause_bodies, Options, false),
               inline_expressions = maps:get(inline_expressions, Options, false),
               inline_items = maps:get(inline_items, Options, {when_over, 25}),
+              inline_attributes = maps:get(inline_attributes, Options, all),
               empty_lines = EmptyLines,
               encoding = maps:get(encoding, Options, epp:default_encoding())}).
 
@@ -369,8 +373,12 @@ lay_no_comments(Node, Ctxt) ->
                 Tag when Tag =:= export_type; Tag =:= optional_callbacks ->
                     [FuncNames] = Args,
                     As = unfold_function_names(FuncNames),
+                    %% We force inlining of list items and use inline_attributes to
+                    %% format the list of functions
+                    Ctxt2 = Ctxt1#ctxt{force_inlining = true,
+                                       inline_items = Ctxt1#ctxt.inline_attributes},
                     beside(lay(N, Ctxt1),
-                           beside(text("("), beside(lay(As, Ctxt1), lay_text_float(")"))));
+                           beside(text("("), beside(lay(As, Ctxt2), lay_text_float(")"))));
                 on_load ->
                     [FuncName] = Args,
                     As = unfold_function_name(FuncName),
@@ -380,6 +388,12 @@ lay_no_comments(Node, Ctxt) ->
                     D1 = lay(N, Ctxt),
                     As = lay(Opts, Ctxt),
                     beside(D1, beside(lay_text_float(" "), As));
+                export ->
+                    %% We force inlining of list items and use inline_attributes to
+                    %% format the lists within these attributes
+                    Ctxt2 = Ctxt1#ctxt{force_inlining = true,
+                                       inline_items = Ctxt1#ctxt.inline_attributes},
+                    lay_application(N, Args, Ctxt2);
                 _ when Args =:= none ->
                     lay(N, Ctxt1);
                 _ ->
@@ -1104,11 +1118,22 @@ lay_items(Exprs, Ctxt, Fun) ->
 lay_items(Exprs, Separator, Ctxt = #ctxt{inline_items = {when_over, N}}, Fun)
     when length(Exprs) > N ->
     par(seq(Exprs, Separator, Ctxt, Fun));
+lay_items(Exprs,
+          Separator,
+          Ctxt = #ctxt{force_inlining = true, inline_items = {when_over, N}},
+          Fun)
+    when length(Exprs) =< N ->
+    vertical(seq(Exprs, Separator, Ctxt, Fun));
 lay_items(Exprs, Separator, Ctxt = #ctxt{inline_items = {when_over, N}}, Fun)
     when length(Exprs) =< N ->
     sep(seq(Exprs, Separator, Ctxt, Fun));
 lay_items(Exprs, Separator, Ctxt = #ctxt{inline_items = all}, Fun) ->
     par(seq(Exprs, Separator, Ctxt, Fun));
+lay_items(Exprs,
+          Separator,
+          Ctxt = #ctxt{force_inlining = true, inline_items = none},
+          Fun) ->
+    vertical(seq(Exprs, Separator, Ctxt, Fun));
 lay_items(Exprs, Separator, Ctxt = #ctxt{inline_items = none}, Fun) ->
     sep(seq(Exprs, Separator, Ctxt, Fun)).
 
