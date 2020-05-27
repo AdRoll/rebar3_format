@@ -29,7 +29,8 @@ format(File, Formatter, Opts) ->
                _ ->
                    changed
              end,
-    case maybe_save_file(maps:get(output_dir, FileOpts), File, Formatted) of
+    OutputDir = maps:get(output_dir, FileOpts),
+    case maybe_save_file(OutputDir, File, Formatted) of
       none ->
           Result;
       NewFile ->
@@ -83,13 +84,22 @@ get_comments(File) ->
 %%      is much more manageable than the one returned by parse_file/1
 apply_per_file_opts(File, Opts) ->
     {ok, AST} = epp_dodger:quick_parse_file(File),
+    IgnoredFiles = maps:get(ignored_files, Opts, []),
     FileOpts = [Opt || {attribute, _, format, Opt} <- AST],
-    lists:foldl(fun (Map, Acc) ->
-                        maps:merge(Acc, Map)
-                end,
-                Opts,
-                FileOpts).
+    InIgnoredFiles = lists:member(File, IgnoredFiles),
+    case lists:member(ignore, FileOpts) orelse InIgnoredFiles of
+      true ->
+          maps:put(ignore, true, Opts);
+      false ->
+          MergeF = fun (Map, Acc) ->
+                           maps:merge(Acc, Map)
+                   end,
+          lists:foldl(MergeF, Opts, FileOpts)
+    end.
 
+format(File, _AST, _Formatter, _Comments, #{ignore := true}) ->
+    {ok, Contents} = file:read_file(File),
+    Contents;
 format(File, AST, Formatter, Comments, Opts) ->
     WithComments = erl_recomment:recomment_forms(erl_syntax:form_list(AST), Comments),
     Formatted = Formatter:format(WithComments, empty_lines(File), Opts),
