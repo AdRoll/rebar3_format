@@ -88,6 +88,10 @@ The plugin supports the following configuration options in the `format` section 
 * `files` (`[file:filename_all()]`):
     - List of wildcard patterns representing the files that will be formatted by default (i.e. when not using `--files` on command line).
     - The default value is `["src/**/*.?rl"]`
+* `ignore` (`[file:filename_all()]`):
+    - List of wildcard patterns representing the files that the formatter will ignore when formatting.
+    - Note that it will ignore the files set for formatting either with the `files` option or using `--files` in the command line if they match one of the given wildcards.
+    - You can also ignore a specific file adding the attribute `-format(ignore)` in it.
 
 ### Per-File Configuration
 
