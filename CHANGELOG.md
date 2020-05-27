@@ -1,8 +1,35 @@
 # Changelog
 
-## [0.2.2](https://github.com/AdRoll/rebar3_format/tree/0.2.2) (2020-04-14)
+## [0.3.0](https://github.com/AdRoll/rebar3_format/tree/0.3.0) (2020-05-27)
 
-[Full Changelog](https://github.com/AdRoll/rebar3_format/compare/0.2.2...0.2.2)
+[Full Changelog](https://github.com/AdRoll/rebar3_format/compare/0.2.3...0.3.0)
+
+**Fixed bugs:**
+
+- Different representations of characters should be preserved [\#93](https://github.com/AdRoll/rebar3_format/issues/93)
+- Output -on\_load\(Fun/Arity\) instead of -on\_load\({Fun, Arity}\) [\#89](https://github.com/AdRoll/rebar3_format/issues/89)
+- List of exported functions and types are inlined despite the default {when\_over, 25} setting [\#88](https://github.com/AdRoll/rebar3_format/issues/88)
+- Preservation of empty lines is broken [\#83](https://github.com/AdRoll/rebar3_format/issues/83)
+- Can't use macros for integer ranges in type specs [\#58](https://github.com/AdRoll/rebar3_format/issues/58)
+- Can't have macros with arguments and ; [\#10](https://github.com/AdRoll/rebar3_format/issues/10)
+
+**Closed issues:**
+
+- Exclude certain files from formatting [\#87](https://github.com/AdRoll/rebar3_format/issues/87)
+
+**Merged pull requests:**
+
+- \[Fix \#88\] Add inline\_attributes as a separate flag to inline\_items [\#106](https://github.com/AdRoll/rebar3_format/pull/106) ([elbrujohalcon](https://github.com/elbrujohalcon))
+- Fix \#93: Preserve char representations [\#104](https://github.com/AdRoll/rebar3_format/pull/104) ([elbrujohalcon](https://github.com/elbrujohalcon))
+- Fix \#58: Properly dodge and undodge macros on specs and types [\#103](https://github.com/AdRoll/rebar3_format/pull/103) ([elbrujohalcon](https://github.com/elbrujohalcon))
+- Show line number of unparsable file [\#102](https://github.com/AdRoll/rebar3_format/pull/102) ([sebastiw](https://github.com/sebastiw))
+- \[\#88\] Clarify description of  in README.md [\#101](https://github.com/AdRoll/rebar3_format/pull/101) ([elbrujohalcon](https://github.com/elbrujohalcon))
+- Fix \#89: on\_load [\#100](https://github.com/AdRoll/rebar3_format/pull/100) ([elbrujohalcon](https://github.com/elbrujohalcon))
+- Add support for file ignoring [\#91](https://github.com/AdRoll/rebar3_format/pull/91) ([juanbono](https://github.com/juanbono))
+
+## [0.2.3](https://github.com/AdRoll/rebar3_format/tree/0.2.3) (2020-04-14)
+
+[Full Changelog](https://github.com/AdRoll/rebar3_format/compare/0.2.2...0.2.3)
 
 **Merged pull requests:**
 
@@ -14,7 +41,6 @@
 
 **Fixed bugs:**
 
-- Preservation of empty lines is broken [\#83](https://github.com/AdRoll/rebar3_format/issues/83)
 - Redundant trailing newline added [\#82](https://github.com/AdRoll/rebar3_format/issues/82)
 
 **Closed issues:**
