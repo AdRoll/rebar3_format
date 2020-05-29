@@ -68,12 +68,7 @@ remove_line_numbers(AST) when is_list(AST) ->
     lists:map(fun remove_line_numbers/1, AST);
 remove_line_numbers(AST) when is_tuple(AST) ->
     [Type, _Line | Rest] = tuple_to_list(AST),
-    case Type of
-      error ->
-          AST;
-      Type ->
-          list_to_tuple([Type, no | remove_line_numbers(Rest)])
-    end;
+    list_to_tuple([Type, no | remove_line_numbers(Rest)]);
 remove_line_numbers(AST) ->
     AST.
 
