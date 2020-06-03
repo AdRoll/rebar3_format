@@ -7,7 +7,7 @@ main([]) ->
     case code:ensure_loaded(rebar3_formatter) of
         {module, rebar3_formatter} ->
             Files =
-                [File || Path <- ["src/*.erl", "test/*.erl"],
+                [File || Path <- ["src/*.erl", "src/formatters/*.erl", "test/*.erl"],
                          File <- filelib:wildcard(Path)],
             Opts = #{output_dir => current},
             lists:foreach(fun (File) -> rebar3_formatter:format(File, default_formatter, Opts) end, Files);
