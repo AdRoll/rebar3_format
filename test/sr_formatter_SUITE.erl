@@ -1,0 +1,66 @@
+-module(sr_formatter_SUITE).
+
+-export([all/0]).
+-export([action/1, output_dir/1, options/1]).
+
+all() ->
+    [action, output_dir, options].
+
+action(_Config) ->
+    steamroller_formatter:validator(fun (File, Opts) ->
+                                            <<"brackets.erl">> = filename:basename(File),
+                                            true = lists:member(check, Opts),
+                                            ok
+                                    end),
+    Args1 = rebar_state:command_parsed_args(init(), {[{verify, true}], something}),
+    {ok, _} = rebar3_format_prv:do(Args1),
+
+    steamroller_formatter:validator(fun (File, Opts) ->
+                                            <<"brackets.erl">> = filename:basename(File),
+                                            false = lists:member(check, Opts),
+                                            ok
+                                    end),
+    Args2 = rebar_state:command_parsed_args(init(), {[], something}),
+    {ok, _} = rebar3_format_prv:do(Args2),
+
+    steamroller_formatter:validator(fun (_, Opts) ->
+                                            true = lists:member(check, Opts),
+                                            {error, <<"Check failed: something">>}
+                                    end),
+    {error, _} = rebar3_format_prv:do(Args1).
+
+output_dir(_Config) ->
+    % When there is no expected output, steamroller should run in the input file
+    steamroller_formatter:validator(fun (File, _) ->
+                                            <<"src/brackets.erl">> = File,
+                                            ok
+                                    end),
+    Args1 = rebar_state:command_parsed_args(init(), {[], something}),
+    {ok, _} = rebar3_format_prv:do(Args1),
+
+    % When there is an expected output, steamroller should run on the output file
+    steamroller_formatter:validator(fun (File, _) ->
+                                            <<"/tmp/src/brackets.erl">> = File,
+                                            ok
+                                    end),
+    Args2 = rebar_state:command_parsed_args(init(), {[{output, "/tmp/"}], something}),
+    {ok, _} = rebar3_format_prv:do(Args2).
+
+options(_Config) ->
+    steamroller_formatter:validator(fun (_, Opts) ->
+                                            true = lists:member({line_length, 100}, Opts),
+                                            ok
+                                    end),
+    Args1 = rebar_state:command_parsed_args(init(#{line_length => 100}), {[], something}),
+    {ok, _} = rebar3_format_prv:do(Args1).
+
+init() ->
+    init(#{}).
+
+init(Options) ->
+    ok = file:set_cwd(filename:join(code:priv_dir(rebar3_format), "../test_app")),
+    {ok, State1} = rebar3_format:init(rebar_state:new()),
+    Files = {files, ["src/brackets.erl"]},
+    Formatter = {formatter, sr_formatter},
+    Opts = {options, Options},
+    rebar_state:set(State1, format, [Files, Formatter, Opts]).

@@ -48,6 +48,7 @@ parse_opt(K, V, Opts) ->
 
 copy_file(File, OutputDir) ->
     OutFile = filename:join(filename:absname(OutputDir), File),
+    ct:pal("Copy ~s to ~s", [File, OutFile]),
     ok = filelib:ensure_dir(OutFile),
     {ok, _} = file:copy(File, OutFile),
     OutFile.
