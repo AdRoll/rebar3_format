@@ -1,4 +1,4 @@
-%% @doc Automatic formatter for Erlang modules
+%% @doc Default formatter for modules that use the AST to prettyprint code
 -module(rebar3_ast_formatter).
 
 -export([format/3]).

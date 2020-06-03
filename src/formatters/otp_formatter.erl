@@ -266,6 +266,9 @@ format(Node, _EmptyLines, Options) ->
     PreFormatted = prettypr:format(layout(Node, OptList), W, L),
     binary_to_list(unicode:characters_to_binary(PreFormatted, E)).
 
+%% @doc Format a file.
+%%      Apply formatting rules to a file containing erlang code.
+%%      Use <code>Opts</code> to configure the formatter.
 -spec format(file:filename_all(), rebar3_formatter:opts()) -> rebar3_formatter:result().
 format(File, Opts) -> rebar3_ast_formatter:format(File, ?MODULE, Opts).
 
