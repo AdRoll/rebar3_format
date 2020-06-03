@@ -12,11 +12,12 @@
 -format #{inline_clause_bodies => true}.
 
 -behaviour(rebar3_formatter).
+-behaviour(rebar3_ast_formatter).
 
--export([format/1, format/3, best/1, best/2, layout/1, layout/2, get_ctxt_precedence/1,
-         set_ctxt_precedence/2, get_ctxt_paperwidth/1, set_ctxt_paperwidth/2, get_ctxt_linewidth/1,
-         set_ctxt_linewidth/2, get_ctxt_hook/1, set_ctxt_hook/2, get_ctxt_user/1,
-         set_ctxt_user/2]).
+-export([format/1, format/2, format/3, best/1, best/2, layout/1, layout/2,
+         get_ctxt_precedence/1, set_ctxt_precedence/2, get_ctxt_paperwidth/1,
+         set_ctxt_paperwidth/2, get_ctxt_linewidth/1, set_ctxt_linewidth/2, get_ctxt_hook/1,
+         set_ctxt_hook/2, get_ctxt_user/1, set_ctxt_user/2]).
 
 -import(prettypr,
         [text/1,
@@ -264,6 +265,9 @@ format(Node, _EmptyLines, Options) ->
     OptList = maps:to_list(Options),
     PreFormatted = prettypr:format(layout(Node, OptList), W, L),
     binary_to_list(unicode:characters_to_binary(PreFormatted, E)).
+
+-spec format(file:filename_all(), rebar3_formatter:opts()) -> rebar3_formatter:result().
+format(File, Opts) -> rebar3_ast_formatter:format(File, ?MODULE, Opts).
 
 %% =====================================================================
 %% @spec best(Tree::syntaxTree()) -> empty | prettypr:document()
