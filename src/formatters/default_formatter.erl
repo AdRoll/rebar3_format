@@ -5,8 +5,9 @@
 -module(default_formatter).
 
 -behaviour(rebar3_formatter).
+-behaviour(rebar3_ast_formatter).
 
--export([format/3]).
+-export([format/2, format/3]).
 
 -import(prettypr,
         [text/1,
@@ -90,6 +91,10 @@ format(Node, EmptyLines, Options) ->
     PreFormatted = prettypr:format(layout(Node, FinalEmptyLines, Options), W, L),
     Formatted = remove_tabs(unicode:characters_to_binary(PreFormatted, E)),
     remove_trailing_spaces(Formatted).
+
+-spec format(file:filename_all(), rebar3_formatter:opts()) -> rebar3_formatter:result().
+format(File, Opts) ->
+    rebar3_ast_formatter:format(File, ?MODULE, Opts).
 
 remove_tabs(Formatted) ->
     binary:replace(Formatted, <<"\t">>, <<"        ">>, [global]).

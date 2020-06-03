@@ -34,14 +34,14 @@ do(State) ->
     Action = get_action(Args),
     OutputDirOpt = get_output_dir(Action, Args),
     Formatter = get_formatter(State),
-    Opts0 = maps:put(action, Action, maps:put(output_dir, OutputDirOpt, get_opts(State))),
-    IgnoredFiles = get_ignored_files(State),
-    Opts = maps:put(ignored_files, IgnoredFiles, Opts0),
+    Opts = maps:put(action, Action, maps:put(output_dir, OutputDirOpt, get_opts(State))),
     rebar_api:debug("Formatter options: ~p", [Opts]),
-    Files = get_files(Args, State),
+    IgnoredFiles = get_ignored_files(State),
+    Files = get_files(Args, State) -- IgnoredFiles,
     rebar_api:debug("Found ~p files: ~p", [length(Files), Files]),
     case format(Files, Formatter, Opts) of
       ok ->
+          maybe_copy_ignored_files(IgnoredFiles, OutputDirOpt),
           {ok, State};
       {error, Error} ->
           {error, format_error(Error)}
@@ -137,3 +137,21 @@ format(Files, Formatter, Opts) ->
           rebar_api:warn("Error parsing files: ~p~nStack: ~p", [Error, Stack]),
           {error, Error}
     end.
+
+%% @doc if output dir is not the current one we need to copy the files that we
+%%      are not formatting to it
+maybe_copy_ignored_files(_IgnoredFiles, none) ->
+    noop;
+maybe_copy_ignored_files(_IgnoredFiles, current) ->
+    noop;
+maybe_copy_ignored_files(IgnoredFiles, OutputDir) ->
+    lists:foreach(fun (IgnoredFile) ->
+                          copy_file(IgnoredFile, OutputDir)
+                  end,
+                  IgnoredFiles).
+
+copy_file(File, OutputDir) ->
+    OutFile = filename:join(filename:absname(OutputDir), File),
+    ok = filelib:ensure_dir(OutFile),
+    {ok, _} = file:copy(File, OutFile),
+    ok.

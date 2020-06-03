@@ -108,6 +108,30 @@ It will essentially run `rebar3 format` inside `test_app`.
 Add modules with any "tricky" formatting you want to `test_app/src`, and push them to github _including_ the `after` results.
 The `after` results can be tought as the **expected output** behaviour.
 
+## Implementing your own Formatter
+
+To create a new formatter, you need to implement the `rebar3_formatter` behaviour. It defines just one callback:
+
+```erlang
+-callback format(file:filename_all(), opts()) -> result().
+```
+
+That means you need to write a function that receives a filename and a map with options (some of them are specified in the `rebar3_formatter` module, but you can add as many others as you want) and returns a result (either `changed` or `unchanged`). It's expected for your formatter to honor the predefined options as described below:
+
+* `output_dir`:
+    - `none`: Don't produce any output.
+    - `current`: Replace files when formatting.
+    - `file:filename_all()`: Drop files in this folder, preserving their current names.
+* `encoding`:
+    - `none`: Preserve/guess original encoding of files.
+    - `epp:source_encoding()`: Use this encoding when parsing files.
+* `action`:
+    - `verify`: Only return the result without actually modifying any files.
+    - `format`: Do format the files.
+
+It's a good practice, although not enforced by the formatter itself to respect `-format` attributes in files as the formatters provided in this repo do.
+To remove the need for parsing and writing files, you can use the `rebar3_ast_formatter` module/behaviour as `default_formatter` and `otp_formatter` do.
+
 ## Contribute
 
 To contribute to rebar3_format, please refer to [CONTRIBUTING](CONTRIBUTING.md).
