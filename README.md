@@ -108,6 +108,62 @@ It will essentially run `rebar3 format` inside `test_app`.
 Add modules with any "tricky" formatting you want to `test_app/src`, and push them to github _including_ the `after` results.
 The `after` results can be tought as the **expected output** behaviour.
 
+---
+
+## Proposed Workflow
+When we created this tool, we envisioned a workflow for teams where each member can use their preferred style for code formatting.
+The idea is to take advantage of `rebar3` profiles and write the following on your `rebar.config` file:
+
+```erlang
+%% The canonical format used when pushing code to the central repository
+{format, [
+    {files, ["src/*.erl", "include/*.hrl", "test/*.erl"]},
+    {formatter, default_formatter},
+    {options, #{paper => 100}}
+]}.
+{profiles, [
+    {brujo, [
+        {format, [
+            {files, ["src/*.erl", "include/*.hrl", "test/*.erl"]},
+            {formatter, rok_formatter}, % I prefer comma-first formatting
+            {options, #{paper => 100}}
+        ]}
+    ]},
+    {miriam, [
+        {format, [
+            {files, ["src/*.erl", "include/*.hrl", "test/*.erl"]},
+            {formatter, default_formatter},
+            {options, #{
+                inline_clause_bodies => false, % she doesn't like one-liners
+                inline_items => all % but she does like long lists of items
+            }}
+        ]}
+    ]}
+]}
+```
+
+Then whenever you're about to work on something, follow this ritual:
+
+```bash
+git checkout master
+git checkout -b my-branch
+rebar3 as brujo format
+# Work on your code...
+rebar3 format # This can be a git hook for commits
+git commit -am "Apply my changes"
+git push origin my-branch --set-upstream
+```
+
+Other developers do the same but using `as $THEIR_NAME` instead of `as brujo`.
+
+That way each developer can read code in the way they understand it better, write code exactly how they like to write it, etc. Then push it to the central repository in a consistent way that matches the style of the rest of the project.
+
+---
+
+## Using External Formatters
+Through `rebar3 format`, you can use other formatters that are not included in this repository. That way you can follow our proposed workflow and allow each developer to format the code with their favorite formatter using rebar3 plugins while still maintaining an unique _canonical formatter_ when pushing to your central git repository.
+You also get `-format` attribute compliance (including `-format ignore.`) for free, since they're respected when using any formatter.
+
 ## Implementing your own Formatter
 
 To create a new formatter, you need to implement the `rebar3_formatter` behaviour. It defines just one callback:
