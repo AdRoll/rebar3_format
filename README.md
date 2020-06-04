@@ -135,7 +135,7 @@ The idea is to take advantage of `rebar3` profiles and write the following on yo
             {formatter, default_formatter},
             {options, #{
                 inline_clause_bodies => false, % she doesn't like one-liners
-                inline_items => all % but she doesn't like long lists of items
+                inline_items => all % but she does like long lists of items
             }}
         ]}
     ]}
@@ -162,6 +162,7 @@ That way each developer can read code in the way they understand it better, writ
 
 ## Using External Formatters
 Through `rebar3 format`, you can use other formatters that are not included in this repository. That way you can follow our proposed workflow and allow each developer to format the code with their favorite formatter using rebar3 plugins while still maintaining an unique _canonical formatter_ when pushing to your central git repository.
+You also get `-format` attribute compliance (including `-format ignore.`) for free, since they're respected when using any formatter.
 
 ### Steamroller
 If you want to use @old-reliable's [steamroller](https://github.com/old-reliable/steamroller), you just need to add the following things to your `rebar.config` file:

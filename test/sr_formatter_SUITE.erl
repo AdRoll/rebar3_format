@@ -48,7 +48,9 @@ output_dir(_Config) ->
 
 options(_Config) ->
     steamroller:validator(fun (_, Opts) ->
-                                  true = lists:member({line_length, 100}, Opts),
+                                  100 = proplists:get_value(line_length, Opts),
+                                  all = proplists:get_value(inline_items, Opts),
+                                  50 = proplists:get_value(paper, Opts),
                                   ok
                           end),
     Args1 = rebar_state:command_parsed_args(init(#{line_length => 100}), {[], something}),
