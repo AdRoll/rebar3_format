@@ -1,4 +1,4 @@
-%% @doc Automatic formatter for Erlang modules
+%% @doc Default formatter for modules that use the AST to prettyprint code
 -module(rebar3_ast_formatter).
 
 -export([format/3]).
@@ -17,17 +17,15 @@ format(File, Formatter, Opts) ->
     AST = get_ast(File),
     QuickAST = get_quick_ast(File),
     Comments = get_comments(File),
-    FileOpts = apply_per_file_opts(File, Opts),
     {ok, Original} = file:read_file(File),
-    Formatted = format(File, AST, Formatter, Comments, FileOpts),
+    Formatted = format(File, AST, Formatter, Comments, Opts),
     Result = case Formatted of
                Original ->
                    unchanged;
                _ ->
                    changed
              end,
-    OutputDir = maps:get(output_dir, FileOpts),
-    case maybe_save_file(OutputDir, File, Formatted) of
+    case maybe_save_file(maps:get(output_dir, Opts), File, Formatted) of
       none ->
           Result;
       NewFile ->
@@ -72,24 +70,6 @@ remove_line_numbers(AST) ->
 get_comments(File) ->
     erl_comment_scan:file(File).
 
-%% @doc We need to use quick_parse_file/1 here because the returned format
-%%      is much more manageable than the one returned by parse_file/1
-apply_per_file_opts(File, Opts) ->
-    {ok, AST} = epp_dodger:quick_parse_file(File),
-    FileOpts = [Opt || {attribute, _, format, Opt} <- AST],
-    case lists:member(ignore, FileOpts) of
-      true ->
-          maps:put(ignore, true, Opts);
-      false ->
-          MergeF = fun (Map, Acc) ->
-                           maps:merge(Acc, Map)
-                   end,
-          lists:foldl(MergeF, Opts, FileOpts)
-    end.
-
-format(File, _AST, _Formatter, _Comments, #{ignore := true}) ->
-    {ok, Contents} = file:read_file(File),
-    Contents;
 format(File, AST, Formatter, Comments, Opts) ->
     WithComments = erl_recomment:recomment_forms(erl_syntax:form_list(AST), Comments),
     Formatted = Formatter:format(WithComments, empty_lines(File), Opts),

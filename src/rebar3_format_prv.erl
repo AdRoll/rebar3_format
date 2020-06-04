@@ -41,7 +41,7 @@ do(State) ->
     rebar_api:debug("Found ~p files: ~p", [length(Files), Files]),
     case format(Files, Formatter, Opts) of
       ok ->
-          maybe_copy_ignored_files(IgnoredFiles, OutputDirOpt),
+          ignore(IgnoredFiles, Formatter, Opts),
           {ok, State};
       {error, Error} ->
           {error, format_error(Error)}
@@ -138,20 +138,9 @@ format(Files, Formatter, Opts) ->
           {error, Error}
     end.
 
-%% @doc if output dir is not the current one we need to copy the files that we
-%%      are not formatting to it
-maybe_copy_ignored_files(_IgnoredFiles, none) ->
-    noop;
-maybe_copy_ignored_files(_IgnoredFiles, current) ->
-    noop;
-maybe_copy_ignored_files(IgnoredFiles, OutputDir) ->
-    lists:foreach(fun (IgnoredFile) ->
-                          copy_file(IgnoredFile, OutputDir)
+%% @doc Process ignored files
+ignore(IgnoredFiles, Formatter, Opts) ->
+    lists:foreach(fun (File) ->
+                          ok = rebar3_formatter:ignore(File, Formatter, Opts)
                   end,
                   IgnoredFiles).
-
-copy_file(File, OutputDir) ->
-    OutFile = filename:join(filename:absname(OutputDir), File),
-    ok = filelib:ensure_dir(OutFile),
-    {ok, _} = file:copy(File, OutFile),
-    ok.
