@@ -1,5 +1,8 @@
 # rebar3_format
 
+[![Build Status](https://api.travis-ci.com/AdRoll/rebar3_format.svg?branch=master)](https://travis-ci.com/AdRoll/rebar3_format)
+[![Hex pm](http://img.shields.io/hexpm/v/rebar3_format.svg?style=flat)](https://hex.pm/packages/rebar3_format)
+
 A rebar plugin for code formatting
 
 ## Build
