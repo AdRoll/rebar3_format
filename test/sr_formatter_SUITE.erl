@@ -7,7 +7,7 @@ all() ->
     [action, output_dir, options].
 
 action(_Config) ->
-    steamroller_formatter:validator(fun (File, Opts) ->
+    steamroller:validator(fun (File, Opts) ->
                                             <<"brackets.erl">> = filename:basename(File),
                                             true = lists:member(check, Opts),
                                             ok
@@ -15,7 +15,7 @@ action(_Config) ->
     Args1 = rebar_state:command_parsed_args(init(), {[{verify, true}], something}),
     {ok, _} = rebar3_format_prv:do(Args1),
 
-    steamroller_formatter:validator(fun (File, Opts) ->
+    steamroller:validator(fun (File, Opts) ->
                                             <<"brackets.erl">> = filename:basename(File),
                                             false = lists:member(check, Opts),
                                             ok
@@ -23,7 +23,7 @@ action(_Config) ->
     Args2 = rebar_state:command_parsed_args(init(), {[], something}),
     {ok, _} = rebar3_format_prv:do(Args2),
 
-    steamroller_formatter:validator(fun (_, Opts) ->
+    steamroller:validator(fun (_, Opts) ->
                                             true = lists:member(check, Opts),
                                             {error, <<"Check failed: something">>}
                                     end),
@@ -31,7 +31,7 @@ action(_Config) ->
 
 output_dir(_Config) ->
     % When there is no expected output, steamroller should run in the input file
-    steamroller_formatter:validator(fun (File, _) ->
+    steamroller:validator(fun (File, _) ->
                                             <<"src/brackets.erl">> = File,
                                             ok
                                     end),
@@ -39,7 +39,7 @@ output_dir(_Config) ->
     {ok, _} = rebar3_format_prv:do(Args1),
 
     % When there is an expected output, steamroller should run on the output file
-    steamroller_formatter:validator(fun (File, _) ->
+    steamroller:validator(fun (File, _) ->
                                             <<"/tmp/src/brackets.erl">> = File,
                                             ok
                                     end),
@@ -47,7 +47,7 @@ output_dir(_Config) ->
     {ok, _} = rebar3_format_prv:do(Args2).
 
 options(_Config) ->
-    steamroller_formatter:validator(fun (_, Opts) ->
+    steamroller:validator(fun (_, Opts) ->
                                             true = lists:member({line_length, 100}, Opts),
                                             ok
                                     end),
