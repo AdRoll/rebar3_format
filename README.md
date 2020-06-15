@@ -167,6 +167,21 @@ That way each developer can read code in the way they understand it better, writ
 Through `rebar3 format`, you can use other formatters that are not included in this repository. That way you can follow our proposed workflow and allow each developer to format the code with their favorite formatter using rebar3 plugins while still maintaining an unique _canonical formatter_ when pushing to your central git repository.
 You also get `-format` attribute compliance (including `-format ignore.`) for free, since they're respected when using any formatter.
 
+### erlfmt
+If you want to use @whatsapp's [erlfmt](https://github.com/whatsapp/erlfmt), you just need to add the following things to your `rebar.config` file:
+
+```erlang
+{plugins, [rebar3_format, erlfmt]}.
+{format, [
+    {files, ["src/*.erl", "include/*.hrl"]},
+    {ignore, ["src/*_ignore.erl", "src/ignored_file_config.erl"]},
+    {formatter, erlfmt_formatter} %% The erlfmt formatter interface.
+]}.
+```
+
+#### Compatibility Note
+`erlfmt_formatter` is compatible with version `v0.1.0` of `erlfmt`, which is the only one that's currently available at [hex.pm](https://hex.pm/packages/erlfmt). When a new version is published, we'll need to adjust our code since the API for `erlfmt` will change (it already changed in their `master` branch).
+
 ## Implementing your own Formatter
 
 To create a new formatter, you need to implement the `rebar3_formatter` behaviour. It defines just one callback:
