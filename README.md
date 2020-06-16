@@ -174,12 +174,27 @@ If you want to use @old-reliable's [steamroller](https://github.com/old-reliable
 {plugins, [rebar3_format, steamroller]}.
 
 {format, [
-    {files, ["src/*.erl", "include/*.hrl"]},
-    {ignore, ["src/*_ignore.erl", "src/ignored_file_config.erl"]},
-    {formatter, sr_formatter}, %% The steamroller formatter.
-    {options, #{line_length => 80}}
+{files, ["src/*.erl", "include/*.hrl"]},
+{ignore, ["src/*_ignore.erl", "src/ignored_file_config.erl"]},
+{formatter, sr_formatter}, %% The steamroller formatter.
+{options, #{line_length => 80}}
 ]}.
 ```
+
+### erlfmt
+If you want to use @whatsapp's [erlfmt](https://github.com/whatsapp/erlfmt), you just need to add the following things to your `rebar.config` file:
+
+```erlang
+{plugins, [rebar3_format, erlfmt]}.
+{format, [
+    {files, ["src/*.erl", "include/*.hrl"]},
+    {ignore, ["src/*_ignore.erl", "src/ignored_file_config.erl"]},
+    {formatter, erlfmt_formatter} %% The erlfmt formatter interface.
+]}.
+```
+
+#### Compatibility Note
+`erlfmt_formatter` is compatible with version `v0.1.0` of `erlfmt`, which is the only one that's currently available at [hex.pm](https://hex.pm/packages/erlfmt). When a new version is published, we'll need to adjust our code since the API for `erlfmt` will change (it already changed in their `master` branch).
 
 ## Implementing your own Formatter
 
