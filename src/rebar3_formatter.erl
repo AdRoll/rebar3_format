@@ -1,50 +1,60 @@
 %% @doc Automatic formatter for Erlang modules
 -module(rebar3_formatter).
 
--export([format/3, ignore/3]).
+-export([new/2, format_file/2, ignore/2, action/1]).
 
 -type opts() :: #{output_dir => none | current | file:filename_all(),
                   encoding => none | epp:source_encoding(),
                   action => verify | format,
                   _ => _}.
 -type result() :: changed | unchanged.
+-type state() :: term().
 
--export_type([opts/0, result/0]).
+-opaque t() :: #{module := module(), opts := opts(), state := state()}.
 
--callback format(file:filename_all(), opts()) -> result().
+-export_type([opts/0, result/0, t/0]).
+
+%% Initialize the formatter and generate a state that will be passed in when
+%% calling other callbacks
+-callback init(opts()) -> state().
+%% Format a file.
+%% Note that opts() are not the same as the global ones passed in on init/1.
+%% These opts include per-file options specified with the -format attribute.
+-callback format_file(file:filename_all(), state(), opts()) -> result().
+
+%% @doc Build a formatter.
+-spec new(module(), opts()) -> t().
+new(Module, Opts) ->
+    #{module => Module, opts => Opts, state => Module:init(Opts)}.
 
 %% @doc Format a file.
 %%      Apply formatting rules to a file containing erlang code.
-%%      Use <code>Opts</code> to configure the formatter.
--spec format(file:filename_all(), module(), opts()) -> result().
-format(File, Formatter, Opts) ->
+-spec format_file(file:filename_all(), t()) -> result().
+format_file(File, #{opts := Opts, module := Module, state := State} = Formatter) ->
     case apply_per_file_opts(File, Opts) of
       ignore ->
-          ignore(File, Formatter, Opts),
+          ignore(File, Formatter),
           unchanged;
       FileOpts ->
-          Formatter:format(File, FileOpts)
+          Module:format_file(File, State, FileOpts)
     end.
 
 %% @doc Process an ignored file.
-%% @doc if output dir is not the current one we need to copy the files that we
+%%      If output dir is not the current one we need to copy the files that we
 %%      are not formatting to it
--spec ignore(file:filename_all(), module(), opts()) -> ok.
-ignore(File, _Formatter, Opts) ->
-    case maps:get(output_dir, Opts, current) of
-      current ->
-          ok;
-      none ->
-          ok;
-      OutputDir ->
-          copy_file(File, OutputDir)
-    end.
-
-copy_file(File, OutputDir) ->
+-spec ignore(file:filename_all(), t()) -> ok.
+ignore(File, #{opts := #{output_dir := OutputDir}}) when not is_atom(OutputDir) ->
     OutFile = filename:join(filename:absname(OutputDir), File),
     ok = filelib:ensure_dir(OutFile),
     {ok, _} = file:copy(File, OutFile),
+    ok;
+ignore(_, _) ->
     ok.
+
+%% @doc The action that the formatter will perform.
+-spec action(t()) -> verify | format.
+action(#{opts := Opts}) ->
+    maps:get(action, Opts, format).
 
 %% @doc We need to use quick_parse_file/1 here because the returned format
 %%      is much more manageable than the one returned by parse_file/1

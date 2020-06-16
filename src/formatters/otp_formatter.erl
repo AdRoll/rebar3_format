@@ -14,7 +14,7 @@
 -behaviour(rebar3_formatter).
 -behaviour(rebar3_ast_formatter).
 
--export([format/1, format/2, format/3, best/1, best/2, layout/1, layout/2,
+-export([init/1, format_file/3, format/1, format/3, best/1, best/2, layout/1, layout/2,
          get_ctxt_precedence/1, set_ctxt_precedence/2, get_ctxt_paperwidth/1,
          set_ctxt_paperwidth/2, get_ctxt_linewidth/1, set_ctxt_linewidth/2, get_ctxt_hook/1,
          set_ctxt_hook/2, get_ctxt_user/1, set_ctxt_user/2]).
@@ -168,6 +168,22 @@ get_ctxt_user(Ctxt) -> Ctxt#ctxt.user.
 set_ctxt_user(Ctxt, X) -> Ctxt#ctxt{user = X}.
 
 %% =====================================================================
+%% rebar3_formatter CALLBACKS
+%% =====================================================================
+%% @doc Initialize the formatter and generate a state that will be passed in when
+%%      calling other callbacks.
+-spec init(rebar3_formatter:opts()) -> nostate.
+init(_) -> nostate.
+
+%% @doc Format a file.
+%%      Apply formatting rules to a file containing erlang code.
+%%      Use <code>Opts</code> to configure the formatter.
+-spec format_file(file:filename_all(),
+                  nostate,
+                  rebar3_formatter:opts()) -> rebar3_formatter:result().
+format_file(File, nostate, Opts) -> rebar3_ast_formatter:format(File, ?MODULE, Opts).
+
+%% =====================================================================
 %% @spec format(Tree::syntaxTree()) -> string()
 %% @equiv format(Tree, [])
 
@@ -265,12 +281,6 @@ format(Node, _EmptyLines, Options) ->
     OptList = maps:to_list(Options),
     PreFormatted = prettypr:format(layout(Node, OptList), W, L),
     binary_to_list(unicode:characters_to_binary(PreFormatted, E)).
-
-%% @doc Format a file.
-%%      Apply formatting rules to a file containing erlang code.
-%%      Use <code>Opts</code> to configure the formatter.
--spec format(file:filename_all(), rebar3_formatter:opts()) -> rebar3_formatter:result().
-format(File, Opts) -> rebar3_ast_formatter:format(File, ?MODULE, Opts).
 
 %% =====================================================================
 %% @spec best(Tree::syntaxTree()) -> empty | prettypr:document()

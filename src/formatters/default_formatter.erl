@@ -7,7 +7,7 @@
 -behaviour(rebar3_formatter).
 -behaviour(rebar3_ast_formatter).
 
--export([format/2, format/3]).
+-export([init/1, format_file/3, format/3]).
 
 -import(prettypr,
         [text/1,
@@ -92,11 +92,19 @@ format(Node, EmptyLines, Options) ->
     Formatted = remove_tabs(unicode:characters_to_binary(PreFormatted, E)),
     remove_trailing_spaces(Formatted).
 
+%% @doc Initialize the formatter and generate a state that will be passed in when
+%%      calling other callbacks.
+-spec init(rebar3_formatter:opts()) -> nostate.
+init(_) ->
+    nostate.
+
 %% @doc Format a file.
 %%      Apply formatting rules to a file containing erlang code.
 %%      Use <code>Opts</code> to configure the formatter.
--spec format(file:filename_all(), rebar3_formatter:opts()) -> rebar3_formatter:result().
-format(File, Opts) ->
+-spec format_file(file:filename_all(),
+                  nostate,
+                  rebar3_formatter:opts()) -> rebar3_formatter:result().
+format_file(File, nostate, Opts) ->
     rebar3_ast_formatter:format(File, ?MODULE, Opts).
 
 remove_tabs(Formatted) ->
