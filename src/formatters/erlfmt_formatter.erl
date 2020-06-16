@@ -4,14 +4,22 @@
 
 -behaviour(rebar3_formatter).
 
--export([format/2]).
+-export([init/1, format_file/3]).
+
+%% Initialize the formatter and generate a state that will be passed in when
+%% calling other callbacks
+-spec init(rebar3_formatter:opts()) -> nostate.
+init(_) ->
+    {ok, _} = application:ensure_all_started(erlfmt),
+    nostate.
 
 %% @doc Format a file.
-%%      Apply formatting rules to a file containing erlang code.
-%%      Use <code>Opts</code> to configure the formatter.
--spec format(file:filename_all(), rebar3_formatter:opts()) -> rebar3_formatter:result().
-format(File, OptionsMap) ->
-    {ok, _} = application:ensure_all_started(erlfmt),
+%%      Note that opts() are not the same as the global ones passed in on init/1.
+%%      These opts include per-file options specified with the -format attribute.
+-spec format_file(file:filename_all(),
+                  nostate,
+                  rebar3_formatter:opts()) -> rebar3_formatter:result().
+format_file(File, nostate, OptionsMap) ->
     Out = case maps:get(output_dir, OptionsMap, current) of
             current -> %% Action can only be 'format'
                 replace;

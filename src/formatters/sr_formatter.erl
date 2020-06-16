@@ -4,13 +4,23 @@
 
 -behaviour(rebar3_formatter).
 
--export([format/2]).
+-export([init/1, format_file/3]).
+
+%% @doc Initialize the formatter and generate a state that will be passed in when
+%%      calling other callbacks.
+%% @todo Actually implement what @dtip pointed to on
+%%      https://github.com/AdRoll/rebar3_format/pull/112
+-spec init(rebar3_formatter:opts()) -> nostate.
+init(_) ->
+    nostate.
 
 %% @doc Format a file.
-%%      Apply formatting rules to a file containing erlang code.
-%%      Use <code>Opts</code> to configure the formatter.
--spec format(file:filename_all(), rebar3_formatter:opts()) -> rebar3_formatter:result().
-format(File, OptionsMap) ->
+%%      Note that opts() are not the same as the global ones passed in on init/1.
+%%      These opts include per-file options specified with the -format attribute.
+-spec format_file(file:filename_all(),
+                  nostate,
+                  rebar3_formatter:opts()) -> rebar3_formatter:result().
+format_file(File, nostate, OptionsMap) ->
     Opts = maps:fold(fun parse_opt/3, [], OptionsMap),
     FileToFormat = case maps:get(output_dir, OptionsMap, current) of
                      current ->

@@ -33,15 +33,15 @@ do(State) ->
     {Args, _} = rebar_state:command_parsed_args(State),
     Action = get_action(Args),
     OutputDirOpt = get_output_dir(Action, Args),
-    Formatter = get_formatter(State),
     Opts = maps:put(action, Action, maps:put(output_dir, OutputDirOpt, get_opts(State))),
     rebar_api:debug("Formatter options: ~p", [Opts]),
+    Formatter = get_formatter(State, Opts),
     IgnoredFiles = get_ignored_files(State),
     Files = get_files(Args, State) -- IgnoredFiles,
     rebar_api:debug("Found ~p files: ~p", [length(Files), Files]),
-    case format(Files, Formatter, Opts) of
+    case format_file(Files, Formatter) of
       ok ->
-          ignore(IgnoredFiles, Formatter, Opts),
+          ignore(IgnoredFiles, Formatter),
           {ok, State};
       {error, Error} ->
           {error, format_error(Error)}
@@ -103,27 +103,29 @@ get_output_dir(Action, Args) ->
           none
     end.
 
--spec get_formatter(rebar_state:t()) -> module().
-get_formatter(State) ->
-    proplists:get_value(formatter, rebar_state:get(State, format, []), default_formatter).
+-spec get_formatter(rebar_state:t(), rebar3_formatter:opts()) -> rebar3_formatter:t().
+get_formatter(State, Opts) ->
+    Module = proplists:get_value(formatter,
+                                 rebar_state:get(State, format, []),
+                                 default_formatter),
+    rebar3_formatter:new(Module, Opts).
 
 -spec get_opts(rebar_state:t()) -> rebar3_formatter:opts().
 get_opts(State) ->
     proplists:get_value(options, rebar_state:get(State, format, []), #{}).
 
--spec format([file:filename_all()], module(), rebar3_formatter:opts()) -> ok |
-                                                                          {error, term()}.
-format(Files, Formatter, Opts) ->
+-spec format_file([file:filename_all()], rebar3_formatter:t()) -> ok | {error, term()}.
+format_file(Files, Formatter) ->
     try lists:filter(fun (File) ->
-                             rebar_api:debug("Formatting ~p with ~p", [File, Opts]),
-                             changed == rebar3_formatter:format(File, Formatter, Opts)
+                             rebar_api:debug("Formatting ~p with ~p", [File, Formatter]),
+                             changed == rebar3_formatter:format_file(File, Formatter)
                      end,
                      Files)
     of
       [] ->
           ok;
       ChangedFiles ->
-          case maps:get(action, Opts) of
+          case rebar3_formatter:action(Formatter) of
             format ->
                 ok;
             verify ->
@@ -139,8 +141,8 @@ format(Files, Formatter, Opts) ->
     end.
 
 %% @doc Process ignored files
-ignore(IgnoredFiles, Formatter, Opts) ->
+ignore(IgnoredFiles, Formatter) ->
     lists:foreach(fun (File) ->
-                          ok = rebar3_formatter:ignore(File, Formatter, Opts)
+                          ok = rebar3_formatter:ignore(File, Formatter)
                   end,
                   IgnoredFiles).
