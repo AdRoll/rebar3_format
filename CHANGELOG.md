@@ -1,5 +1,27 @@
 # Changelog
 
+## [0.3.1](https://github.com/AdRoll/rebar3_format/tree/0.3.1) (2020-06-16)
+
+[Full Changelog](https://github.com/AdRoll/rebar3_format/compare/0.3.0...0.3.1)
+
+**Fixed bugs:**
+
+- Defining a type called `error\(\)` leads to `modified\_ast` error in some cases [\#108](https://github.com/AdRoll/rebar3_format/issues/108)
+
+**Closed issues:**
+
+- Integrate with other formatters [\#110](https://github.com/AdRoll/rebar3_format/issues/110)
+
+**Merged pull requests:**
+
+- \[Fix \#110\] Refactor rebar3\_formatter behavior [\#116](https://github.com/AdRoll/rebar3_format/pull/116) ([elbrujohalcon](https://github.com/elbrujohalcon))
+- \[\#110\] Allow users to use erlfmt from within rebar3 format [\#115](https://github.com/AdRoll/rebar3_format/pull/115) ([elbrujohalcon](https://github.com/elbrujohalcon))
+- \[\#110\] Prepare for external formatters a bit more [\#114](https://github.com/AdRoll/rebar3_format/pull/114) ([elbrujohalcon](https://github.com/elbrujohalcon))
+- Add badges to README [\#113](https://github.com/AdRoll/rebar3_format/pull/113) ([juanbono](https://github.com/juanbono))
+- \[\#110\] Add Steamroller integration [\#112](https://github.com/AdRoll/rebar3_format/pull/112) ([elbrujohalcon](https://github.com/elbrujohalcon))
+- \[\#110\] A little refactor to simplify addition of new external formatters [\#111](https://github.com/AdRoll/rebar3_format/pull/111) ([elbrujohalcon](https://github.com/elbrujohalcon))
+- Fix modified\_ast issue [\#109](https://github.com/AdRoll/rebar3_format/pull/109) ([juanbono](https://github.com/juanbono))
+
 ## [0.3.0](https://github.com/AdRoll/rebar3_format/tree/0.3.0) (2020-05-27)
 
 [Full Changelog](https://github.com/AdRoll/rebar3_format/compare/0.2.3...0.3.0)
@@ -19,12 +41,12 @@
 
 **Merged pull requests:**
 
-- \[Fix \#88\] Add inline\_attributes as a separate flag to inline\_items [\#106](https://github.com/AdRoll/rebar3_format/pull/106) ([elbrujohalcon](https://github.com/elbrujohalcon))
-- Fix \#93: Preserve char representations [\#104](https://github.com/AdRoll/rebar3_format/pull/104) ([elbrujohalcon](https://github.com/elbrujohalcon))
-- Fix \#58: Properly dodge and undodge macros on specs and types [\#103](https://github.com/AdRoll/rebar3_format/pull/103) ([elbrujohalcon](https://github.com/elbrujohalcon))
 - Show line number of unparsable file [\#102](https://github.com/AdRoll/rebar3_format/pull/102) ([sebastiw](https://github.com/sebastiw))
 - \[\#88\] Clarify description of  in README.md [\#101](https://github.com/AdRoll/rebar3_format/pull/101) ([elbrujohalcon](https://github.com/elbrujohalcon))
 - Fix \#89: on\_load [\#100](https://github.com/AdRoll/rebar3_format/pull/100) ([elbrujohalcon](https://github.com/elbrujohalcon))
+- \[Fix \#88\] Add inline\_attributes as a separate flag to inline\_items [\#106](https://github.com/AdRoll/rebar3_format/pull/106) ([elbrujohalcon](https://github.com/elbrujohalcon))
+- Fix \#93: Preserve char representations [\#104](https://github.com/AdRoll/rebar3_format/pull/104) ([elbrujohalcon](https://github.com/elbrujohalcon))
+- Fix \#58: Properly dodge and undodge macros on specs and types [\#103](https://github.com/AdRoll/rebar3_format/pull/103) ([elbrujohalcon](https://github.com/elbrujohalcon))
 - Add support for file ignoring [\#91](https://github.com/AdRoll/rebar3_format/pull/91) ([juanbono](https://github.com/juanbono))
 
 ## [0.2.3](https://github.com/AdRoll/rebar3_format/tree/0.2.3) (2020-04-14)
