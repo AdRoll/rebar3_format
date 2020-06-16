@@ -167,6 +167,20 @@ That way each developer can read code in the way they understand it better, writ
 Through `rebar3 format`, you can use other formatters that are not included in this repository. That way you can follow our proposed workflow and allow each developer to format the code with their favorite formatter using rebar3 plugins while still maintaining an unique _canonical formatter_ when pushing to your central git repository.
 You also get `-format` attribute compliance (including `-format ignore.`) for free, since they're respected when using any formatter.
 
+### Steamroller
+If you want to use @old-reliable's [steamroller](https://github.com/old-reliable/steamroller), you just need to add the following things to your `rebar.config` file:
+
+```erlang
+{plugins, [rebar3_format, steamroller]}.
+
+{format, [
+{files, ["src/*.erl", "include/*.hrl"]},
+{ignore, ["src/*_ignore.erl", "src/ignored_file_config.erl"]},
+{formatter, sr_formatter}, %% The steamroller formatter.
+{options, #{line_length => 80}}
+]}.
+```
+
 ### erlfmt
 If you want to use @whatsapp's [erlfmt](https://github.com/whatsapp/erlfmt), you just need to add the following things to your `rebar.config` file:
 
