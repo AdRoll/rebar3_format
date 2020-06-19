@@ -220,6 +220,14 @@ That means you need to write a function that receives a filename and a map with 
 It's a good practice, although not enforced by the formatter itself to respect `-format` attributes in files as the formatters provided in this repo do.
 To remove the need for parsing and writing files, you can use the `rebar3_ast_formatter` module/behaviour as `default_formatter` and `otp_formatter` do.
 
+## Editor Integration
+
+### Visual Studio Code
+
+You can use rebar3_format from Visual Studio Code with the
+[Erlang Formatter](https://marketplace.visualstudio.com/items?itemName=szTheory.erlang-formatter)
+extension.
+
 ## Contribute
 
 To contribute to rebar3_format, please refer to [CONTRIBUTING](CONTRIBUTING.md).
