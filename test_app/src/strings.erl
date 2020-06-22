@@ -8,7 +8,8 @@ all() ->
   heredoc(),
   superlong(),
   repeat(),
-  multiple_calls().
+  multiple_calls(),
+  characters().
 
 
 superlong() ->
@@ -48,3 +49,11 @@ multiple_calls_more() ->
   repeat(),
   repeat(),
   repeat().
+
+characters() ->
+    {
+    "\x63haracters with strange representations are preserved"
+    ++ " in small strings",
+    "\x62ut they're not"
+    " preserved in multiblock strings"
+    }.

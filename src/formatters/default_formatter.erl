@@ -220,7 +220,7 @@ lay_no_comments(Node, Ctxt) ->
       char ->
           text(tidy_char(Node, Ctxt#ctxt.encoding));
       string ->
-          lay_string(erl_syntax:string_literal(Node, Ctxt#ctxt.encoding), Ctxt);
+          lay_string(Node, Ctxt);
       nil ->
           text("[]");
       tuple ->
@@ -872,7 +872,23 @@ maybe_parentheses(D, Prec, Ctxt) ->
           D
     end.
 
-lay_string(S, Ctxt) ->
+lay_string(Node, Ctxt) ->
+    S0 = erl_syntax:string_literal(Node, Ctxt#ctxt.encoding),
+    Txt = get_node_text(Node),
+    S = try {erl_scan:string(S0), erl_scan:string(Txt)} of
+          {Same, Same} ->
+              %% They're 'semantically' the same, but syntactically different
+              Txt;
+          {_, _} ->
+              %% They're 'semantically' different. This might be the case when
+              %% the parser truncates a multi-line string. Or if the node text is
+              %% undefined.
+              S0
+        catch
+          _:_ ->
+              %% Probably malformed node text
+              S0
+        end,
     %% S includes leading/trailing double-quote characters. The segment
     %% width is 2/3 of the ribbon width - this seems to work well.
     W = Ctxt#ctxt.ribbon * 2 div 3,
