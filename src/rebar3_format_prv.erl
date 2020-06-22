@@ -108,7 +108,7 @@ get_formatter(State, Opts) ->
     Module = proplists:get_value(formatter,
                                  rebar_state:get(State, format, []),
                                  default_formatter),
-    rebar3_formatter:new(Module, Opts).
+    rebar3_formatter:new(Module, Opts, State).
 
 -spec get_opts(rebar_state:t()) -> rebar3_formatter:opts().
 get_opts(State) ->

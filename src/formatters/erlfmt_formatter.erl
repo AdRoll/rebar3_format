@@ -4,12 +4,12 @@
 
 -behaviour(rebar3_formatter).
 
--export([init/1, format_file/3]).
+-export([init/2, format_file/3]).
 
 %% Initialize the formatter and generate a state that will be passed in when
 %% calling other callbacks
--spec init(rebar3_formatter:opts()) -> nostate.
-init(_) ->
+-spec init(rebar3_formatter:opts(), undefined | rebar_state:t()) -> nostate.
+init(_, _) ->
     {ok, _} = application:ensure_all_started(erlfmt),
     nostate.
 

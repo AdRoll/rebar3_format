@@ -7,7 +7,7 @@
 -behaviour(rebar3_formatter).
 -behaviour(rebar3_ast_formatter).
 
--export([init/1, format_file/3, format/3]).
+-export([init/2, format_file/3, format/3]).
 
 -import(prettypr,
         [text/1,
@@ -94,8 +94,8 @@ format(Node, EmptyLines, Options) ->
 
 %% @doc Initialize the formatter and generate a state that will be passed in when
 %%      calling other callbacks.
--spec init(rebar3_formatter:opts()) -> nostate.
-init(_) ->
+-spec init(rebar3_formatter:opts(), undefined | rebar_state:t()) -> nostate.
+init(_, _) ->
     nostate.
 
 %% @doc Format a file.
