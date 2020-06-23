@@ -14,7 +14,7 @@
 -behaviour(rebar3_formatter).
 -behaviour(rebar3_ast_formatter).
 
--export([init/1, format_file/3, format/1, format/3, best/1, best/2, layout/1, layout/2,
+-export([init/2, format_file/3, format/1, format/3, best/1, best/2, layout/1, layout/2,
          get_ctxt_precedence/1, set_ctxt_precedence/2, get_ctxt_paperwidth/1,
          set_ctxt_paperwidth/2, get_ctxt_linewidth/1, set_ctxt_linewidth/2, get_ctxt_hook/1,
          set_ctxt_hook/2, get_ctxt_user/1, set_ctxt_user/2]).
@@ -172,8 +172,8 @@ set_ctxt_user(Ctxt, X) -> Ctxt#ctxt{user = X}.
 %% =====================================================================
 %% @doc Initialize the formatter and generate a state that will be passed in when
 %%      calling other callbacks.
--spec init(rebar3_formatter:opts()) -> nostate.
-init(_) -> nostate.
+-spec init(rebar3_formatter:opts(), undefined | rebar_state:t()) -> nostate.
+init(_, _) -> nostate.
 
 %% @doc Format a file.
 %%      Apply formatting rules to a file containing erlang code.

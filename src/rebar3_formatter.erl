@@ -1,7 +1,7 @@
 %% @doc Automatic formatter for Erlang modules
 -module(rebar3_formatter).
 
--export([new/2, format_file/2, ignore/2, action/1]).
+-export([new/3, format_file/2, ignore/2, action/1]).
 
 -type opts() :: #{output_dir => none | current | file:filename_all(),
                   encoding => none | epp:source_encoding(),
@@ -16,16 +16,16 @@
 
 %% Initialize the formatter and generate a state that will be passed in when
 %% calling other callbacks
--callback init(opts()) -> state().
+-callback init(opts(), undefined | rebar_state:t()) -> state().
 %% Format a file.
-%% Note that opts() are not the same as the global ones passed in on init/1.
+%% Note that opts() are not the same as the global ones passed in on init/2.
 %% These opts include per-file options specified with the -format attribute.
 -callback format_file(file:filename_all(), state(), opts()) -> result().
 
 %% @doc Build a formatter.
--spec new(module(), opts()) -> t().
-new(Module, Opts) ->
-    #{module => Module, opts => Opts, state => Module:init(Opts)}.
+-spec new(module(), opts(), undefined | rebar_state:t()) -> t().
+new(Module, Opts, RebarState) ->
+    #{module => Module, opts => Opts, state => Module:init(Opts, RebarState)}.
 
 %% @doc Format a file.
 %%      Apply formatting rules to a file containing erlang code.

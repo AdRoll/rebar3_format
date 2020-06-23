@@ -2,7 +2,11 @@
 %%%      steamroller from old-reliable's steamroller.
 -module(steamroller).
 
--export([format_file/2, validator/1]).
+-export([opts/2, format_file/2, validator/1]).
+
+-spec opts(proplists:proplist(), rebar_state:t()) -> proplists:proplist().
+opts(Opts, _) ->
+    Opts.
 
 -spec validator(fun((binary(), [any()]) -> ok | {error, any()})) -> ok.
 validator(Fun) ->
