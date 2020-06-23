@@ -60,6 +60,7 @@
          force_inlining = false :: boolean(),
          inline_clause_bodies = false :: boolean(),
          inline_expressions = false :: boolean(),
+         unquote_atoms = true :: boolean(),
          empty_lines = [] :: [pos_integer()],
          encoding = epp:default_encoding() :: epp:source_encoding()}).
 
@@ -141,6 +142,7 @@ layout(Node, EmptyLines, Options) ->
               inline_expressions = maps:get(inline_expressions, Options, false),
               inline_items = maps:get(inline_items, Options, {when_over, 25}),
               inline_attributes = maps:get(inline_attributes, Options, all),
+              unquote_atoms = maps:get(unquote_atoms, Options, true),
               empty_lines = EmptyLines,
               encoding = maps:get(encoding, Options, epp:default_encoding())}).
 
@@ -212,7 +214,7 @@ lay_no_comments(Node, Ctxt) ->
       variable ->
           text(erl_syntax:variable_literal(Node));
       atom ->
-          text(erl_syntax:atom_literal(Node, Ctxt#ctxt.encoding));
+          text(tidy_atom(Node, Ctxt));
       integer ->
           text(tidy_integer(Node));
       float ->
@@ -1117,6 +1119,21 @@ tidy_char(Node, Encoding) ->
           erl_syntax:char_literal(Node, Encoding);
       Text ->
           Text
+    end.
+
+tidy_atom(Node, #ctxt{encoding = Encoding, unquote_atoms = true}) ->
+    erl_syntax:atom_literal(Node, Encoding);
+tidy_atom(Node, #ctxt{encoding = Encoding}) ->
+    case erl_syntax:is_tree(Node) of
+      true -> %% It's not exactly an atom (e.g. module, export, spec)
+          erl_syntax:atom_literal(Node, Encoding);
+      false ->
+          case get_node_text(Node) of
+            undefined ->
+                erl_syntax:atom_literal(Node, Encoding);
+            Text ->
+                Text
+          end
     end.
 
 %% @doc If we captured the original text for the number, then we use it.
