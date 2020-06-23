@@ -5,7 +5,7 @@
 -format #{inline_expressions => true}.
 
 all() ->
-    heredoc(), superlong(), repeat(), multiple_calls().
+    heredoc(), superlong(), repeat(), multiple_calls(), characters().
 
 superlong() ->
     "This is a super super super super super super super super super "
@@ -49,3 +49,7 @@ multiple_calls_more() ->
     repeat(),
     repeat(),
     repeat().
+
+characters() ->
+    {"\x63haracters with strange representations are preserved" ++ " in small strings",
+     "but they're not preserved in multiblock strings"}.
