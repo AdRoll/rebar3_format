@@ -40,7 +40,13 @@ format_file(File, nostate, OptionsMap) ->
 
     {ok, Code} = file:read_file(File),
 
-    try erlfmt:format_file(File, Out) of
+    Pragma = case maps:get(require_pragma, OptionsMap, false) of
+               true ->
+                   require;
+               false ->
+                   ignore
+             end,
+    try erlfmt:format_file(File, {Pragma, Out}) of
       {ok, _} ->
           case file:read_file(OutFile) of
             {ok, Code} ->
@@ -51,6 +57,21 @@ format_file(File, nostate, OptionsMap) ->
       {error, Reason} ->
           erlang:error(Reason)
     catch
+      error:function_clause ->
+          try erlfmt:format_file(File, Out) of
+            {ok, _} ->
+                case file:read_file(OutFile) of
+                  {ok, Code} ->
+                      unchanged;
+                  {ok, _} ->
+                      changed
+                end;
+            {error, Reason} ->
+                erlang:error(Reason)
+          catch
+            _:{error, Reason} ->
+                erlang:error(Reason)
+          end;
       _:{error, Reason} ->
           erlang:error(Reason)
     end.
