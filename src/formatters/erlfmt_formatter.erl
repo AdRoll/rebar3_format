@@ -47,6 +47,8 @@ format_file(File, nostate, OptionsMap) ->
                    ignore
              end,
     try erlfmt:format_file(File, {Pragma, Out}) of
+      skip ->
+          unchanged;
       {ok, _} ->
           case file:read_file(OutFile) of
             {ok, Code} ->

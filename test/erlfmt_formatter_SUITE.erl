@@ -73,7 +73,7 @@ pragma(_Config) ->
     erlfmt:validator(fun (File, {Pragma, _}) ->
                              "brackets.erl" = filename:basename(File),
                              require = Pragma,
-                             {ok, []}
+                             skip
                      end),
     Args2 = rebar_state:command_parsed_args(init(#{require_pragma => true}), {[], something}),
     {ok, _} = rebar3_format_prv:do(Args2),
