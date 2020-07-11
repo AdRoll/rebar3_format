@@ -6,8 +6,9 @@
 -type error_info() :: {file:name_all(), erl_anno:location(), module(), Reason :: any()}.
 -type out() :: standard_out | {path, file:name_all()} | replace.
 
--spec validator(fun((file:name_all(), out()) -> {ok, [error_info()]} |
-                                                {error, error_info()})) -> ok.
+-spec validator(fun((file:name_all(), out()) ->
+                        {ok, [error_info()]} | {error, error_info()})) ->
+                   ok.
 validator(Fun) ->
     application:set_env(rebar3_format, erlfmt_formatter_validator, Fun).
 

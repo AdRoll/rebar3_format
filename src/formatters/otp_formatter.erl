@@ -178,9 +178,8 @@ init(_, _) -> nostate.
 %% @doc Format a file.
 %%      Apply formatting rules to a file containing erlang code.
 %%      Use <code>Opts</code> to configure the formatter.
--spec format_file(file:filename_all(),
-                  nostate,
-                  rebar3_formatter:opts()) -> rebar3_formatter:result().
+-spec format_file(file:filename_all(), nostate, rebar3_formatter:opts()) ->
+                     rebar3_formatter:result().
 format_file(File, nostate, Opts) -> rebar3_ast_formatter:format(File, ?MODULE, Opts).
 
 %% =====================================================================
@@ -271,9 +270,8 @@ format(Node) -> format(Node, [], #{}).
 %% @see get_ctxt_user/1
 %% @see set_ctxt_user/2
 
--spec format(erl_syntax:syntaxTree(),
-             [pos_integer()],
-             rebar3_formatter:opts()) -> string().
+-spec format(erl_syntax:syntaxTree(), [pos_integer()], rebar3_formatter:opts()) ->
+                string().
 format(Node, _EmptyLines, Options) ->
     W = maps:get(paper, Options, ?PAPER),
     L = maps:get(ribbon, Options, ?RIBBON),

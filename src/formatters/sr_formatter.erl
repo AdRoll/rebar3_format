@@ -23,9 +23,8 @@ init(Opts, RebarState) ->
 %% @doc Format a file.
 %%      Note that opts() are not the same as the global ones passed in on init/1.
 %%      These opts include per-file options specified with the -format attribute.
--spec format_file(file:filename_all(),
-                  state(),
-                  rebar3_formatter:opts()) -> rebar3_formatter:result().
+-spec format_file(file:filename_all(), state(), rebar3_formatter:opts()) ->
+                     rebar3_formatter:result().
 format_file(File, #{opts := GlobalOpts}, OptionsMap) ->
     %% NOTE: This works because we know that...
     %%       1. Opts are treated as a proplist in steamroller

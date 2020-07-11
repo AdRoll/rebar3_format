@@ -27,7 +27,8 @@ foo1(#{a := 1, b := V}) ->
 
 -spec foo2(Type1 :: some_type(),
            Type2 :: some_other_type(),
-           Map :: #{get => value, value => binary()}) -> binary().
+           Map :: #{get => value, value => binary()}) ->
+              binary().
 foo2(Type1, {a, #{"a" := _}}, #{get := value, value := B}) when is_map(Type1) ->
     B.
 

@@ -5,22 +5,12 @@
 -compile(export_all).
 
 -callback f(inline, this, clause, _) -> [just | like];
-           (inline,
-            this,
-            other,
-            much_much_larger_clause) -> [please |
-                                         mister |
-                                         rebar3 |
-                                         formatter].
+           (inline, this, other, much_much_larger_clause) ->
+               [please | mister | rebar3 | formatter].
 
 -spec f_cs(inline, this, clause, _) -> [just | like];
-          (inline,
-           this,
-           other,
-           much_much_larger_clause) -> [please |
-                                        mister |
-                                        rebar3 |
-                                        formatter].
+          (inline, this, other, much_much_larger_clause) ->
+              [please | mister | rebar3 | formatter].
 f_cs(inline, this, clause, _) ->
     [just, like];
 f_cs(inline, this, other, much_much_larger_clause) ->

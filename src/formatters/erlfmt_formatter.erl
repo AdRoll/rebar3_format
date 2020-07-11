@@ -16,9 +16,8 @@ init(_, _) ->
 %% @doc Format a file.
 %%      Note that opts() are not the same as the global ones passed in on init/1.
 %%      These opts include per-file options specified with the -format attribute.
--spec format_file(file:filename_all(),
-                  nostate,
-                  rebar3_formatter:opts()) -> rebar3_formatter:result().
+-spec format_file(file:filename_all(), nostate, rebar3_formatter:opts()) ->
+                     rebar3_formatter:result().
 format_file(File, nostate, OptionsMap) ->
     Out = case maps:get(output_dir, OptionsMap, current) of
             current -> %% Action can only be 'format'

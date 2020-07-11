@@ -3,16 +3,14 @@
 
 -export([format/3]).
 
--callback format(erl_syntax:forms(),
-                 [pos_integer()],
-                 rebar3_formatter:opts()) -> string().
+-callback format(erl_syntax:forms(), [pos_integer()], rebar3_formatter:opts()) ->
+                    string().
 
 %% @doc Format a file.
 %%      Apply formatting rules to a file containing erlang code.
 %%      Use <code>Opts</code> to configure the formatter.
--spec format(file:filename_all(),
-             module(),
-             rebar3_formatter:opts()) -> rebar3_formatter:result().
+-spec format(file:filename_all(), module(), rebar3_formatter:opts()) ->
+                rebar3_formatter:result().
 format(File, Formatter, Opts) ->
     AST = get_ast(File),
     QuickAST = get_quick_ast(File),
