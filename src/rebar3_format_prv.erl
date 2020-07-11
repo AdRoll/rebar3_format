@@ -6,25 +6,26 @@
 %% @private
 -spec init(rebar_state:t()) -> {ok, rebar_state:t()}.
 init(State) ->
-    Provider = providers:create([{name, format},
-                                 {module, rebar3_format_prv},
-                                 {bare, true},
-                                 {deps, [app_discovery]},
-                                 {example, "rebar3 format"},
-                                 {opts,
-                                  [{files,
-                                    $f,
-                                    "files",
-                                    string,
-                                    "List of files and directories to be formatted"},
-                                   {verify, $v, "verify", boolean, "Just verify, don't format"},
-                                   {output,
-                                    $o,
-                                    "output",
-                                    string,
-                                    "Output directory for the formatted files"}]},
-                                 {short_desc, "A rebar plugin for code formatting"},
-                                 {desc, ""}]),
+    Provider =
+        providers:create([{name, format},
+                          {module, rebar3_format_prv},
+                          {bare, true},
+                          {deps, [app_discovery]},
+                          {example, "rebar3 format"},
+                          {opts,
+                           [{files,
+                             $f,
+                             "files",
+                             string,
+                             "List of files and directories to be formatted"},
+                            {verify, $v, "verify", boolean, "Just verify, don't format"},
+                            {output,
+                             $o,
+                             "output",
+                             string,
+                             "Output directory for the formatted files"}]},
+                          {short_desc, "A rebar plugin for code formatting"},
+                          {desc, ""}]),
     {ok, rebar_state:add_provider(State, Provider)}.
 
 %% @private
@@ -53,8 +54,9 @@ format_error({unformatted_files, Files}) ->
     Msg = "The following files are not properly formatted:\n~p",
     io_lib:format(Msg, [Files]);
 format_error({erl_parse, File, Error}) ->
-    Msg = "Error while parsing ~s: ~p.\n\tTry running with DEBUG=1 for "
-          "more information",
+    Msg =
+        "Error while parsing ~s: ~p.\n\tTry running with DEBUG=1 for "
+        "more information",
     io_lib:format(Msg, [File, Error]);
 format_error(Reason) ->
     io_lib:format("Unknown Formatting Error: ~p", [Reason]).
@@ -70,18 +72,19 @@ get_action(Args) ->
 
 -spec get_files(proplists:proplist(), rebar_state:t()) -> [file:filename_all()].
 get_files(Args, State) ->
-    Patterns = case lists:keyfind(files, 1, Args) of
-                 {files, Wildcard} ->
-                     [Wildcard];
-                 false ->
-                     FormatConfig = rebar_state:get(State, format, []),
-                     case proplists:get_value(files, FormatConfig, undefined) of
-                       undefined ->
-                           ["src/**/*.[he]rl"];
-                       Wildcards ->
-                           Wildcards
-                     end
-               end,
+    Patterns =
+        case lists:keyfind(files, 1, Args) of
+          {files, Wildcard} ->
+              [Wildcard];
+          false ->
+              FormatConfig = rebar_state:get(State, format, []),
+              case proplists:get_value(files, FormatConfig, undefined) of
+                undefined ->
+                    ["src/**/*.[he]rl"];
+                Wildcards ->
+                    Wildcards
+              end
+        end,
     [File || Pattern <- Patterns, File <- filelib:wildcard(Pattern)].
 
 -spec get_ignored_files(rebar_state:t()) -> [file:filename_all()].
@@ -105,9 +108,8 @@ get_output_dir(Action, Args) ->
 
 -spec get_formatter(rebar_state:t(), rebar3_formatter:opts()) -> rebar3_formatter:t().
 get_formatter(State, Opts) ->
-    Module = proplists:get_value(formatter,
-                                 rebar_state:get(State, format, []),
-                                 default_formatter),
+    Module =
+        proplists:get_value(formatter, rebar_state:get(State, format, []), default_formatter),
     rebar3_formatter:new(Module, Opts, State).
 
 -spec get_opts(rebar_state:t()) -> rebar3_formatter:opts().

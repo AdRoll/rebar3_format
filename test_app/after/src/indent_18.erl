@@ -21,8 +21,8 @@ infix_expr() ->
                  using:sub_indent(8).
 
 prefix_expr() ->
- ThisPrefixExpressionShould = not
-                                      use:break_indent(1).
+ ThisPrefixExpressionShould =
+  not use:break_indent(1).
 
 match_expr() ->
  ThisVeryVeryVeryLongMatchExpression =

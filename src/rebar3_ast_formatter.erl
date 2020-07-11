@@ -19,12 +19,13 @@ format(File, Formatter, Opts) ->
     Comments = get_comments(File),
     {ok, Original} = file:read_file(File),
     Formatted = format(File, AST, Formatter, Comments, Opts),
-    Result = case Formatted of
-               Original ->
-                   unchanged;
-               _ ->
-                   changed
-             end,
+    Result =
+        case Formatted of
+          Original ->
+              unchanged;
+          _ ->
+              changed
+        end,
     case maybe_save_file(maps:get(output_dir, Opts), File, Formatted) of
       none ->
           Result;
@@ -79,16 +80,17 @@ empty_lines(File) ->
     {ok, Data} = file:read_file(File),
     List = binary:split(Data, [<<"\n">>], [global, trim]),
     {ok, NonEmptyLineRe} = re:compile("\\S"),
-    {Res, _} = lists:foldl(fun (Line, {EmptyLines, N}) ->
-                                   case re:run(Line, NonEmptyLineRe) of
-                                     {match, _} ->
-                                         {EmptyLines, N + 1};
-                                     nomatch ->
-                                         {[N | EmptyLines], N + 1}
-                                   end
-                           end,
-                           {[], 1},
-                           List),
+    {Res, _} =
+        lists:foldl(fun (Line, {EmptyLines, N}) ->
+                            case re:run(Line, NonEmptyLineRe) of
+                              {match, _} ->
+                                  {EmptyLines, N + 1};
+                              nomatch ->
+                                  {[N | EmptyLines], N + 1}
+                            end
+                    end,
+                    {[], 1},
+                    List),
     lists:reverse(Res).
 
 insert_last_line(Formatted) ->

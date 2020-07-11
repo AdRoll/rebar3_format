@@ -28,14 +28,16 @@ long_tuple() ->
      needs, indentation}.
 
 nested() ->
-    First = {a, long, long, tuple, with,
-             [a, really, very, long, long, list,
-              in, it],
-             plus, other, things},
-    Then = [a, long, long, list, with,
-            {a, really, very, long, long, tuple,
-             in, it},
-            plus, other, things],
+    First =
+        {a, long, long, tuple, with,
+         [a, really, very, long, long, list, in,
+          it],
+         plus, other, things},
+    Then =
+        [a, long, long, list, with,
+         {a, really, very, long, long, tuple, in,
+          it},
+         plus, other, things],
     finally:a_long_function_call(with, many,
                                  arguments, like,
                                  First, Then,
