@@ -90,9 +90,8 @@ get_ignored_files(State) ->
     Patterns = proplists:get_value(ignore, FormatConfig, []),
     [IgnoredFile || Pat <- Patterns, IgnoredFile <- filelib:wildcard(Pat)].
 
--spec get_output_dir(format | verify, proplists:proplist()) -> none |
-                                                               current |
-                                                               file:filename_all().
+-spec get_output_dir(format | verify, proplists:proplist()) ->
+                        none | current | file:filename_all().
 get_output_dir(Action, Args) ->
     case {lists:keyfind(output, 1, Args), Action} of
       {{output, OutputDir}, _} ->

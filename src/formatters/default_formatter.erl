@@ -76,9 +76,8 @@ reset_prec(Ctxt) ->
 %% @see erl_syntax
 %% @see format/1
 %% @see layout/2
--spec format(erl_syntax:syntaxTree(),
-             [pos_integer()],
-             rebar3_formatter:opts()) -> string().
+-spec format(erl_syntax:syntaxTree(), [pos_integer()], rebar3_formatter:opts()) ->
+                string().
 format(Node, EmptyLines, Options) ->
     W = maps:get(paper, Options, ?PAPER),
     L = maps:get(ribbon, Options, ?RIBBON),
@@ -102,9 +101,8 @@ init(_, _) ->
 %% @doc Format a file.
 %%      Apply formatting rules to a file containing erlang code.
 %%      Use <code>Opts</code> to configure the formatter.
--spec format_file(file:filename_all(),
-                  nostate,
-                  rebar3_formatter:opts()) -> rebar3_formatter:result().
+-spec format_file(file:filename_all(), nostate, rebar3_formatter:opts()) ->
+                     rebar3_formatter:result().
 format_file(File, nostate, Opts) ->
     rebar3_ast_formatter:format(File, ?MODULE, Opts).
 
@@ -129,9 +127,8 @@ remove_trailing_spaces(Formatted) ->
 %%
 %% @see prettypr
 %% @see format/2
--spec layout(erl_syntax:syntaxTree(),
-             [pos_integer()],
-             rebar3_formatter:opts()) -> prettypr:document().
+-spec layout(erl_syntax:syntaxTree(), [pos_integer()], rebar3_formatter:opts()) ->
+                prettypr:document().
 layout(Node, EmptyLines, Options) ->
     lay(Node,
         #ctxt{paper = maps:get(paper, Options, ?PAPER),
@@ -697,7 +694,8 @@ lay_no_comments(Node, Ctxt) ->
                end,
           D2 = lay(erl_syntax:function_type_return(Node), Ctxt1),
           beside(lay_text_float(Before),
-                 beside(D1, beside(lay_text_float(" -> "), beside(D2, lay_text_float(After)))));
+                 sep([beside(D1, lay_text_float(" ->")),
+                      nest(Ctxt#ctxt.break_indent, beside(D2, lay_text_float(After)))]));
       constraint ->
           Name = erl_syntax:constraint_argument(Node),
           Args = erl_syntax:constraint_body(Node),

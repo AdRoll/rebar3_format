@@ -166,27 +166,29 @@ long_list() ->
       very_very_long_name_3
       | y:z()]].
 
--spec long_fun() -> fun((X1,
-                         X2,
-                         X3,
-                         X4,
-                         Y1,
-                         Y2,
-                         Y3,
-                         Y4,
-                         VeryVeryLongName1,
-                         VeryVeryLongName2,
-                         VeryVeryLongName3) -> {X1,
-                                                X2,
-                                                X3,
-                                                X4,
-                                                Y1,
-                                                Y2,
-                                                Y3,
-                                                Y4,
-                                                VeryVeryLongName1,
-                                                VeryVeryLongName2,
-                                                VeryVeryLongName3}).
+-spec long_fun() ->
+                  fun((X1,
+                       X2,
+                       X3,
+                       X4,
+                       Y1,
+                       Y2,
+                       Y3,
+                       Y4,
+                       VeryVeryLongName1,
+                       VeryVeryLongName2,
+                       VeryVeryLongName3) ->
+                          {X1,
+                           X2,
+                           X3,
+                           X4,
+                           Y1,
+                           Y2,
+                           Y3,
+                           Y4,
+                           VeryVeryLongName1,
+                           VeryVeryLongName2,
+                           VeryVeryLongName3}).
 long_fun() ->
     fun (X1,
          X2,
@@ -289,7 +291,8 @@ long_bc() ->
                    float(),
                    non_neg_integer(),
                    non_neg_integer(),
-                   non_neg_integer()) -> number().
+                   non_neg_integer()) ->
+                      number().
 long_arglist(X1,
              X2,
              X3,
@@ -300,15 +303,16 @@ long_arglist(X1,
     X1 + X2 + X3 + Y1 + VeryVeryLongName1 + VeryVeryLongName2 +
       VeryVeryLongName3.
 
--spec long_rec() -> #long_rec{x1 :: x1,
-                              x2 :: x2,
-                              x3 :: x3,
-                              y1 :: y1,
-                              y2 :: y2,
-                              y3 :: y3,
-                              very_very_long_name_1 :: very_very_long_name_1,
-                              very_very_long_name_2 :: very_very_long_name_2,
-                              very_very_long_name_3 :: very_very_long_name_3}.
+-spec long_rec() ->
+                  #long_rec{x1 :: x1,
+                            x2 :: x2,
+                            x3 :: x3,
+                            y1 :: y1,
+                            y2 :: y2,
+                            y3 :: y3,
+                            very_very_long_name_1 :: very_very_long_name_1,
+                            very_very_long_name_2 :: very_very_long_name_2,
+                            very_very_long_name_3 :: very_very_long_name_3}.
 long_rec() ->
     #long_rec{x1 = x1,
               x2 = x2,
@@ -320,15 +324,16 @@ long_rec() ->
               very_very_long_name_2 = very_very_long_name_2,
               very_very_long_name_3 = very_very_long_name_3}.
 
--spec long_map() -> #{x1 := x1,
-                      x2 := x2,
-                      x3 := x3,
-                      y1 := y1,
-                      y2 := y2,
-                      y3 := y3,
-                      very_very_long_name_1 := very_very_long_name_1,
-                      very_very_long_name_2 := very_very_long_name_2,
-                      very_very_long_name_3 := very_very_long_name_3}.
+-spec long_map() ->
+                  #{x1 := x1,
+                    x2 := x2,
+                    x3 := x3,
+                    y1 := y1,
+                    y2 := y2,
+                    y3 := y3,
+                    very_very_long_name_1 := very_very_long_name_1,
+                    very_very_long_name_2 := very_very_long_name_2,
+                    very_very_long_name_3 := very_very_long_name_3}.
 long_map() ->
     #{x1 => x1,
       x2 => x2,
