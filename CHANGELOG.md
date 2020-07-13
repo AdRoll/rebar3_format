@@ -1,5 +1,27 @@
 # Changelog
 
+## [0.3.2](https://github.com/AdRoll/rebar3_format/tree/0.3.2) (2020-07-13)
+
+[Full Changelog](https://github.com/AdRoll/rebar3_format/compare/0.3.1...0.3.2)
+
+**Closed issues:**
+
+- Improve steamroller integration [\#117](https://github.com/AdRoll/rebar3_format/issues/117)
+- Formatting specs with 'when' keyword [\#90](https://github.com/AdRoll/rebar3_format/issues/90)
+- Indent long lines on = [\#75](https://github.com/AdRoll/rebar3_format/issues/75)
+- Don't unquote atoms [\#56](https://github.com/AdRoll/rebar3_format/issues/56)
+
+**Merged pull requests:**
+
+- \[Fix \#75\] Indent long lines on = [\#126](https://github.com/AdRoll/rebar3_format/pull/126) ([elbrujohalcon](https://github.com/elbrujohalcon))
+- \[Fix \#90\] Indent specs on -\> [\#125](https://github.com/AdRoll/rebar3_format/pull/125) ([elbrujohalcon](https://github.com/elbrujohalcon))
+- Support erlfmt 0.3.0 [\#124](https://github.com/AdRoll/rebar3_format/pull/124) ([elbrujohalcon](https://github.com/elbrujohalcon))
+- Add support for erlfmt 0.2.0 [\#123](https://github.com/AdRoll/rebar3_format/pull/123) ([elbrujohalcon](https://github.com/elbrujohalcon))
+- \[\#55\] Some initial steps [\#122](https://github.com/AdRoll/rebar3_format/pull/122) ([elbrujohalcon](https://github.com/elbrujohalcon))
+- \[Fix \#56\] Handle quoted atoms [\#121](https://github.com/AdRoll/rebar3_format/pull/121) ([elbrujohalcon](https://github.com/elbrujohalcon))
+- \[Fix \#117\] Full steamroller integration [\#120](https://github.com/AdRoll/rebar3_format/pull/120) ([elbrujohalcon](https://github.com/elbrujohalcon))
+- Add link to VS Code extension [\#119](https://github.com/AdRoll/rebar3_format/pull/119) ([szTheory](https://github.com/szTheory))
+
 ## [0.3.1](https://github.com/AdRoll/rebar3_format/tree/0.3.1) (2020-06-16)
 
 [Full Changelog](https://github.com/AdRoll/rebar3_format/compare/0.3.0...0.3.1)
@@ -14,12 +36,12 @@
 
 **Merged pull requests:**
 
+- Add badges to README [\#113](https://github.com/AdRoll/rebar3_format/pull/113) ([juanbono](https://github.com/juanbono))
+- \[\#110\] A little refactor to simplify addition of new external formatters [\#111](https://github.com/AdRoll/rebar3_format/pull/111) ([elbrujohalcon](https://github.com/elbrujohalcon))
 - \[Fix \#110\] Refactor rebar3\_formatter behavior [\#116](https://github.com/AdRoll/rebar3_format/pull/116) ([elbrujohalcon](https://github.com/elbrujohalcon))
 - \[\#110\] Allow users to use erlfmt from within rebar3 format [\#115](https://github.com/AdRoll/rebar3_format/pull/115) ([elbrujohalcon](https://github.com/elbrujohalcon))
 - \[\#110\] Prepare for external formatters a bit more [\#114](https://github.com/AdRoll/rebar3_format/pull/114) ([elbrujohalcon](https://github.com/elbrujohalcon))
-- Add badges to README [\#113](https://github.com/AdRoll/rebar3_format/pull/113) ([juanbono](https://github.com/juanbono))
 - \[\#110\] Add Steamroller integration [\#112](https://github.com/AdRoll/rebar3_format/pull/112) ([elbrujohalcon](https://github.com/elbrujohalcon))
-- \[\#110\] A little refactor to simplify addition of new external formatters [\#111](https://github.com/AdRoll/rebar3_format/pull/111) ([elbrujohalcon](https://github.com/elbrujohalcon))
 - Fix modified\_ast issue [\#109](https://github.com/AdRoll/rebar3_format/pull/109) ([juanbono](https://github.com/juanbono))
 
 ## [0.3.0](https://github.com/AdRoll/rebar3_format/tree/0.3.0) (2020-05-27)
