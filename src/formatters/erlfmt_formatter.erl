@@ -19,32 +19,35 @@ init(_, _) ->
 -spec format_file(file:filename_all(), nostate, rebar3_formatter:opts()) ->
                      rebar3_formatter:result().
 format_file(File, nostate, OptionsMap) ->
-    Out = case maps:get(output_dir, OptionsMap, current) of
-            current -> %% Action can only be 'format'
-                replace;
-            none ->
-                %% Action can only be 'verify'
-                %% We need to dump the output somewhere since erlfmt has no
-                %% concept of verify / check / etc.
-                filename:join("/tmp", File);
-            OutputDir ->
-                filename:join(filename:absname(OutputDir), File)
-          end,
-    OutFile = case Out of
-                replace ->
-                    File;
-                Out ->
-                    Out
-              end,
+    Out =
+        case maps:get(output_dir, OptionsMap, current) of
+          current -> %% Action can only be 'format'
+              replace;
+          none ->
+              %% Action can only be 'verify'
+              %% We need to dump the output somewhere since erlfmt has no
+              %% concept of verify / check / etc.
+              filename:join("/tmp", File);
+          OutputDir ->
+              filename:join(filename:absname(OutputDir), File)
+        end,
+    OutFile =
+        case Out of
+          replace ->
+              File;
+          Out ->
+              Out
+        end,
 
     {ok, Code} = file:read_file(File),
 
-    Pragma = case maps:get(require_pragma, OptionsMap, false) of
-               true ->
-                   require;
-               false ->
-                   ignore
-             end,
+    Pragma =
+        case maps:get(require_pragma, OptionsMap, false) of
+          true ->
+              require;
+          false ->
+              ignore
+        end,
     try erlfmt:format_file(File, {Pragma, Out}) of
       skip ->
           unchanged;

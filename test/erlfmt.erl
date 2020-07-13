@@ -14,9 +14,10 @@ validator(Fun) ->
 
 -spec format_file(file:name_all(), out()) -> {ok, [error_info()]} | {error, error_info()}.
 format_file(File, Opts) ->
-    Validator = application:get_env(rebar3_format,
-                                    erlfmt_formatter_validator,
-                                    fun (_, _) ->
-                                            ok
-                                    end),
+    Validator =
+        application:get_env(rebar3_format,
+                            erlfmt_formatter_validator,
+                            fun (_, _) ->
+                                    ok
+                            end),
     Validator(File, Opts).

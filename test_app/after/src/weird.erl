@@ -16,10 +16,11 @@ nospaces(_) ->
 
 -spec newlines(Num :: integer()) -> list().
 newlines(Num) ->
-    List = [{X, Y}
-            || X <- lists:seq(1, Num),
-               % Weird comment here!
-               Y <- [a, b]],
+    List =
+        [{X, Y}
+         || X <- lists:seq(1, Num),
+            % Weird comment here!
+            Y <- [a, b]],
     io:format("~p~n", [List]),
     List.
 

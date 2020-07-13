@@ -22,12 +22,13 @@ catch_expr() ->
     catch this:train(with, all, its, arguments, {they, might, be, too, many, to, "handle"}).
 
 comprehensions(Bin, List) ->
-    BinToBin = << <<X:1>>
-                   || <<X:8/integer>> <= Bin, X > 0, with:a_very(complex, boolean_filter, on, X) >>,
-    BinToList = [X
-                 || <<X:8/integer>> <= Bin, X > 0, with:a_very(complex, boolean_filter, on, X)],
-    ListToBin = << <<X:1>>
-                    || X <- List, X > 0, with:a_very(complex, boolean_filter, on, X) >>,
+    BinToBin =
+        << <<X:1>>
+            || <<X:8/integer>> <= Bin, X > 0, with:a_very(complex, boolean_filter, on, X) >>,
+    BinToList =
+        [X || <<X:8/integer>> <= Bin, X > 0, with:a_very(complex, boolean_filter, on, X)],
+    ListToBin =
+        << <<X:1>>  || X <- List, X > 0, with:a_very(complex, boolean_filter, on, X) >>,
     ListToList = [X || X <- List, X > 0, with:a_very(complex, boolean_filter, on, X)],
     {BinToBin, BinToList, ListToBin, ListToList}.
 

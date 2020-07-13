@@ -14,9 +14,10 @@ validator(Fun) ->
 
 -spec format_file(binary(), [any()]) -> ok | {error, any()}.
 format_file(File, Opts) ->
-    Validator = application:get_env(rebar3_format,
-                                    steamroller_formatter_validator,
-                                    fun (_, _) ->
-                                            ok
-                                    end),
+    Validator =
+        application:get_env(rebar3_format,
+                            steamroller_formatter_validator,
+                            fun (_, _) ->
+                                    ok
+                            end),
     Validator(File, Opts).
