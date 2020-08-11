@@ -81,12 +81,12 @@ list_generator() ->
 
 binary_generator() ->
  << <<"generators">>
-     || <<_In>>
-         <= list:comprehensions(should:be(indented_using:break_indent(1))),
-        <<_Which>>
-         <= is:something(that:looks(quite:awful({in,
-                                                 my,
-                                                 opinion}))) >>.
+    || <<_In>>
+        <= list:comprehensions(should:be(indented_using:break_indent(1))),
+       <<_Which>>
+        <= is:something(that:looks(quite:awful({in,
+                                                my,
+                                                opinion}))) >>.
 
 receive_after(ExpressionsThatAreReallyTooLongForALine) ->
  receive

@@ -134,7 +134,7 @@ format_files(Files, Formatter) ->
           end
     catch
       _:{cant_parse, File, {Line, erl_parse, Error}} ->
-          rebar_api:warn("Couldn't parse ~s:~p ~p", [Line, File, Error]),
+          rebar_api:warn("Couldn't parse ~s:~p ~s", [File, Line, Error]),
           {error, {erl_parse, File, Error}};
       _:Error:Stack ->
           rebar_api:warn("Error parsing files: ~p~nStack: ~p", [Error, Stack]),

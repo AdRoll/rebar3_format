@@ -65,7 +65,7 @@ short_lc() ->
 
 -spec short_bc() -> binary().
 short_bc() ->
-    << <<X, Y, Z>>  || <<X, Y, Z>> <= x:y(z), Z < Y >>.
+    << <<X, Y, Z>> || <<X, Y, Z>> <= x:y(z), Z < Y >>.
 
 -spec short_arglist(number(), number(), number()) -> number().
 short_arglist(X, Y, Z) ->
@@ -284,12 +284,12 @@ long_lc() ->
 -spec long_bc() -> binary().
 long_bc() ->
     << <<X, Y, Z>>
-        || <<X>> <- generator:x(),
-           X < 1,
-           <<Y:2/signed-integer-unit:8>> <- generator:y(),
-           Z <- generator:z(),
-           filter:x(Y, Z),
-           X + Y == Z >>.
+       || <<X>> <- generator:x(),
+          X < 1,
+          <<Y:2/signed-integer-unit:8>> <- generator:y(),
+          Z <- generator:z(),
+          filter:x(Y, Z),
+          X + Y == Z >>.
 
 -spec long_arglist(number(),
                    number(),
