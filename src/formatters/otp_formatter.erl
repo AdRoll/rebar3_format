@@ -49,7 +49,6 @@
 
 -type hook() :: none | fun((erl_syntax:syntaxTree(), _, _) -> prettypr:document()).
 -type clause_t() :: case_expr |
-                    cond_expr |
                     fun_expr |
                     if_expr |
                     receive_expr |
@@ -504,7 +503,6 @@ lay_no_comments(Node, Ctxt) ->
             fun_expr -> make_fun_clause(D1, D2, D3, Ctxt);
             {function, N} -> make_fun_clause(N, D1, D2, D3, Ctxt);
             if_expr -> make_if_clause(D1, D2, D3, Ctxt);
-            cond_expr -> make_if_clause(D1, D2, D3, Ctxt);
             case_expr -> make_case_clause(D1, D2, D3, Ctxt);
             receive_expr -> make_case_clause(D1, D2, D3, Ctxt);
             try_expr -> make_case_clause(D1, D2, D3, Ctxt);
@@ -532,10 +530,6 @@ lay_no_comments(Node, Ctxt) ->
           Ctxt1 = reset_prec(Ctxt),
           D = lay_clauses(erl_syntax:if_expr_clauses(Node), if_expr, Ctxt1),
           sep([follow(text("if"), D, Ctxt1#ctxt.break_indent), text("end")]);
-      cond_expr ->
-          Ctxt1 = reset_prec(Ctxt),
-          D = lay_clauses(erl_syntax:cond_expr_clauses(Node), cond_expr, Ctxt1),
-          sep([text("cond"), nest(Ctxt1#ctxt.break_indent, D), text("end")]);
       fun_expr ->
           Ctxt1 = reset_prec(Ctxt),
           Clauses = lay_clauses(erl_syntax:fun_expr_clauses(Node), fun_expr, Ctxt1),
