@@ -514,7 +514,7 @@ lay_no_comments(Node, Ctxt) ->
           D1 = lay(erl_syntax:binary_comp_template(Node), Ctxt1),
           D2 = lay_items(erl_syntax:binary_comp_body(Node), Ctxt1, fun lay/2),
           beside(lay_text_float("<< "),
-                 par([D1, beside(lay_text_float(" || "), beside(D2, lay_text_float(" >>")))]));
+                 par([D1, beside(lay_text_float("|| "), beside(D2, lay_text_float(" >>")))]));
       macro ->
           %% This is formatted similar to a normal function call, but
           %% prefixed with a "?".
