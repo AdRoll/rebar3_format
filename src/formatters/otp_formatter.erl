@@ -49,7 +49,6 @@
 
 -type hook() :: none | fun((erl_syntax:syntaxTree(), _, _) -> prettypr:document()).
 -type clause_t() :: case_expr |
-                    cond_expr |
                     fun_expr |
                     if_expr |
                     receive_expr |
@@ -66,7 +65,8 @@
          paper = ?PAPER :: integer(),
          ribbon = ?RIBBON :: integer(),
          user = ?NOUSER :: term(),
-         encoding = epp:default_encoding() :: epp:source_encoding()}).
+         encoding = epp:default_encoding() :: epp:source_encoding(),
+         empty_lines = sets:new() :: sets:set(integer())}).
 
 -type context() :: #ctxt{}.
 
@@ -272,11 +272,11 @@ format(Node) -> format(Node, [], #{}).
 
 -spec format(erl_syntax:syntaxTree(), [pos_integer()], rebar3_formatter:opts()) ->
                 string().
-format(Node, _EmptyLines, Options) ->
+format(Node, EmptyLines, Options) ->
     W = maps:get(paper, Options, ?PAPER),
     L = maps:get(ribbon, Options, ?RIBBON),
     E = maps:get(encoding, Options, utf8),
-    OptList = maps:to_list(Options),
+    OptList = [{empty_lines, sets:from_list(EmptyLines)} | maps:to_list(Options)],
     PreFormatted = prettypr:format(layout(Node, OptList), W, L),
     binary_to_list(unicode:characters_to_binary(PreFormatted, E)).
 
@@ -341,7 +341,8 @@ layout(Node, Options) ->
               paper = proplists:get_value(paper, Options, ?PAPER),
               ribbon = proplists:get_value(ribbon, Options, ?RIBBON),
               user = proplists:get_value(user, Options),
-              encoding = proplists:get_value(encoding, Options, epp:default_encoding())}).
+              encoding = proplists:get_value(encoding, Options, epp:default_encoding()),
+              empty_lines = proplists:get_value(empty_lines, Options, sets:new())}).
 
 lay(Node, Ctxt) ->
     case erl_syntax:get_ann(Node) of
@@ -429,11 +430,11 @@ lay_no_comments(Node, Ctxt) ->
                   lay_text_float(","),
                   reset_prec(Ctxt),
                   fun lay/2),
-          beside(lay_text_float("{"), beside(par(Es), lay_text_float("}")));
+          beside(lay_text_float("{"), beside(sep(Es), lay_text_float("}")));
       list ->
           Ctxt1 = reset_prec(Ctxt),
           Node1 = erl_syntax:compact_list(Node),
-          D1 = par(seq(erl_syntax:list_prefix(Node1), lay_text_float(","), Ctxt1, fun lay/2)),
+          D1 = sep(seq(erl_syntax:list_prefix(Node1), lay_text_float(","), Ctxt1, fun lay/2)),
           D =
               case erl_syntax:list_suffix(Node1) of
                 none -> beside(D1, lay_text_float("]"));
@@ -453,7 +454,7 @@ lay_no_comments(Node, Ctxt) ->
           D1 = lay(erl_syntax:infix_expr_left(Node), set_prec(Ctxt, PrecL)),
           D2 = lay(Operator, reset_prec(Ctxt)),
           D3 = lay(erl_syntax:infix_expr_right(Node), set_prec(Ctxt, PrecR)),
-          D4 = par([D1, D2, D3], Ctxt#ctxt.sub_indent),
+          D4 = par([D1, D2, D3], Ctxt#ctxt.break_indent),
           maybe_parentheses(D4, Prec, Ctxt);
       prefix_expr ->
           Operator = erl_syntax:prefix_expr_operator(Node),
@@ -470,7 +471,7 @@ lay_no_comments(Node, Ctxt) ->
               case Name of
                 '+' -> beside(D1, D2);
                 '-' -> beside(D1, D2);
-                _ -> par([D1, D2], Ctxt#ctxt.sub_indent)
+                _ -> par([D1, D2], Ctxt#ctxt.break_indent)
               end,
           maybe_parentheses(D3, Prec, Ctxt);
       application ->
@@ -481,7 +482,7 @@ lay_no_comments(Node, Ctxt) ->
                   floating(text(",")),
                   reset_prec(Ctxt),
                   fun lay/2),
-          D1 = beside(D, beside(text("("), beside(par(As), floating(text(")"))))),
+          D1 = beside(D, beside(text("("), beside(sep(As), floating(text(")"))))),
           maybe_parentheses(D1, Prec, Ctxt);
       match_expr ->
           {PrecL, Prec, PrecR} = inop_prec('='),
@@ -499,12 +500,11 @@ lay_no_comments(Node, Ctxt) ->
                 none -> none;
                 G -> lay(G, Ctxt1)
               end,
-          D3 = sep(seq(erl_syntax:clause_body(Node), lay_text_float(","), Ctxt1, fun lay/2)),
+          D3 = lay_clause_expressions(erl_syntax:clause_body(Node), Ctxt1),
           case Ctxt#ctxt.clause of
             fun_expr -> make_fun_clause(D1, D2, D3, Ctxt);
             {function, N} -> make_fun_clause(N, D1, D2, D3, Ctxt);
             if_expr -> make_if_clause(D1, D2, D3, Ctxt);
-            cond_expr -> make_if_clause(D1, D2, D3, Ctxt);
             case_expr -> make_case_clause(D1, D2, D3, Ctxt);
             receive_expr -> make_case_clause(D1, D2, D3, Ctxt);
             try_expr -> make_case_clause(D1, D2, D3, Ctxt);
@@ -524,18 +524,14 @@ lay_no_comments(Node, Ctxt) ->
           Ctxt1 = reset_prec(Ctxt),
           D1 = lay(erl_syntax:case_expr_argument(Node), Ctxt1),
           D2 = lay_clauses(erl_syntax:case_expr_clauses(Node), case_expr, Ctxt1),
-          sep([par([follow(text("case"), D1, Ctxt1#ctxt.sub_indent), text("of")],
+          sep([par([follow(text("case"), D1, Ctxt1#ctxt.break_indent), text("of")],
                    Ctxt1#ctxt.break_indent),
-               nest(Ctxt1#ctxt.sub_indent, D2),
+               nest(Ctxt1#ctxt.break_indent, D2),
                text("end")]);
       if_expr ->
           Ctxt1 = reset_prec(Ctxt),
           D = lay_clauses(erl_syntax:if_expr_clauses(Node), if_expr, Ctxt1),
-          sep([follow(text("if"), D, Ctxt1#ctxt.sub_indent), text("end")]);
-      cond_expr ->
-          Ctxt1 = reset_prec(Ctxt),
-          D = lay_clauses(erl_syntax:cond_expr_clauses(Node), cond_expr, Ctxt1),
-          sep([text("cond"), nest(Ctxt1#ctxt.sub_indent, D), text("end")]);
+          sep([follow(text("if"), D, Ctxt1#ctxt.break_indent), text("end")]);
       fun_expr ->
           Ctxt1 = reset_prec(Ctxt),
           Clauses = lay_clauses(erl_syntax:fun_expr_clauses(Node), fun_expr, Ctxt1),
@@ -600,7 +596,7 @@ lay_no_comments(Node, Ctxt) ->
                            beside(text("("), beside(lay(As, Ctxt1), lay_text_float(")"))));
                 _ when Args =:= none -> lay(N, Ctxt1);
                 _ ->
-                    D1 = par(seq(Args, lay_text_float(","), Ctxt1, fun lay/2)),
+                    D1 = sep(seq(Args, lay_text_float(","), Ctxt1, fun lay/2)),
                     beside(lay(N, Ctxt1), beside(text("("), beside(D1, lay_text_float(")"))))
               end,
           beside(lay_text_float("-"), beside(D, lay_text_float(".")));
@@ -620,11 +616,11 @@ lay_no_comments(Node, Ctxt) ->
       block_expr ->
           Ctxt1 = reset_prec(Ctxt),
           Es = seq(erl_syntax:block_expr_body(Node), lay_text_float(","), Ctxt1, fun lay/2),
-          sep([text("begin"), nest(Ctxt1#ctxt.sub_indent, sep(Es)), text("end")]);
+          sep([text("begin"), nest(Ctxt1#ctxt.break_indent, sep(Es)), text("end")]);
       catch_expr ->
           {Prec, PrecR} = preop_prec('catch'),
           D = lay(erl_syntax:catch_expr_body(Node), set_prec(Ctxt, PrecR)),
-          D1 = follow(text("catch"), D, Ctxt#ctxt.sub_indent),
+          D1 = follow(text("catch"), D, Ctxt#ctxt.break_indent),
           maybe_parentheses(D1, Prec, Ctxt);
       class_qualifier ->
           Ctxt1 = set_prec(Ctxt, max_prec()),
@@ -720,9 +716,9 @@ lay_no_comments(Node, Ctxt) ->
                     sep([D1,
                          follow(lay_text_float("after"),
                                 append_clause_body(D4, D3, Ctxt1),
-                                Ctxt1#ctxt.sub_indent)])
+                                Ctxt1#ctxt.break_indent)])
               end,
-          sep([text("receive"), nest(Ctxt1#ctxt.sub_indent, D2), text("end")]);
+          sep([text("receive"), nest(Ctxt1#ctxt.break_indent, D2), text("end")]);
       record_access ->
           {PrecL, Prec, PrecR} = inop_prec('#'),
           D1 = lay(erl_syntax:record_access_argument(Node), set_prec(Ctxt, PrecL)),
@@ -779,7 +775,7 @@ lay_no_comments(Node, Ctxt) ->
           Ctxt1 = reset_prec(Ctxt),
           D1 = lay(erl_syntax:typed_record_field_body(Node), Ctxt1),
           D2 = lay(erl_syntax:typed_record_field_type(Node), set_prec(Ctxt, Prec)),
-          D3 = par([D1, lay_text_float(" ::"), D2], Ctxt1#ctxt.break_indent),
+          D3 = par([D1, lay_text_float("::"), D2], Ctxt1#ctxt.break_indent),
           maybe_parentheses(D3, Prec, Ctxt);
       try_expr ->
           Ctxt1 = reset_prec(Ctxt),
@@ -790,23 +786,23 @@ lay_no_comments(Node, Ctxt) ->
                 [] -> Es0;
                 As ->
                     D2 = sep(seq(As, lay_text_float(","), Ctxt1, fun lay/2)),
-                    [text("after"), nest(Ctxt1#ctxt.sub_indent, D2) | Es0]
+                    [text("after"), nest(Ctxt1#ctxt.break_indent, D2) | Es0]
               end,
           Es2 =
               case erl_syntax:try_expr_handlers(Node) of
                 [] -> Es1;
                 Hs ->
                     D3 = lay_clauses(Hs, try_expr, Ctxt1),
-                    [text("catch"), nest(Ctxt1#ctxt.sub_indent, D3) | Es1]
+                    [text("catch"), nest(Ctxt1#ctxt.break_indent, D3) | Es1]
               end,
           Es3 =
               case erl_syntax:try_expr_clauses(Node) of
                 [] -> Es2;
                 Cs ->
                     D4 = lay_clauses(Cs, try_expr, Ctxt1),
-                    [text("of"), nest(Ctxt1#ctxt.sub_indent, D4) | Es2]
+                    [text("of"), nest(Ctxt1#ctxt.break_indent, D4) | Es2]
               end,
-          sep([par([follow(text("try"), D1, Ctxt1#ctxt.sub_indent), hd(Es3)]) | tl(Es3)]);
+          sep([par([follow(text("try"), D1, Ctxt1#ctxt.break_indent), hd(Es3)]) | tl(Es3)]);
       warning_marker ->
           E = erl_syntax:warning_marker_info(Node),
           beside(text("%% WARNING: "), lay_error_info(E, reset_prec(Ctxt)));
@@ -934,7 +930,7 @@ lay_no_comments(Node, Ctxt) ->
       type_union ->
           {_, Prec, PrecR} = type_inop_prec('|'),
           Es =
-              par(seq(erl_syntax:type_union_types(Node),
+              sep(seq(erl_syntax:type_union_types(Node),
                       lay_text_float(" |"),
                       set_prec(Ctxt, PrecR),
                       fun lay/2)),
@@ -1001,7 +997,7 @@ lay_follow_beside_text_float(D1, D2, Ctxt) ->
     follow(beside(D1, lay_text_float(" ::")), D2, Ctxt#ctxt.break_indent).
 
 lay_fun_sep(Clauses, Ctxt) ->
-    sep([follow(text("fun"), Clauses, Ctxt#ctxt.sub_indent), text("end")]).
+    sep([follow(text("fun"), Clauses, Ctxt#ctxt.break_indent), text("end")]).
 
 lay_expr_argument(none, D, Ctxt) ->
     {_, Prec, _} = inop_prec('#'),
@@ -1197,6 +1193,30 @@ number_from_text(Text, Default) ->
     case string:to_integer(Text) of
       {error, no_integer} -> Default;
       {_, _} -> Text
+    end.
+
+lay_clause_expressions([H], Ctxt) -> lay(H, Ctxt);
+lay_clause_expressions([H | T], Ctxt) ->
+    Clause = beside(lay(H, Ctxt), lay_text_float(",")),
+    Next = lay_clause_expressions(T, Ctxt),
+    case is_last_and_before_empty_line(H, T, Ctxt) of
+      true -> above(above(Clause, text("")), Next);
+      false -> above(Clause, Next)
+    end;
+lay_clause_expressions([], _) -> empty().
+
+is_last_and_before_empty_line(H, [], #ctxt{empty_lines = EmptyLines}) ->
+    try
+      sets:is_element(erl_syntax:get_pos(H) + 1, EmptyLines)
+    catch
+      error:badarith -> false
+    end;
+is_last_and_before_empty_line(H, [H2 | _], #ctxt{empty_lines = EmptyLines}) ->
+    try
+      (erl_syntax:get_pos(H2) - erl_syntax:get_pos(H) >= 2) and
+        sets:is_element(erl_syntax:get_pos(H) + 1, EmptyLines)
+    catch
+      error:badarith -> false
     end.
 
 %% =====================================================================

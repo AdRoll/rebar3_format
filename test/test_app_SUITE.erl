@@ -9,7 +9,14 @@ test_app(_Config) ->
     ok = file:set_cwd("../../../../test_app"),
     {ok, State1} = rebar3_format:init(rebar_state:new()),
     Files = {files, ["src/*.erl", "include/*.hrl"]},
-    IgnoredFiles = {ignore, ["src/*_ignore.erl", "src/ignored_file_config.erl"]},
+    IgnoredFiles =
+        case string:to_integer(erlang:system_info(otp_release)) of
+          {N, []} when N >= 23 ->
+              {ignore, ["src/*_ignore.erl", "src/ignored_file_config.erl"]};
+          _ ->
+              {ignore, ["src/*_ignore.erl", "src/ignored_file_config.erl", "src/otp23.erl"]}
+        end,
+    ct:pal("~p => IgnoredFiles: ~p", [erlang:system_info(otp_release), IgnoredFiles]),
     State2 = rebar_state:set(State1, format, [Files, IgnoredFiles]),
     {error, _} = verify(State2),
     {ok, _} = format(State2),
