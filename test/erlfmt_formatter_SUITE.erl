@@ -60,7 +60,7 @@ output_dir(_Config) ->
     {ok, _} = rebar3_format_prv:do(Args2).
 
 pragma(_Config) ->
-    % When there is no defined require_pragma, Pragma should be ignore
+    % When there is no defined require_pragma nor insert_prgama, Pragma should be ignore
     erlfmt:validator(fun (File, {Pragma, _}) ->
                              "src/brackets.erl" = File,
                              ignore = Pragma,
@@ -78,15 +78,28 @@ pragma(_Config) ->
     Args2 = rebar_state:command_parsed_args(init(#{require_pragma => true}), {[], something}),
     {ok, _} = rebar3_format_prv:do(Args2),
 
-    % When require_pragma is false, erlfmt's pragma should be ignore
+    % When require_pragma is false, erlfmt's pragma depends on insert_pragma
+    % If insert_pragma is true, it should be insert
+    erlfmt:validator(fun (File, {Pragma, _}) ->
+                             "brackets.erl" = filename:basename(File),
+                             insert = Pragma,
+                             {ok, []}
+                     end),
+    Args3 =
+        rebar_state:command_parsed_args(init(#{require_pragma => false, insert_pragma => true}),
+                                        {[], something}),
+    {ok, _} = rebar3_format_prv:do(Args3),
+
+    % Otherwise it should be ignore
     erlfmt:validator(fun (File, {Pragma, _}) ->
                              "brackets.erl" = filename:basename(File),
                              ignore = Pragma,
                              {ok, []}
                      end),
-    Args3 =
-        rebar_state:command_parsed_args(init(#{require_pragma => false}), {[], something}),
-    {ok, _} = rebar3_format_prv:do(Args3).
+    Args4 =
+        rebar_state:command_parsed_args(init(#{require_pragma => false, insert_pragma => false}),
+                                        {[], something}),
+    {ok, _} = rebar3_format_prv:do(Args4).
 
 init() ->
     init(#{}).

@@ -46,7 +46,12 @@ format_file(File, nostate, OptionsMap) ->
           true ->
               require;
           false ->
-              ignore
+              case maps:get(insert_pragma, OptionsMap, false) of
+                true ->
+                    insert;
+                false ->
+                    ignore
+              end
         end,
     try erlfmt:format_file(File, {Pragma, Out}) of
       skip ->
