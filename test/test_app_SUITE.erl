@@ -16,7 +16,6 @@ test_app(_Config) ->
           _ ->
               {ignore, ["src/*_ignore.erl", "src/ignored_file_config.erl", "src/otp23.erl"]}
         end,
-    ct:pal("~p => IgnoredFiles: ~p", [erlang:system_info(otp_release), IgnoredFiles]),
     State2 = rebar_state:set(State1, format, [Files, IgnoredFiles]),
     {error, _} = verify(State2),
     {ok, _} = format(State2),
