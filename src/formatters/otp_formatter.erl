@@ -774,6 +774,7 @@ lay_no_comments(Node, Ctxt) ->
           D1 = lay(erl_syntax:typed_record_field_body(Node), Ctxt1),
           D2 = lay(erl_syntax:typed_record_field_type(Node), set_prec(Ctxt, Prec)),
           D3 = par([D1, lay_text_float(" ::"), D2], Ctxt1#ctxt.break_indent),
+          D3 = par([D1, lay_text_float("::"), D2], Ctxt1#ctxt.break_indent),
           maybe_parentheses(D3, Prec, Ctxt);
       try_expr ->
           Ctxt1 = reset_prec(Ctxt),
