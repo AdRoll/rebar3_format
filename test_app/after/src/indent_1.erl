@@ -107,3 +107,13 @@ try_expr() ->
  after
   should:be(indented_using:break_indent(1))
  end.
+
+when_clause(A, B, C)
+ when is_integer(A),
+      B >= A andalso C rem 2 =:= 0 ->
+ the:guard(should:be(indented_using:break_indent(1)));
+when_clause(Along, Blonb, Clong)
+ when is_integer(Along),
+      Along >= Blong andalso
+       Clong rem Along =:= Blong ->
+ here:should(happen, the, same, thing).
