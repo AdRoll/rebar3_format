@@ -19,26 +19,22 @@ init(_, _) ->
 -spec format_file(file:filename_all(), nostate, rebar3_formatter:opts()) ->
                      rebar3_formatter:result().
 format_file(File, nostate, OptionsMap) ->
-    Out =
+    {Out, OutFile} =
         case maps:get(output_dir, OptionsMap, current) of
           current -> %% Action can only be 'format'
-              replace;
+              {replace, File};
           none ->
               %% Action can only be 'verify'
               %% We need to dump the output somewhere since erlfmt has no
               %% concept of verify / check / etc.
-              filename:join("/tmp", File);
+              OFile = filename:join("/tmp", File),
+              {{path, filename:dirname(OFile)}, OFile};
           OutputDir ->
-              filename:join(filename:absname(OutputDir), File)
+              %% We understand output dirs differently than erlfmt.
+              %% We use relative subpaths.
+              OFile = filename:join(filename:absname(OutputDir), File),
+              {{path, filename:dirname(OFile)}, OFile}
         end,
-    OutFile =
-        case Out of
-          replace ->
-              File;
-          Out ->
-              Out
-        end,
-
     {ok, Code} = file:read_file(File),
 
     Pragma =
@@ -67,7 +63,14 @@ format_file(File, nostate, OptionsMap) ->
           erlang:error(Reason)
     catch
       error:function_clause ->
-          try erlfmt:format_file(File, Out) of
+          OldOut =
+              case Out of
+                replace ->
+                    replace;
+                {path, P} ->
+                    P
+              end,
+          try erlfmt:format_file(File, OldOut) of
             {ok, _} ->
                 case file:read_file(OutFile) of
                   {ok, Code} ->
