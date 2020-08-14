@@ -27,7 +27,8 @@ format_file(File, nostate, OptionsMap) ->
               %% Action can only be 'verify'
               %% We need to dump the output somewhere since erlfmt has no
               %% concept of verify / check / etc.
-              {{path, "/tmp"}, filename:join("/tmp", File)};
+              OFile = filename:join("/tmp", File),
+              {{path, filename:dirname(OFile)}, OFile};
           OutputDir ->
               %% We understand output dirs differently than erlfmt.
               %% We use relative subpaths.
