@@ -17,10 +17,10 @@ old_version(_Config) ->
     {ok, _} = rebar3_format_prv:do(Args2).
 
 action(_Config) ->
-    erlfmt:validator(fun (File, {_, {path, Out}}) ->
+    erlfmt:validator(fun (File, {_, Out}) ->
                              "brackets.erl" = filename:basename(File),
-                             "/tmp/src/brackets.erl" = Out,
-                             copy_file(File, Out),
+                             {path, "/tmp"} = Out,
+                             copy_file(File, "/tmp/brackets.erl"),
                              {ok, []}
                      end),
     Args1 = rebar_state:command_parsed_args(init(), {[{verify, true}], something}),
@@ -34,8 +34,8 @@ action(_Config) ->
     Args2 = rebar_state:command_parsed_args(init(), {[], something}),
     {ok, _} = rebar3_format_prv:do(Args2),
 
-    erlfmt:validator(fun (_, {_, {path, Out}}) ->
-                             file:write_file(Out, "something different"),
+    erlfmt:validator(fun (_, {_, {path, _}}) ->
+                             file:write_file("/tmp/src/brackets.erl", "something different"),
                              {ok, []}
                      end),
     {error, _} = rebar3_format_prv:do(Args1).
@@ -53,7 +53,7 @@ output_dir(_Config) ->
     % When there is an expected output, erlfmt's out should be it
     erlfmt:validator(fun (File, {_, Out}) ->
                              "brackets.erl" = filename:basename(File),
-                             {path, "/tmp/src/brackets.erl"} = Out,
+                             {path, "/tmp/src"} = Out,
                              {ok, []}
                      end),
     Args2 = rebar_state:command_parsed_args(init(), {[{output, "/tmp/"}], something}),
