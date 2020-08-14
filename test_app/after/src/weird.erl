@@ -27,10 +27,10 @@ newlines(Num) ->
 %% @doc No specs!
 cases(V) when is_list(V) ->
     case V of
-      [] ->
-          ok;
-      _ ->
-          {error, "Uops!"}
+        [] ->
+            ok;
+        _ ->
+            {error, "Uops!"}
     end;
 cases(_) ->
     ok.

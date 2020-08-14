@@ -144,10 +144,10 @@ str(S, Sub) when is_list(Sub) ->
 
 str([C | S], [C | Sub], I) ->
     case prefix(Sub, S) of
-      true ->
-          I;
-      false ->
-          str(S, [C | Sub], I + 1)
+        true ->
+            I;
+        false ->
+            str(S, [C | Sub], I + 1)
     end;
 str([_ | S], Sub, I) ->
     str(S, Sub, I + 1);
@@ -162,10 +162,10 @@ rstr(S, Sub) when is_list(Sub) ->
 
 rstr([C | S], [C | Sub], I, L) ->
     case prefix(Sub, S) of
-      true ->
-          rstr(S, [C | Sub], I + 1, I);
-      false ->
-          rstr(S, [C | Sub], I + 1, L)
+        true ->
+            rstr(S, [C | Sub], I + 1, I);
+        false ->
+            rstr(S, [C | Sub], I + 1, L)
     end;
 rstr([_ | S], Sub, I, L) ->
     rstr(S, Sub, I + 1, L);
@@ -190,10 +190,10 @@ span(S, Cs) when is_list(Cs) ->
 
 span([C | S], Cs, I) ->
     case member(C, Cs) of
-      true ->
-          span(S, Cs, I + 1);
-      false ->
-          I
+        true ->
+            span(S, Cs, I + 1);
+        false ->
+            I
     end;
 span([], _Cs, I) ->
     I.
@@ -206,10 +206,10 @@ cspan(S, Cs) when is_list(Cs) ->
 
 cspan([C | S], Cs, I) ->
     case member(C, Cs) of
-      true ->
-          I;
-      false ->
-          cspan(S, Cs, I + 1)
+        true ->
+            I;
+        false ->
+            cspan(S, Cs, I + 1)
     end;
 cspan([], _Cs, I) ->
     I.
@@ -254,20 +254,20 @@ tokens(S, Seps) ->
 
 tokens1([C | S], Seps, Toks) ->
     case member(C, Seps) of
-      true ->
-          tokens1(S, Seps, Toks);
-      false ->
-          tokens2(S, Seps, Toks, [C])
+        true ->
+            tokens1(S, Seps, Toks);
+        false ->
+            tokens2(S, Seps, Toks, [C])
     end;
 tokens1([], _Seps, Toks) ->
     reverse(Toks).
 
 tokens2([C | S], Seps, Toks, Cs) ->
     case member(C, Seps) of
-      true ->
-          tokens1(S, Seps, [reverse(Cs) | Toks]);
-      false ->
-          tokens2(S, Seps, Toks, [C | Cs])
+        true ->
+            tokens1(S, Seps, [reverse(Cs) | Toks]);
+        false ->
+            tokens2(S, Seps, Toks, [C | Cs])
     end;
 tokens2([], _Seps, Toks, Cs) ->
     reverse([reverse(Cs) | Toks]).
@@ -335,10 +335,10 @@ sub_word(String, Index) ->
                                                        Character :: char().
 sub_word(String, Index, Char) when is_integer(Index), is_integer(Char) ->
     case words(String, Char) of
-      Num when Num < Index ->
-          [];
-      _Num ->
-          s_word(strip(String, left, Char), Index, Char, 1, [])
+        Num when Num < Index ->
+            [];
+        _Num ->
+            s_word(strip(String, left, Char), Index, Char, 1, [])
     end.
 
 s_word([], _, _, _, Res) ->
@@ -388,10 +388,10 @@ strip_left([], Sc) when is_integer(Sc) ->
 
 strip_right([Sc | S], Sc) ->
     case strip_right(S, Sc) of
-      [] ->
-          [];
-      T ->
-          [Sc | T]
+        [] ->
+            [];
+        T ->
+            [Sc | T]
     end;
 strip_right([C | S], Sc) ->
     [C | strip_right(S, Sc)];

@@ -18,17 +18,17 @@ f_cs(inline, this, other, much_much_larger_clause) ->
 
 case_expr_clauses(Inline) ->
     case Inline of
-      {this, clause} ->
-          [just, like];
-      {this, other} ->
-          [much,
-           much,
-           larger,
-           clause,
-           please,
-           mister,
-           rebar3,
-           formatter]
+        {this, clause} ->
+            [just, like];
+        {this, other} ->
+            [much,
+             much,
+             larger,
+             clause,
+             please,
+             mister,
+             rebar3,
+             formatter]
     end.
 
 if_expr_clauses(Inline) ->
@@ -77,42 +77,42 @@ named_fun_expr_clauses() ->
 
 receive_expr_clauses() ->
     receive
-      {inline, this, clause} ->
-          [just, like];
-      {this, other} ->
-          [much,
-           much,
-           larger,
-           clause,
-           please,
-           mister,
-           rebar3,
-           formatter]
+        {inline, this, clause} ->
+            [just, like];
+        {this, other} ->
+            [much,
+             much,
+             larger,
+             clause,
+             please,
+             mister,
+             rebar3,
+             formatter]
     end.
 
 try_expr(Inline) ->
     try Inline() of
-      {this, clause} ->
-          [just, like];
-      {this, other} ->
-          [much,
-           much,
-           larger,
-           clause,
-           please,
-           mister,
-           rebar3,
-           formatter]
+        {this, clause} ->
+            [just, like];
+        {this, other} ->
+            [much,
+             much,
+             larger,
+             clause,
+             please,
+             mister,
+             rebar3,
+             formatter]
     catch
-      _This:clause ->
-          [just, like];
-      _This:_Other ->
-          [much,
-           much,
-           larger,
-           clause,
-           please,
-           mister,
-           rebar3,
-           formatter]
+        _This:clause ->
+            [just, like];
+        _This:_Other ->
+            [much,
+             much,
+             larger,
+             clause,
+             please,
+             mister,
+             rebar3,
+             formatter]
     end.

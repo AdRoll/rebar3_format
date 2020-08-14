@@ -42,8 +42,8 @@ parentheses() ->
 
 receive_expr() ->
     receive
-      with ->
-          {no, timeout}
+        with ->
+            {no, timeout}
     end.
 
 record_index_expr(List) ->
@@ -51,26 +51,26 @@ record_index_expr(List) ->
 
 try_expr_after() ->
     try to:open({the, door}) of
-      my ->
-          room or your;
-      room ->
-          {my, friend}
+        my ->
+            room or your;
+        room ->
+            {my, friend}
     catch
-      {you_cant, Open} when Open ->
-          it:was(Open)
+        {you_cant, Open} when Open ->
+            it:was(Open)
     after
-      close:the(door, anyway)
+        close:the(door, anyway)
     end,
     try
-      with:no(catching)
+        with:no(catching)
     after
-      do:something({to,
-                    "clean up",
-                    <<"the">>,
-                    [filthy, filthy, mess],
-                    you,
-                    created,
-                    "if you can"})
+        do:something({to,
+                      "clean up",
+                      <<"the">>,
+                      [filthy, filthy, mess],
+                      you,
+                      created,
+                      "if you can"})
     end.
 
 bit_types(X) ->
@@ -78,9 +78,9 @@ bit_types(X) ->
 
 multi_try_expr() ->
     try
-      there:are(2),
-      expressions:in(this_block)
+        there:are(2),
+        expressions:in(this_block)
     catch
-      A:Catch:Expression ->
-          formatter:should(indent, A, Catch, Expression)
+        A:Catch:Expression ->
+            formatter:should(indent, A, Catch, Expression)
     end.

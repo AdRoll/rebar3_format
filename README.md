@@ -60,9 +60,6 @@ The plugin supports the following configuration options in the `format` section 
         + `break_indent`(`pos_integer()`):
             * Specifies the preferred number of characters to use to indent a line that "breaks" from the previous one (for instance, a clause body after a clause head).
             * The default value is `4`.
-        + `sub_indent`(`pos_integer()`):
-            * Specifies the preferred number of characters to use to indent a line that "follows" the current one (for instance, a long clause head or a long function application).
-            * The default value is `2`.
         + `unquote_atoms` (`boolean()`):
             * Specifies whether the formatter should remove quotes from atoms that don't need them (e.g. `'this_one'`) or not.
             * The default value is `true`, i.e. the formatter won't preserve your quotes if they're not needed, unless you explicitely ask for.

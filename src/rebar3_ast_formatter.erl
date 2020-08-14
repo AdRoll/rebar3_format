@@ -19,42 +19,42 @@ format(File, Formatter, Opts) ->
     Formatted = format(File, AST, Formatter, Comments, Opts),
     Result =
         case Formatted of
-          Original ->
-              unchanged;
-          _ ->
-              changed
+            Original ->
+                unchanged;
+            _ ->
+                changed
         end,
     case maybe_save_file(maps:get(output_dir, Opts), File, Formatted) of
-      none ->
-          Result;
-      NewFile ->
-          case get_quick_ast(NewFile) of
-            QuickAST ->
-                Result;
-            _ ->
-                erlang:error({modified_ast, File, NewFile})
-          end
+        none ->
+            Result;
+        NewFile ->
+            case get_quick_ast(NewFile) of
+                QuickAST ->
+                    Result;
+                _ ->
+                    erlang:error({modified_ast, File, NewFile})
+            end
     end.
 
 get_ast(File) ->
     case ktn_dodger:parse_file(File, [{scan_opts, [text]}]) of
-      {ok, AST} ->
-          case [Error || {error, Error} <- AST] of
-            [] ->
-                AST;
-            [Error | _] ->
-                erlang:error({cant_parse, File, Error})
-          end;
-      {error, OpenError} ->
-          erlang:error({cant_parse, File, OpenError})
+        {ok, AST} ->
+            case [Error || {error, Error} <- AST] of
+                [] ->
+                    AST;
+                [Error | _] ->
+                    erlang:error({cant_parse, File, Error})
+            end;
+        {error, OpenError} ->
+            erlang:error({cant_parse, File, OpenError})
     end.
 
 get_quick_ast(File) ->
     case ktn_dodger:quick_parse_file(File) of
-      {ok, AST} ->
-          remove_line_numbers(AST);
-      {error, OpenError} ->
-          erlang:error({cant_parse, File, OpenError})
+        {ok, AST} ->
+            remove_line_numbers(AST);
+        {error, OpenError} ->
+            erlang:error({cant_parse, File, OpenError})
     end.
 
 %% @doc Removes line numbers from ASTs to allow for "semantic" comparison
@@ -81,10 +81,10 @@ empty_lines(File) ->
     {Res, _} =
         lists:foldl(fun (Line, {EmptyLines, N}) ->
                             case re:run(Line, NonEmptyLineRe) of
-                              {match, _} ->
-                                  {EmptyLines, N + 1};
-                              nomatch ->
-                                  {[N | EmptyLines], N + 1}
+                                {match, _} ->
+                                    {EmptyLines, N + 1};
+                                nomatch ->
+                                    {[N | EmptyLines], N + 1}
                             end
                     end,
                     {[], 1},
@@ -94,10 +94,10 @@ empty_lines(File) ->
 insert_last_line(Formatted) ->
     {ok, Re} = re:compile("[\n]+$"),
     case re:run(Formatted, Re) of
-      {match, _} ->
-          re:replace(Formatted, Re, "\n", [{return, binary}]);
-      nomatch ->
-          <<Formatted/binary, "\n">>
+        {match, _} ->
+            re:replace(Formatted, Re, "\n", [{return, binary}]);
+        nomatch ->
+            <<Formatted/binary, "\n">>
     end.
 
 maybe_save_file(none, _File, _Formatted) ->

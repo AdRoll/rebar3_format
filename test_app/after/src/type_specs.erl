@@ -67,8 +67,8 @@ f({R, R}) ->
 -spec type_specs:b() -> pos_integer().
 b() ->
     case foo:bar() of
-      #{a := 2} ->
-          19
+        #{a := 2} ->
+            19
     end.
 
 -define(I, integer).

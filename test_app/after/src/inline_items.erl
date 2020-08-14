@@ -53,10 +53,10 @@ short_bin() ->
 -spec short_guard(integer()) -> integer().
 short_guard(X) when is_integer(X), X < 2 ->
     case X of
-      X when X >= -1 ->
-          X + 1;
-      X ->
-          X
+        X when X >= -1 ->
+            X + 1;
+        X ->
+            X
     end.
 
 -spec short_lc() -> [{_, _, _}].
@@ -307,7 +307,7 @@ long_arglist(X1,
              VeryVeryLongName2,
              VeryVeryLongName3) ->
     X1 + X2 + X3 + Y1 + VeryVeryLongName1 + VeryVeryLongName2 +
-      VeryVeryLongName3.
+        VeryVeryLongName3.
 
 -spec long_rec() ->
                   #long_rec{x1 :: x1,
