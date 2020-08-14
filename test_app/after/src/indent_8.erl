@@ -16,7 +16,7 @@
 infix_expr() ->
         this:infix(expression) ++
                 should:be(indented) ++
-                        using:indent(8).
+                        using:break_indent(8).
 
 prefix_expr() ->
         ThisPrefixExpressionShould =
@@ -29,14 +29,14 @@ match_expr() ->
 case_expr() ->
         case
                 expressions:that(are_too_long_for_a_line,
-                                 should:be(indented_using:indent(8)),
+                                 should:be(indented_using:break_indent(8)),
                                  but,
                                  the,
                                  "of",
                                  should:be(indented_using:break_indent(8)))
                 of
                 clauses ->
-                        should:be(indented_using:indent(8))
+                        should:be(indented_using:break_indent(8))
         end.
 
 if_expr() ->
@@ -63,12 +63,12 @@ a_function_with_a_very_long_name() ->
 block_expr() ->
         begin
                 block:expressions(),
-                should:be(indented_using:indent(8))
+                should:be(indented_using:break_indent(8))
         end.
 
 catch_expr() ->
         catch
-                exp:ressions(should:be(indented_using:indent(8))).
+                exp:ressions(should:be(indented_using:break_indent(8))).
 
 list_generator() ->
         [generators
@@ -91,23 +91,23 @@ binary_generator() ->
 receive_after(ExpressionsThatAreReallyTooLongForALine) ->
         receive
                 clauses ->
-                        should:be(indented_using:indent(8))
+                        should:be(indented_using:break_indent(8))
                 after
                         ExpressionsThatAreReallyTooLongForALine ->
-                                should:be(indented_using:indent(8))
+                                should:be(indented_using:break_indent(8))
         end.
 
 try_expr() ->
         try
                 expressions:that(are_too_long_for_a_line,
-                                 should:be(indented_using:indent(8)),
+                                 should:be(indented_using:break_indent(8)),
                                  but,
                                  the)
         of
                 should -> not be:indented(at_all)
         catch
                 Clauses:Should:Also ->
-                        be:indented(using:indent(8))
+                        be:indented(using:break_indent(8))
         after
-                should:be(indented_using:indent(8))
+                should:be(indented_using:break_indent(8))
         end.
