@@ -45,7 +45,7 @@ if_expr() ->
                  [should,
                   be,
                   indented_using,
-                  {indent, 8}]} ->
+                  {break_indent, 8}]} ->
                         ok
         end.
 

@@ -40,7 +40,10 @@ case_expr() ->
 
 if_expr() ->
  if {expressions_that_are_too_long_for_a_line,
-     [should, be, indented_using, {indent, 1}]} ->
+     [should,
+      be,
+      indented_using,
+      {break_indent, 1}]} ->
      ok
  end.
 
