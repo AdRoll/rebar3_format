@@ -27,16 +27,16 @@ format_file(File, nostate, OptionsMap) ->
               %% Action can only be 'verify'
               %% We need to dump the output somewhere since erlfmt has no
               %% concept of verify / check / etc.
-              filename:join("/tmp", File);
+              {path, filename:join("/tmp", File)};
           OutputDir ->
-              filename:join(filename:absname(OutputDir), File)
+              {path, filename:join(filename:absname(OutputDir), File)}
         end,
     OutFile =
         case Out of
           replace ->
               File;
-          Out ->
-              Out
+          {path, Path} ->
+              Path
         end,
 
     {ok, Code} = file:read_file(File),
@@ -67,7 +67,14 @@ format_file(File, nostate, OptionsMap) ->
           erlang:error(Reason)
     catch
       error:function_clause ->
-          try erlfmt:format_file(File, Out) of
+          OldOut =
+              case Out of
+                replace ->
+                    replace;
+                {path, P} ->
+                    P
+              end,
+          try erlfmt:format_file(File, OldOut) of
             {ok, _} ->
                 case file:read_file(OutFile) of
                   {ok, Code} ->
