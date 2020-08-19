@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.4.1](https://github.com/AdRoll/rebar3_format/tree/0.4.1) (2020-08-19)
+
+[Full Changelog](https://github.com/AdRoll/rebar3_format/compare/0.4.0...0.4.1)
+
+**Closed issues:**
+
+- Make compatible with erlfmt 0.6.0 [\#135](https://github.com/AdRoll/rebar3_format/issues/135)
+
+**Merged pull requests:**
+
+- \[Fix \#135\] Compatibilize with erlfmt 0.6.0 and 0.5.1 [\#136](https://github.com/AdRoll/rebar3_format/pull/136) ([elbrujohalcon](https://github.com/elbrujohalcon))
+
 ## [0.4.0](https://github.com/AdRoll/rebar3_format/tree/0.4.0) (2020-08-19)
 
 [Full Changelog](https://github.com/AdRoll/rebar3_format/compare/0.3.2...0.4.0)
