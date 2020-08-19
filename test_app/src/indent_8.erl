@@ -1,6 +1,6 @@
--module(indent_81).
+-module(indent_8).
 
--format(#{break_indent => 8, sub_indent => 1, paper => 50}).
+-format(#{break_indent => 8, paper => 50}).
 -format(#{inline_clause_bodies => true}).
 
 -record(
@@ -9,7 +9,7 @@
                 what_about = fields_with:very_long_values(and_very:long_type_names()) :: they:also(should:be(indented_using:break_indent(8)))}).
 
 infix_expr() ->
-    this:infix(expression) ++ should:be(indented) ++ using:sub_indent(1).
+    this:infix(expression) ++ should:be(indented) ++ using:break_indent(8).
 
 prefix_expr() ->
     ThisPrefixExpressionShould = not use:break_indent(8).
@@ -20,14 +20,14 @@ match_expr() ->
 case_expr() ->
     case expressions:that(
             are_too_long_for_a_line,
-            should:be(indented_using:sub_indent(1)),
+            should:be(indented_using:break_indent(8)),
             but, the, "of", should:be(indented_using:break_indent(8))) of
-        clauses -> should:be(indented_using:sub_indent(1))
+        clauses -> should:be(indented_using:break_indent(8))
     end.
 
 if_expr() ->
     if {expressions_that_are_too_long_for_a_line,
-            [should, be, indented_using, {sub_indent, 1}]} ->
+            [should, be, indented_using, {break_indent, 8}]} ->
         ok
     end.
 
@@ -39,11 +39,11 @@ a_function_with_a_very_long_name() ->
 block_expr() ->
     begin
         block:expressions(),
-        should:be(indented_using:sub_indent(1))
+        should:be(indented_using:break_indent(8))
     end.
 
 catch_expr() ->
-    catch exp:ressions(should:be(indented_using:sub_indent(1))).
+    catch exp:ressions(should:be(indented_using:break_indent(8))).
 
 list_generator() ->
     [generators || _In <- list:comprehensions(should:be(indented_using:break_indent(8))),
@@ -55,17 +55,22 @@ binary_generator() ->
 
 receive_after(ExpressionsThatAreReallyTooLongForALine) ->
     receive
-        clauses -> should:be(indented_using:sub_indent(1))
-    after ExpressionsThatAreReallyTooLongForALine -> should:be(indented_using:sub_indent(1))
+        clauses -> should:be(indented_using:break_indent(8))
+    after ExpressionsThatAreReallyTooLongForALine -> should:be(indented_using:break_indent(8))
     end.
 
 try_expr() ->
     try expressions:that(
             are_too_long_for_a_line,
-            should:be(indented_using:sub_indent(1)),
+            should:be(indented_using:break_indent(8)),
             but, the) of
         should -> not be:indented(at_all)
     catch
-        Clauses:Should:Also -> be:indented(using:sub_indent(1))
-    after should:be(indented_using:sub_indent(1))
+        Clauses:Should:Also -> be:indented(using:break_indent(8))
+    after should:be(indented_using:break_indent(8))
     end.
+
+when_clause(A, B, C) when is_integer(A), B >= A andalso C rem 2 =:= 0 ->
+    the:guard(should:be(indented_using:break_indent(8)));
+when_clause(Along, Blonb, Clong) when is_integer(Along), Along >= Blong andalso Clong rem Along =:= Blong ->
+    here:should(happen, the, same, thing).

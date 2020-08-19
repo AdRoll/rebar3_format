@@ -90,22 +90,22 @@ foo2(A, B) ->
                               3.14
                        end),
       ?macro_argument1(case A of
-                         ok ->
-                             B;
-                         C ->
-                             C
+                           ok ->
+                               B;
+                           C ->
+                               C
                        end),
       ?macro_argument1(receive
-                         M ->
-                             M
-                         after 100 ->
-                                   3
+                           M ->
+                               M
+                           after 100 ->
+                                     3
                        end),
       ?macro_argument1(try
-                         foo5(A)
+                           foo5(A)
                        catch
-                         C:?macro_simple5 ->
-                             {C, B}
+                           C:?macro_simple5 ->
+                               {C, B}
                        end),
       ?macro_argument2(A, B)],
      A,
@@ -155,9 +155,9 @@ foo4(A, B, #state{c = C} = S) ->
 
 foo5(A) ->
     try foo2(A, A) of
-      R ->
-          R
+        R ->
+            R
     catch
-      error:?macro_simple5 ->
-          nope
+        error:?macro_simple5 ->
+            nope
     end.

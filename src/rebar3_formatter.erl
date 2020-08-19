@@ -32,11 +32,11 @@ new(Module, Opts, RebarState) ->
 -spec format_file(file:filename_all(), t()) -> result().
 format_file(File, #{opts := Opts, module := Module, state := State} = Formatter) ->
     case apply_per_file_opts(File, Opts) of
-      ignore ->
-          ignore(File, Formatter),
-          unchanged;
-      FileOpts ->
-          Module:format_file(File, State, FileOpts)
+        ignore ->
+            ignore(File, Formatter),
+            unchanged;
+        FileOpts ->
+            Module:format_file(File, State, FileOpts)
     end.
 
 %% @doc Process an ignored file.
@@ -62,12 +62,12 @@ apply_per_file_opts(File, Opts) ->
     {ok, AST} = epp_dodger:quick_parse_file(File),
     FileOpts = [Opt || {attribute, _, format, Opt} <- AST],
     case lists:member(ignore, FileOpts) of
-      true ->
-          ignore;
-      false ->
-          MergeF =
-              fun (Map, Acc) ->
-                      maps:merge(Acc, Map)
-              end,
-          lists:foldl(MergeF, Opts, FileOpts)
+        true ->
+            ignore;
+        false ->
+            MergeF =
+                fun (Map, Acc) ->
+                        maps:merge(Acc, Map)
+                end,
+            lists:foldl(MergeF, Opts, FileOpts)
     end.

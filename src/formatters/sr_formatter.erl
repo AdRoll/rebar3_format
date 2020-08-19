@@ -32,26 +32,26 @@ format_file(File, #{opts := GlobalOpts}, OptionsMap) ->
     Opts = parse_opts(OptionsMap) ++ GlobalOpts,
     FileToFormat =
         case maps:get(output_dir, OptionsMap, current) of
-          current ->
-              File;
-          none ->
-              File;
-          OutputDir ->
-              copy_file(File, OutputDir)
+            current ->
+                File;
+            none ->
+                File;
+            OutputDir ->
+                copy_file(File, OutputDir)
         end,
     {ok, Code} = file:read_file(FileToFormat),
     case steamroller:format_file(iolist_to_binary(FileToFormat), Opts) of
-      ok ->
-          case file:read_file(FileToFormat) of
-            {ok, Code} ->
-                unchanged;
-            {ok, _} ->
-                changed
-          end;
-      {error, <<"Check failed", _/binary>>} ->
-          changed;
-      {error, Reason} ->
-          erlang:error(Reason)
+        ok ->
+            case file:read_file(FileToFormat) of
+                {ok, Code} ->
+                    unchanged;
+                {ok, _} ->
+                    changed
+            end;
+        {error, <<"Check failed", _/binary>>} ->
+            changed;
+        {error, Reason} ->
+            erlang:error(Reason)
     end.
 
 parse_opts(OptionsMap) ->

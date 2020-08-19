@@ -63,8 +63,8 @@ f({R, R}) ->
 -spec igor_type_specs:b() -> integer() | fun().
 b() ->
     case foo:bar() of
-      #{a := 2} ->
-          19
+        #{a := 2} ->
+            19
     end.
 
 -spec c(Atom :: atom(), Integer :: integer()) -> {atom(), integer()};

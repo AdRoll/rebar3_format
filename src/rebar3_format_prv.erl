@@ -41,11 +41,11 @@ do(State) ->
     Files = get_files(Args, State) -- IgnoredFiles,
     rebar_api:debug("Found ~p files: ~p", [length(Files), Files]),
     case format_files(Files, Formatter) of
-      ok ->
-          ignore(IgnoredFiles, Formatter),
-          {ok, State};
-      {error, Error} ->
-          {error, format_error(Error)}
+        ok ->
+            ignore(IgnoredFiles, Formatter),
+            {ok, State};
+        {error, Error} ->
+            {error, format_error(Error)}
     end.
 
 %% @private
@@ -64,26 +64,26 @@ format_error(Reason) ->
 -spec get_action(proplists:proplist()) -> format | verify.
 get_action(Args) ->
     case lists:keyfind(verify, 1, Args) of
-      {verify, true} ->
-          verify;
-      _ ->
-          format
+        {verify, true} ->
+            verify;
+        _ ->
+            format
     end.
 
 -spec get_files(proplists:proplist(), rebar_state:t()) -> [file:filename_all()].
 get_files(Args, State) ->
     Patterns =
         case lists:keyfind(files, 1, Args) of
-          {files, Wildcard} ->
-              [Wildcard];
-          false ->
-              FormatConfig = rebar_state:get(State, format, []),
-              case proplists:get_value(files, FormatConfig, undefined) of
-                undefined ->
-                    ["src/**/*.[he]rl"];
-                Wildcards ->
-                    Wildcards
-              end
+            {files, Wildcard} ->
+                [Wildcard];
+            false ->
+                FormatConfig = rebar_state:get(State, format, []),
+                case proplists:get_value(files, FormatConfig, undefined) of
+                    undefined ->
+                        ["src/**/*.[he]rl"];
+                    Wildcards ->
+                        Wildcards
+                end
         end,
     [File || Pattern <- Patterns, File <- filelib:wildcard(Pattern)].
 
@@ -97,12 +97,12 @@ get_ignored_files(State) ->
                         none | current | file:filename_all().
 get_output_dir(Action, Args) ->
     case {lists:keyfind(output, 1, Args), Action} of
-      {{output, OutputDir}, _} ->
-          OutputDir;
-      {false, format} ->
-          current;
-      {false, verify} ->
-          none
+        {{output, OutputDir}, _} ->
+            OutputDir;
+        {false, format} ->
+            current;
+        {false, verify} ->
+            none
     end.
 
 -spec get_formatter(rebar_state:t(), rebar3_formatter:opts()) -> rebar3_formatter:t().
@@ -123,22 +123,22 @@ format_files(Files, Formatter) ->
                      end,
                      Files)
     of
-      [] ->
-          ok;
-      ChangedFiles ->
-          case rebar3_formatter:action(Formatter) of
-            format ->
-                ok;
-            verify ->
-                {error, {unformatted_files, ChangedFiles}}
-          end
+        [] ->
+            ok;
+        ChangedFiles ->
+            case rebar3_formatter:action(Formatter) of
+                format ->
+                    ok;
+                verify ->
+                    {error, {unformatted_files, ChangedFiles}}
+            end
     catch
-      _:{cant_parse, File, {Line, erl_parse, Error}} ->
-          rebar_api:warn("Couldn't parse ~s:~p ~s", [File, Line, Error]),
-          {error, {erl_parse, File, Error}};
-      _:Error:Stack ->
-          rebar_api:warn("Error parsing files: ~p~nStack: ~p", [Error, Stack]),
-          {error, Error}
+        _:{cant_parse, File, {Line, erl_parse, Error}} ->
+            rebar_api:warn("Couldn't parse ~s:~p ~s", [File, Line, Error]),
+            {error, {erl_parse, File, Error}};
+        _:Error:Stack ->
+            rebar_api:warn("Error parsing files: ~p~nStack: ~p", [Error, Stack]),
+            {error, Error}
     end.
 
 %% @doc Process ignored files
