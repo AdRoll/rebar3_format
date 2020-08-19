@@ -7,8 +7,8 @@ all() ->
     [action, output_dir, pragma, old_version].
 
 old_version(_Config) ->
-    %% testing support for old version of erlfmt through is_tuple(Out)
-    erlfmt:validator(fun (File, {Pragma, Out}) when not is_tuple(Out) ->
+    %% testing support for old version of erlfmt
+    erlfmt:validator(fun (File, {Pragma, Out}) ->
                              "brackets.erl" = filename:basename(File),
                              replace = Out,
                              ignore = Pragma,
