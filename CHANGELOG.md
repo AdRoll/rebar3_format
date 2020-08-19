@@ -1,5 +1,27 @@
 # Changelog
 
+## [0.4.0](https://github.com/AdRoll/rebar3_format/tree/0.4.0) (2020-08-19)
+
+[Full Changelog](https://github.com/AdRoll/rebar3_format/compare/0.3.2...0.4.0)
+
+**Fixed bugs:**
+
+- Fix compatibility issues with erlfmt [\#133](https://github.com/AdRoll/rebar3_format/pull/133) ([elbrujohalcon](https://github.com/elbrujohalcon))
+
+**Closed issues:**
+
+- Consider removing sub\_indent altogether from the default formatter [\#131](https://github.com/AdRoll/rebar3_format/issues/131)
+- Ensure compatibility with latest erlfmt [\#128](https://github.com/AdRoll/rebar3_format/issues/128)
+- Remove extra spaces in statements [\#127](https://github.com/AdRoll/rebar3_format/issues/127)
+- Adjust for OTP23 [\#105](https://github.com/AdRoll/rebar3_format/issues/105)
+
+**Merged pull requests:**
+
+- Remove sub\_indent altogether from the default\_formatter [\#134](https://github.com/AdRoll/rebar3_format/pull/134) ([elbrujohalcon](https://github.com/elbrujohalcon))
+- \[Fix \#127\] Extra spaces in binary comprehensions [\#132](https://github.com/AdRoll/rebar3_format/pull/132) ([elbrujohalcon](https://github.com/elbrujohalcon))
+- \[Fix \#105\] Adjust to OTP23 [\#130](https://github.com/AdRoll/rebar3_format/pull/130) ([elbrujohalcon](https://github.com/elbrujohalcon))
+- Add support for new features in erlfmt v0.5.1 [\#129](https://github.com/AdRoll/rebar3_format/pull/129) ([elbrujohalcon](https://github.com/elbrujohalcon))
+
 ## [0.3.2](https://github.com/AdRoll/rebar3_format/tree/0.3.2) (2020-07-13)
 
 [Full Changelog](https://github.com/AdRoll/rebar3_format/compare/0.3.1...0.3.2)
@@ -13,6 +35,7 @@
 
 **Merged pull requests:**
 
+- Add link to VS Code extension [\#119](https://github.com/AdRoll/rebar3_format/pull/119) ([szTheory](https://github.com/szTheory))
 - \[Fix \#75\] Indent long lines on = [\#126](https://github.com/AdRoll/rebar3_format/pull/126) ([elbrujohalcon](https://github.com/elbrujohalcon))
 - \[Fix \#90\] Indent specs on -\> [\#125](https://github.com/AdRoll/rebar3_format/pull/125) ([elbrujohalcon](https://github.com/elbrujohalcon))
 - Support erlfmt 0.3.0 [\#124](https://github.com/AdRoll/rebar3_format/pull/124) ([elbrujohalcon](https://github.com/elbrujohalcon))
@@ -20,7 +43,6 @@
 - \[\#55\] Some initial steps [\#122](https://github.com/AdRoll/rebar3_format/pull/122) ([elbrujohalcon](https://github.com/elbrujohalcon))
 - \[Fix \#56\] Handle quoted atoms [\#121](https://github.com/AdRoll/rebar3_format/pull/121) ([elbrujohalcon](https://github.com/elbrujohalcon))
 - \[Fix \#117\] Full steamroller integration [\#120](https://github.com/AdRoll/rebar3_format/pull/120) ([elbrujohalcon](https://github.com/elbrujohalcon))
-- Add link to VS Code extension [\#119](https://github.com/AdRoll/rebar3_format/pull/119) ([szTheory](https://github.com/szTheory))
 
 ## [0.3.1](https://github.com/AdRoll/rebar3_format/tree/0.3.1) (2020-06-16)
 
