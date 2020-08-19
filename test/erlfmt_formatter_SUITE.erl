@@ -1,16 +1,17 @@
 -module(erlfmt_formatter_SUITE).
 
 -export([all/0]).
--export([action/1, output_dir/1, pragma/1, old_version/1]).
+-export([action/1, output_dir/1, pragma/1, width/1, old_version/1]).
 
 all() ->
     [action, output_dir, pragma, old_version].
 
 old_version(_Config) ->
     %% testing support for old version of erlfmt through is_tuple(Out)
-    erlfmt:validator(fun (File, Out) when not is_tuple(Out) ->
+    erlfmt:validator(fun (File, {Pragma, Out}) when not is_tuple(Out) ->
                              "brackets.erl" = filename:basename(File),
                              replace = Out,
+                             ignore = Pragma,
                              {ok, []}
                      end),
     Args2 = rebar_state:command_parsed_args(init(), {[], something}),
@@ -101,6 +102,25 @@ pragma(_Config) ->
         rebar_state:command_parsed_args(init(#{require_pragma => false, insert_pragma => false}),
                                         {[], something}),
     {ok, _} = rebar3_format_prv:do(Args4).
+
+width(_Config) ->
+    % When there is no defined print_width
+    erlfmt:validator(fun (File, _, Opts) ->
+                             "src/brackets.erl" = File,
+                             false = maps:is_key(width, Opts),
+                             {ok, []}
+                     end),
+    Args1 = rebar_state:command_parsed_args(init(), {[], something}),
+    {ok, _} = rebar3_format_prv:do(Args1),
+
+    % When print_width has a value, erlfmt's width should be it
+    erlfmt:validator(fun (File, _, Opts) ->
+                             "brackets.erl" = filename:basename(File),
+                             50 = maps:get(width, Opts, undefined),
+                             skip
+                     end),
+    Args2 = rebar_state:command_parsed_args(init(#{print_width => 50}), {[], something}),
+    {ok, _} = rebar3_format_prv:do(Args2).
 
 init() ->
     init(#{}).
