@@ -74,6 +74,8 @@ format_file(File, Pragma, Out, Options) ->
     try
         erlfmt:format_file(File, Out, Options)
     catch
-        _:_ -> % Old version
-            erlfmt:format_file(File, {Pragma, Out})
+        error:undef -> % Old version
+            erlfmt:format_file(File, {Pragma, Out});
+        _:{error, Reason} ->
+            erlang:error(Reason)
     end.

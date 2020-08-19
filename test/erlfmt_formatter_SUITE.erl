@@ -4,7 +4,7 @@
 -export([action/1, output_dir/1, pragma/1, width/1, old_version/1]).
 
 all() ->
-    [action, output_dir, pragma, old_version].
+    [action, output_dir, pragma, width, old_version].
 
 old_version(_Config) ->
     %% testing support for old version of erlfmt
@@ -18,7 +18,7 @@ old_version(_Config) ->
     {ok, _} = rebar3_format_prv:do(Args2).
 
 action(_Config) ->
-    erlfmt:validator(fun (File, {_, Out}) ->
+    erlfmt:validator(fun (File, Out, _) ->
                              "brackets.erl" = filename:basename(File),
                              {path, "/tmp/src"} = Out,
                              copy_file(File, "/tmp/src/brackets.erl"),
@@ -27,7 +27,7 @@ action(_Config) ->
     Args1 = rebar_state:command_parsed_args(init(), {[{verify, true}], something}),
     {ok, _} = rebar3_format_prv:do(Args1),
 
-    erlfmt:validator(fun (File, {_, Out}) ->
+    erlfmt:validator(fun (File, Out, _) ->
                              "brackets.erl" = filename:basename(File),
                              replace = Out,
                              {ok, []}
@@ -35,7 +35,7 @@ action(_Config) ->
     Args2 = rebar_state:command_parsed_args(init(), {[], something}),
     {ok, _} = rebar3_format_prv:do(Args2),
 
-    erlfmt:validator(fun (_, {_, {path, Out}}) ->
+    erlfmt:validator(fun (_, {path, Out}, _) ->
                              file:write_file(filename:join(Out, "brackets.erl"),
                                              "something different"),
                              {ok, []}
@@ -44,7 +44,7 @@ action(_Config) ->
 
 output_dir(_Config) ->
     % When there is no expected output, erlfmt's out should be 'replace'
-    erlfmt:validator(fun (File, {_, Out}) ->
+    erlfmt:validator(fun (File, Out, _) ->
                              "src/brackets.erl" = File,
                              replace = Out,
                              {ok, []}
@@ -53,7 +53,7 @@ output_dir(_Config) ->
     {ok, _} = rebar3_format_prv:do(Args1),
 
     % When there is an expected output, erlfmt's out should be it
-    erlfmt:validator(fun (File, {_, Out}) ->
+    erlfmt:validator(fun (File, Out, _) ->
                              "brackets.erl" = filename:basename(File),
                              {path, "/tmp/src"} = Out,
                              {ok, []}
@@ -63,18 +63,18 @@ output_dir(_Config) ->
 
 pragma(_Config) ->
     % When there is no defined require_pragma nor insert_prgama, Pragma should be ignore
-    erlfmt:validator(fun (File, {Pragma, _}) ->
+    erlfmt:validator(fun (File, _, Opts) ->
                              "src/brackets.erl" = File,
-                             ignore = Pragma,
+                             ignore = proplists:get_value(pragma, Opts),
                              {ok, []}
                      end),
     Args1 = rebar_state:command_parsed_args(init(), {[], something}),
     {ok, _} = rebar3_format_prv:do(Args1),
 
     % When require_pragma is true, erlfmt's pragma should be require
-    erlfmt:validator(fun (File, {Pragma, _}) ->
+    erlfmt:validator(fun (File, _, Opts) ->
                              "brackets.erl" = filename:basename(File),
-                             require = Pragma,
+                             require = proplists:get_value(pragma, Opts),
                              skip
                      end),
     Args2 = rebar_state:command_parsed_args(init(#{require_pragma => true}), {[], something}),
@@ -82,9 +82,9 @@ pragma(_Config) ->
 
     % When require_pragma is false, erlfmt's pragma depends on insert_pragma
     % If insert_pragma is true, it should be insert
-    erlfmt:validator(fun (File, {Pragma, _}) ->
+    erlfmt:validator(fun (File, _, Opts) ->
                              "brackets.erl" = filename:basename(File),
-                             insert = Pragma,
+                             insert = proplists:get_value(pragma, Opts),
                              {ok, []}
                      end),
     Args3 =
@@ -93,9 +93,9 @@ pragma(_Config) ->
     {ok, _} = rebar3_format_prv:do(Args3),
 
     % Otherwise it should be ignore
-    erlfmt:validator(fun (File, {Pragma, _}) ->
+    erlfmt:validator(fun (File, _, Opts) ->
                              "brackets.erl" = filename:basename(File),
-                             ignore = Pragma,
+                             ignore = proplists:get_value(pragma, Opts),
                              {ok, []}
                      end),
     Args4 =
@@ -107,7 +107,7 @@ width(_Config) ->
     % When there is no defined print_width
     erlfmt:validator(fun (File, _, Opts) ->
                              "src/brackets.erl" = File,
-                             false = maps:is_key(width, Opts),
+                             false = proplists:is_defined(width, Opts),
                              {ok, []}
                      end),
     Args1 = rebar_state:command_parsed_args(init(), {[], something}),
@@ -116,7 +116,7 @@ width(_Config) ->
     % When print_width has a value, erlfmt's width should be it
     erlfmt:validator(fun (File, _, Opts) ->
                              "brackets.erl" = filename:basename(File),
-                             50 = maps:get(width, Opts, undefined),
+                             50 = proplists:get_value(width, Opts, undefined),
                              skip
                      end),
     Args2 = rebar_state:command_parsed_args(init(#{print_width => 50}), {[], something}),
