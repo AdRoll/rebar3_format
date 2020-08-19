@@ -49,7 +49,14 @@ format_file(File, nostate, OptionsMap) ->
                         ignore
                 end
         end,
-    try erlfmt:format_file(File, {Pragma, Out}) of
+    Options =
+        case maps:get(print_width, OptionsMap, undefined) of
+            undefined ->
+                [{pragma, Pragma}];
+            Width ->
+                [{width, Width}, {pragma, Pragma}]
+        end,
+    case format_file(File, Pragma, Out, Options) of
         skip ->
             unchanged;
         {ok, _} ->
@@ -61,29 +68,14 @@ format_file(File, nostate, OptionsMap) ->
             end;
         {error, Reason} ->
             erlang:error(Reason)
+    end.
+
+format_file(File, Pragma, Out, Options) ->
+    try
+        erlfmt:format_file(File, Out, Options)
     catch
-        error:function_clause ->
-            OldOut =
-                case Out of
-                    replace ->
-                        replace;
-                    {path, P} ->
-                        P
-                end,
-            try erlfmt:format_file(File, OldOut) of
-                {ok, _} ->
-                    case file:read_file(OutFile) of
-                        {ok, Code} ->
-                            unchanged;
-                        {ok, _} ->
-                            changed
-                    end;
-                {error, Reason} ->
-                    erlang:error(Reason)
-            catch
-                _:{error, Reason} ->
-                    erlang:error(Reason)
-            end;
+        error:undef -> % Old version
+            erlfmt:format_file(File, {Pragma, Out});
         _:{error, Reason} ->
-            erlang:error(Reason)
+            {error, Reason}
     end.
