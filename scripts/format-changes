@@ -1,0 +1,23 @@
+#!/bin/bash
+#
+# Usage: format-changes $A_COMMIT
+#
+# Example: format-changes HEAD
+#
+# Runs the rebar3 formatter on the files that were changed in the provided commit.
+# Then it generates a new commit with the formatting, if needed.
+# This can be a useful thing to add to your .git/hooks/post-commit
+LAST_COMMIT_MSG=$(git log -1 --pretty=%B $1)
+
+if [[ $LAST_COMMIT_MSG != *"[AUTO] Format"* ]]; then
+    FILES=$(git diff-tree -r --name-status --no-commit-id $1 | grep -e "^[A-M]" | grep -e "[.][eh]rl" | cut -d$'\t' -f 2)
+
+    if [ ! -z "$FILES" ]; then
+        echo "Formatting " $FILES
+        for FILE in $FILES
+        do
+            ./rebar3 format --files $FILE
+        done
+        git diff --exit-code > /dev/null || git commit -am "[AUTO] Format files from previous commit"
+    fi
+fi
