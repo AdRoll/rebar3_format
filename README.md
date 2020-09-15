@@ -228,6 +228,12 @@ You can use rebar3_format from Visual Studio Code with the
 [Erlang Formatter](https://marketplace.visualstudio.com/items?itemName=szTheory.erlang-formatter)
 extension.
 
+## Helpers
+
+### Git commit hooks
+
+In the `scripts` folder you'll find two scripts that work really well as _pre_ and _post_ commit git hooks, in case you want to _slowly_ format your huge repos with a myriad of modules :)
+
 ## Contribute
 
 To contribute to rebar3_format, please refer to [CONTRIBUTING](CONTRIBUTING.md).

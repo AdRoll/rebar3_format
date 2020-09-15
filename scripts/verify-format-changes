@@ -1,0 +1,21 @@
+#!/bin/bash
+#
+# Usage: verify-format-changes $A_COMMIT
+#
+# Example: verify-format-changes HEAD
+#
+# Runs the rebar3 formatter on the files that were changed in the provided commit.
+# It crashes on the first unformatted file that it finds.
+# This can be a useful thing to add to your .git/hooks/pre-commit
+set -e
+FILES=$(git diff-tree -r --name-status --no-commit-id $1 | grep -e "^[A-M]" | grep -e "[.][eh]rl" | cut -d$'\t' -f 2)
+
+if [ ! -z "$FILES" ]; then
+    echo "Verifying " $FILES
+    for FILE in $FILES
+    do
+        rebar3 format --verify --files $FILE
+    done
+else
+    echo "No files to verify"
+fi
