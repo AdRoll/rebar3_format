@@ -14,7 +14,7 @@ if [ ! -z "$FILES" ]; then
     echo "Verifying " $FILES
     for FILE in $FILES
     do
-        ./rebar3 format --verify --files $FILE
+        rebar3 format --verify --files $FILE
     done
 else
     echo "No files to verify"
