@@ -2,17 +2,28 @@
 name: Style Request
 about: Suggest an idea for code styling
 title: ''
-labels: configuration idea
+labels: configuration idea, style change
 assignees: ''
 
 ---
 
-**Describe the style you'd like to see**
-A clear and concise description of what you want to happen with your formatted code.
-Before and After code-blocks are appreciated.
+Currently, `$formatter` (the formatter you want to change) formats this code…
 
-**Describe alternatives you've considered**
-A clear and concise description of any alternative solutions or features you've considered.
+```erlang
+some:code(you, want, to, format).
+```
 
-**Additional context**
-Add any other context or screenshots about the feature request here.
+…like this…
+
+```erlang
+case current:version() of
+  the -> formatted:code();
+```
+
+I would like it to be formatted like this…
+
+```erlang
+case expected:version() of
+  the ->
+    formatted:code();
+```
