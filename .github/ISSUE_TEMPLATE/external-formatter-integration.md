@@ -7,7 +7,7 @@ assignees: ''
 
 ---
 
-There is a new release of `$project`: [`$version.number`](http://hex.pm/$project).
+There is a new release of `$project`: [`$version.number`](http://hex.pm/$project/$version.number).
 We need to adjust our formatter module to it.
 
 ### Highlihgts
