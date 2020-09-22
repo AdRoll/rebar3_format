@@ -12,6 +12,6 @@ my_apply(Fun, Arg, _) ->
 
 -spec two(fun((A) -> A)) -> fun((B) -> B).
 two(F) ->
-    F(fun (X) ->
-              X
+    F(fun(X) ->
+             X
       end).

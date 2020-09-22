@@ -7,51 +7,51 @@ all() ->
     [action, output_dir, options].
 
 action(_Config) ->
-    steamroller:validator(fun (File, Opts) ->
-                                  <<"brackets.erl">> = filename:basename(File),
-                                  true = lists:member(check, Opts),
-                                  ok
+    steamroller:validator(fun(File, Opts) ->
+                                 <<"brackets.erl">> = filename:basename(File),
+                                 true = lists:member(check, Opts),
+                                 ok
                           end),
     Args1 = rebar_state:command_parsed_args(init(), {[{verify, true}], something}),
     {ok, _} = rebar3_format_prv:do(Args1),
 
-    steamroller:validator(fun (File, Opts) ->
-                                  <<"brackets.erl">> = filename:basename(File),
-                                  false = lists:member(check, Opts),
-                                  ok
+    steamroller:validator(fun(File, Opts) ->
+                                 <<"brackets.erl">> = filename:basename(File),
+                                 false = lists:member(check, Opts),
+                                 ok
                           end),
     Args2 = rebar_state:command_parsed_args(init(), {[], something}),
     {ok, _} = rebar3_format_prv:do(Args2),
 
-    steamroller:validator(fun (_, Opts) ->
-                                  true = lists:member(check, Opts),
-                                  {error, <<"Check failed: something">>}
+    steamroller:validator(fun(_, Opts) ->
+                                 true = lists:member(check, Opts),
+                                 {error, <<"Check failed: something">>}
                           end),
     {error, _} = rebar3_format_prv:do(Args1).
 
 output_dir(_Config) ->
     % When there is no expected output, steamroller should run in the input file
-    steamroller:validator(fun (File, _) ->
-                                  <<"src/brackets.erl">> = File,
-                                  ok
+    steamroller:validator(fun(File, _) ->
+                                 <<"src/brackets.erl">> = File,
+                                 ok
                           end),
     Args1 = rebar_state:command_parsed_args(init(), {[], something}),
     {ok, _} = rebar3_format_prv:do(Args1),
 
     % When there is an expected output, steamroller should run on the output file
-    steamroller:validator(fun (File, _) ->
-                                  <<"/tmp/src/brackets.erl">> = File,
-                                  ok
+    steamroller:validator(fun(File, _) ->
+                                 <<"/tmp/src/brackets.erl">> = File,
+                                 ok
                           end),
     Args2 = rebar_state:command_parsed_args(init(), {[{output, "/tmp/"}], something}),
     {ok, _} = rebar3_format_prv:do(Args2).
 
 options(_Config) ->
-    steamroller:validator(fun (_, Opts) ->
-                                  100 = proplists:get_value(line_length, Opts),
-                                  all = proplists:get_value(inline_items, Opts),
-                                  50 = proplists:get_value(paper, Opts),
-                                  ok
+    steamroller:validator(fun(_, Opts) ->
+                                 100 = proplists:get_value(line_length, Opts),
+                                 all = proplists:get_value(inline_items, Opts),
+                                 50 = proplists:get_value(paper, Opts),
+                                 ok
                           end),
     Args1 = rebar_state:command_parsed_args(init(#{line_length => 100}), {[], something}),
     {ok, _} = rebar3_format_prv:do(Args1).
