@@ -20,8 +20,6 @@ external_calls() ->
                                    read,
                                    more,
                                    easily])),
-    this_one(
-        will:be(more(
-                    complex:since(
-                        it:combines(), local:and_remote(calls))),
-                hopefully:it(is(a, rare, thing)))).
+    this_one(will:be(more(complex:since(
+                              it:combines(), local:and_remote(calls))),
+                     hopefully:it(is(a, rare, thing)))).

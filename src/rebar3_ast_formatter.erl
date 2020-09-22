@@ -24,9 +24,7 @@ format(File, Formatter, Opts) ->
             _ ->
                 changed
         end,
-    case maybe_save_file(
-             maps:get(output_dir, Opts), File, Formatted)
-        of
+    case maybe_save_file(maps:get(output_dir, Opts), File, Formatted) of
         none ->
             Result;
         NewFile ->
