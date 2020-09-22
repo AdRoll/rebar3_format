@@ -36,8 +36,8 @@ action(_Config) ->
     {ok, _} = rebar3_format_prv:do(Args2),
 
     erlfmt:validator(fun (_, {path, Out}, _) ->
-                             file:write_file(filename:join(Out, "brackets.erl"),
-                                             "something different"),
+                             file:write_file(
+                                 filename:join(Out, "brackets.erl"), "something different"),
                              {ok, []}
                      end),
     {error, _} = rebar3_format_prv:do(Args1).
@@ -126,8 +126,13 @@ init() ->
     init(#{}).
 
 init(Opts) ->
-    ok = file:set_cwd(filename:join(code:priv_dir(rebar3_format), "../test_app")),
-    {ok, State1} = rebar3_format:init(rebar_state:new()),
+    ok =
+        file:set_cwd(
+            filename:join(
+                code:priv_dir(rebar3_format), "../test_app")),
+    {ok, State1} =
+        rebar3_format:init(
+            rebar_state:new()),
     Files = {files, ["src/brackets.erl"]},
     Formatter = {formatter, erlfmt_formatter},
     Out = {options, Opts},

@@ -7,10 +7,14 @@ all() ->
 
 test_app(_Config) ->
     ok = file:set_cwd("../../../../test_app"),
-    {ok, State1} = rebar3_format:init(rebar_state:new()),
+    {ok, State1} =
+        rebar3_format:init(
+            rebar_state:new()),
     Files = {files, ["src/*.erl", "include/*.hrl"]},
     IgnoredFiles =
-        case string:to_integer(erlang:system_info(otp_release)) of
+        case string:to_integer(
+                 erlang:system_info(otp_release))
+            of
             {N, []} when N >= 23 ->
                 {ignore, ["src/*_ignore.erl", "src/ignored_file_config.erl"]};
             _ ->
@@ -26,12 +30,12 @@ test_app(_Config) ->
     ok = git_diff().
 
 verify(State) ->
-    rebar3_format_prv:do(rebar_state:command_parsed_args(State,
-                                                         {[{verify, true}], something})).
+    rebar3_format_prv:do(
+        rebar_state:command_parsed_args(State, {[{verify, true}], something})).
 
 format(State) ->
-    rebar3_format_prv:do(rebar_state:command_parsed_args(State,
-                                                         {[{output, "formatted"}], something})).
+    rebar3_format_prv:do(
+        rebar_state:command_parsed_args(State, {[{output, "formatted"}], something})).
 
 git_diff() ->
     case os:cmd("git --no-pager diff --no-index -- after formatted") of

@@ -24,7 +24,9 @@ format(File, Formatter, Opts) ->
             _ ->
                 changed
         end,
-    case maybe_save_file(maps:get(output_dir, Opts), File, Formatted) of
+    case maybe_save_file(
+             maps:get(output_dir, Opts), File, Formatted)
+        of
         none ->
             Result;
         NewFile ->
@@ -70,7 +72,9 @@ get_comments(File) ->
     erl_comment_scan:file(File).
 
 format(File, AST, Formatter, Comments, Opts) ->
-    WithComments = erl_recomment:recomment_forms(erl_syntax:form_list(AST), Comments),
+    WithComments =
+        erl_recomment:recomment_forms(
+            erl_syntax:form_list(AST), Comments),
     Formatted = Formatter:format(WithComments, empty_lines(File), Opts),
     insert_last_line(iolist_to_binary(Formatted)).
 
@@ -106,7 +110,9 @@ maybe_save_file(current, File, Formatted) ->
     ok = file:write_file(File, Formatted),
     File;
 maybe_save_file(OutputDir, File, Formatted) ->
-    OutFile = filename:join(filename:absname(OutputDir), File),
+    OutFile =
+        filename:join(
+            filename:absname(OutputDir), File),
     ok = filelib:ensure_dir(OutFile),
     ok = file:write_file(OutFile, Formatted),
     OutFile.

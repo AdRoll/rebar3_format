@@ -69,7 +69,9 @@ parse_opt(K, V, Opts) ->
     [{K, V} | Opts].
 
 copy_file(File, OutputDir) ->
-    OutFile = filename:join(filename:absname(OutputDir), File),
+    OutFile =
+        filename:join(
+            filename:absname(OutputDir), File),
     ok = filelib:ensure_dir(OutFile),
     {ok, _} = file:copy(File, OutFile),
     OutFile.
