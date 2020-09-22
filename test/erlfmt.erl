@@ -32,6 +32,6 @@ format_file(File, Out, Opts) ->
 validator() ->
     application:get_env(rebar3_format,
                         erlfmt_formatter_validator,
-                        fun (_, _) ->
-                                ok
+                        fun(_, _) ->
+                               ok
                         end).

@@ -34,7 +34,7 @@ fact(0) ->           %  |
 
 %% @doc This is a oneline @doc comment
 dummy_fn(A) ->
-    Fn = fun (B) -> B end, % Inline comment
+    Fn = fun(B) -> B end, % Inline comment
     % Newline comment
     Fn(A).
 

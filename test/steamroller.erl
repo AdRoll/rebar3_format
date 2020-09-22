@@ -17,7 +17,7 @@ format_file(File, Opts) ->
     Validator =
         application:get_env(rebar3_format,
                             steamroller_formatter_validator,
-                            fun (_, _) ->
-                                    ok
+                            fun(_, _) ->
+                                   ok
                             end),
     Validator(File, Opts).
