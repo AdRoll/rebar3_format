@@ -340,8 +340,13 @@ lay_no_comments(Node, Ctxt) ->
             sep([follow(text("if"), D, Ctxt1#ctxt.break_indent), text("end")]);
         fun_expr ->
             Ctxt1 = reset_prec(Ctxt),
-            Clauses = lay_clauses(erl_syntax:fun_expr_clauses(Node), fun_expr, Ctxt1),
-            lay_fun_sep(Clauses, Ctxt1);
+            case erl_syntax:fun_expr_clauses(Node) of
+                [Clause] -> % Just one
+                    DClause = lay(Clause, Ctxt1#ctxt{clause = fun_expr}),
+                    sep([beside(text("fun"), DClause), text("end")]);
+                Clauses ->
+                    lay_fun_sep(lay_clauses(Clauses, fun_expr, Ctxt1), Ctxt1)
+            end;
         named_fun_expr ->
             Ctxt1 = reset_prec(Ctxt),
             D1 = lay(erl_syntax:named_fun_expr_name(Node), Ctxt1),
@@ -688,8 +693,8 @@ lay_no_comments(Node, Ctxt) ->
                 [beside(text("_:_*"), lay(N, Ctxt1))
                  || erl_syntax:type(N) =/= integer orelse erl_syntax:integer_value(N) =/= 0],
             F =
-                fun (D, _) ->
-                        D
+                fun(D, _) ->
+                       D
                 end,
             D = lay_items(D1 ++ D2, Ctxt1, F),
             beside(lay_text_float("<<"), beside(D, lay_text_float(">>")));

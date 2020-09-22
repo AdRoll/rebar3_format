@@ -117,9 +117,9 @@ get_opts(State) ->
 
 -spec format_files([file:filename_all()], rebar3_formatter:t()) -> ok | {error, term()}.
 format_files(Files, Formatter) ->
-    try lists:filter(fun (File) ->
-                             rebar_api:debug("Formatting ~p with ~p", [File, Formatter]),
-                             changed == rebar3_formatter:format_file(File, Formatter)
+    try lists:filter(fun(File) ->
+                            rebar_api:debug("Formatting ~p with ~p", [File, Formatter]),
+                            changed == rebar3_formatter:format_file(File, Formatter)
                      end,
                      Files)
     of
@@ -143,7 +143,7 @@ format_files(Files, Formatter) ->
 
 %% @doc Process ignored files
 ignore(IgnoredFiles, Formatter) ->
-    lists:foreach(fun (File) ->
-                          ok = rebar3_formatter:ignore(File, Formatter)
+    lists:foreach(fun(File) ->
+                         ok = rebar3_formatter:ignore(File, Formatter)
                   end,
                   IgnoredFiles).
