@@ -81,10 +81,8 @@ empty_lines(File) ->
     {Res, _} =
         lists:foldl(fun(Line, {EmptyLines, N}) ->
                            case re:run(Line, NonEmptyLineRe) of
-                               {match, _} ->
-                                   {EmptyLines, N + 1};
-                               nomatch ->
-                                   {[N | EmptyLines], N + 1}
+                               {match, _} -> {EmptyLines, N + 1};
+                               nomatch -> {[N | EmptyLines], N + 1}
                            end
                     end,
                     {[], 1},

@@ -10,7 +10,7 @@ short() ->
     fun(I) -> I(I) end.
 
 long() ->
-    FunctionWithLongName = fun() -> {function, with, long, body} end,
+    FunctionWithLongName = fun() -> A = {function, [with, {a, <<"really">>, <<"extremely">>, long}, long], body}, [even, more, than, A, single, expression] end,
     GenericFunctionWithLongName = fun GenericFunctionWithLongName() -> GenericFunctionWithLongName() end,
     HumorouslyLongFunctionName =
         fun (f) -> FunctionWithLongName(); (g) -> GenericFunctionWithLongName()

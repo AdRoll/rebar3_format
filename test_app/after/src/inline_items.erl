@@ -40,9 +40,7 @@ short_list() ->
 
 -spec short_fun() -> fun((X, Y, Z) -> {X, Y, Z}).
 short_fun() ->
-    fun(X, Y, Z) ->
-           {X, Y, Z}
-    end.
+    fun(X, Y, Z) -> {X, Y, Z} end.
 
 -spec short_bin() -> binary().
 short_bin() ->

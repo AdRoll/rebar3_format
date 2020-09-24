@@ -143,7 +143,5 @@ format_files(Files, Formatter) ->
 
 %% @doc Process ignored files
 ignore(IgnoredFiles, Formatter) ->
-    lists:foreach(fun(File) ->
-                         ok = rebar3_formatter:ignore(File, Formatter)
-                  end,
+    lists:foreach(fun(File) -> ok = rebar3_formatter:ignore(File, Formatter) end,
                   IgnoredFiles).

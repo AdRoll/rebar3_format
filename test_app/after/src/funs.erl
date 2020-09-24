@@ -3,10 +3,7 @@
 -export([short/0, long/0]).
 
 short() ->
-    F =
-        fun() ->
-               f
-        end,
+    F = fun() -> f end,
     G =
         fun G() ->
                 G()
@@ -25,14 +22,13 @@ short() ->
             I(h) ->
                 h
         end,
-    fun(I) ->
-           I(I)
-    end.
+    fun(I) -> I(I) end.
 
 long() ->
     FunctionWithLongName =
         fun() ->
-               {function, with, long, body}
+               A = {function, [with, {a, <<"really">>, <<"extremely">>, long}, long], body},
+               [even, more, than, A, single, expression]
         end,
     GenericFunctionWithLongName =
         fun GenericFunctionWithLongName() ->
