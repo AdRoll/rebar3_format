@@ -56,6 +56,7 @@
          inline_items = {when_over, 25} :: inlining(),
          inline_attributes = all :: inlining(),
          force_inlining = false :: boolean(),
+         inline_simple_funs = true :: boolean(),
          inline_clause_bodies = false :: boolean(),
          inline_expressions = false :: boolean(),
          unquote_atoms = true :: boolean(),
@@ -133,6 +134,7 @@ layout(Node, EmptyLines, Options) ->
         #ctxt{paper = maps:get(paper, Options, ?PAPER),
               ribbon = maps:get(ribbon, Options, ?RIBBON),
               break_indent = maps:get(break_indent, Options, ?BREAK_INDENT),
+              inline_simple_funs = maps:get(inline_simple_funs, Options, true),
               inline_clause_bodies = maps:get(inline_clause_bodies, Options, false),
               inline_expressions = maps:get(inline_expressions, Options, false),
               inline_items = maps:get(inline_items, Options, {when_over, 25}),
@@ -343,8 +345,14 @@ lay_no_comments(Node, Ctxt) ->
             case erl_syntax:fun_expr_clauses(Node) of
                 [Clause] -> % Just one clause
                     % We force inlining here, to prevent fun() -> x end to use 3 lines
+                    % if inline_simple_funs is true. Otherwise treat them as the rest
+                    % of the code
                     DClause =
-                        lay(Clause, Ctxt1#ctxt{inline_clause_bodies = true, clause = fun_expr}),
+                        lay(Clause,
+                            Ctxt1#ctxt{inline_clause_bodies =
+                                           Ctxt1#ctxt.inline_simple_funs orelse
+                                               Ctxt1#ctxt.inline_clause_bodies,
+                                       clause = fun_expr}),
                     sep([beside(text("fun"), DClause), text("end")]);
                 Clauses ->
                     lay_fun_sep(lay_clauses(Clauses, fun_expr, Ctxt1), Ctxt1)
