@@ -978,7 +978,7 @@ get_func_node(Node) ->
 unfold_function_names(Ns) ->
     F =
         fun({Atom, Arity}) ->
-               erl_syntax:arity_qualifier(erl_syntax:atom(Atom), erl_syntax:integer(Arity))
+           erl_syntax:arity_qualifier(erl_syntax:atom(Atom), erl_syntax:integer(Arity))
         end,
     erl_syntax:list([F(N) || N <- Ns]).
 
@@ -986,15 +986,15 @@ unfold_function_names(Ns) ->
 dodge_macros(Type) ->
     F =
         fun(T) ->
-               case erl_syntax:type(T) of
-                   macro ->
-                       Var = erl_syntax:macro_name(T),
-                       VarName0 = erl_syntax:variable_name(Var),
-                       VarName = list_to_atom("?" ++ atom_to_list(VarName0)),
-                       Atom = erl_syntax:atom(VarName),
-                       Atom;
-                   _ -> T
-               end
+           case erl_syntax:type(T) of
+               macro ->
+                   Var = erl_syntax:macro_name(T),
+                   VarName0 = erl_syntax:variable_name(Var),
+                   VarName = list_to_atom("?" ++ atom_to_list(VarName0)),
+                   Atom = erl_syntax:atom(VarName),
+                   Atom;
+               _ -> T
+           end
         end,
     erl_syntax_lib:map(F, Type).
 

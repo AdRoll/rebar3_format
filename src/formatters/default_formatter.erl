@@ -38,6 +38,7 @@
 -define(NOUSER, undefined).
 
 -type clause_t() :: case_expr |
+                    simple_fun_expr |
                     fun_expr |
                     if_expr |
                     receive_expr |
@@ -306,6 +307,8 @@ lay_no_comments(Node, Ctxt) ->
             case Ctxt#ctxt.clause of
                 fun_expr ->
                     make_fun_clause(D1, D2, D3, Ctxt);
+                simple_fun_expr ->
+                    make_simple_fun_clause(D1, D2, D3, Ctxt);
                 {function, N} ->
                     make_fun_clause(N, D1, D2, D3, Ctxt);
                 if_expr ->
@@ -352,7 +355,7 @@ lay_no_comments(Node, Ctxt) ->
                             Ctxt1#ctxt{inline_clause_bodies =
                                            Ctxt1#ctxt.inline_simple_funs orelse
                                                Ctxt1#ctxt.inline_clause_bodies,
-                                       clause = fun_expr}),
+                                       clause = simple_fun_expr}),
                     sep([beside(text("fun"), DClause), text("end")]);
                 Clauses ->
                     lay_fun_sep(lay_clauses(Clauses, fun_expr, Ctxt1), Ctxt1)
@@ -1001,6 +1004,12 @@ lay_clauses(Cs, Type, Ctxt) ->
 %% Note that for the clause-making functions, the guard argument
 %% can be `none', which has different interpretations in different
 %% contexts.
+make_simple_fun_clause(P, G, B, Ctxt) ->
+    D = make_fun_clause_head(none, P, Ctxt),
+    % Since this anonymous fun has a single clause, we don't need to indent its
+    % body _that_ much
+    make_case_clause(D, G, B, Ctxt#ctxt{break_indent = 0}).
+
 make_fun_clause(P, G, B, Ctxt) ->
     make_fun_clause(none, P, G, B, Ctxt).
 
