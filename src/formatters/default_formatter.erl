@@ -57,6 +57,7 @@
          inline_items = {when_over, 25} :: inlining(),
          inline_attributes = all :: inlining(),
          force_inlining = false :: boolean(),
+         force_arity_qualifiers = false :: boolean(),
          inline_simple_funs = true :: boolean(),
          inline_clause_bodies = false :: boolean(),
          inline_expressions = false :: boolean(),
@@ -226,8 +227,13 @@ lay_no_comments(Node, Ctxt) ->
         nil ->
             text("[]");
         tuple ->
-            Es = lay_items(erl_syntax:tuple_elements(Node), reset_prec(Ctxt), fun lay/2),
-            beside(lay_text_float("{"), beside(Es, lay_text_float("}")));
+            case maybe_convert_to_qualifier(Node, Ctxt) of
+                Node -> % it didn't change
+                    Es = lay_items(erl_syntax:tuple_elements(Node), reset_prec(Ctxt), fun lay/2),
+                    beside(lay_text_float("{"), beside(Es, lay_text_float("}")));
+                NewNode ->
+                    lay_no_comments(NewNode, Ctxt)
+            end;
         list ->
             Ctxt1 = reset_prec(Ctxt),
             Node1 = erl_syntax:compact_list(Node),
@@ -437,6 +443,21 @@ lay_no_comments(Node, Ctxt) ->
                         Ctxt2 =
                             Ctxt1#ctxt{force_inlining = true,
                                        inline_items = Ctxt1#ctxt.inline_attributes},
+                        lay_application(N, Args, Ctxt2);
+                    dialyzer ->
+                        %% We need to convert 2-tuples to arity qualifiers here
+                        %% because the parser doesn't recognize them as such.
+                        Ctxt2 = Ctxt1#ctxt{force_arity_qualifiers = true},
+                        lay_application(N, Args, Ctxt2);
+                    mixin ->
+                        %% We need to convert 2-tuples to arity qualifiers here
+                        %% because the parser doesn't recognize them as such.
+                        Ctxt2 = Ctxt1#ctxt{force_arity_qualifiers = true},
+                        lay_application(N, Args, Ctxt2);
+                    ignore_xref ->
+                        %% We need to convert 2-tuples to arity qualifiers here
+                        %% because the parser doesn't recognize them as such.
+                        Ctxt2 = Ctxt1#ctxt{force_arity_qualifiers = true},
                         lay_application(N, Args, Ctxt2);
                     _ when Args =:= none ->
                         lay(N, Ctxt1);
@@ -887,6 +908,23 @@ undodge_macro(T) ->
             end;
         _ ->
             T
+    end.
+
+%% @doc This is a particular edge case for those places where the parser
+%%      treats func/1 as {func, 1}... particularly -dialyzer(...)
+maybe_convert_to_qualifier(Node, #ctxt{force_arity_qualifiers = false}) ->
+    Node;
+maybe_convert_to_qualifier(Node, #ctxt{force_arity_qualifiers = true}) ->
+    case erl_syntax:tuple_elements(Node) of
+        [FuncName, Arity] ->
+            case {erl_syntax:type(FuncName), erl_syntax:type(Arity)} of
+                {atom, integer} ->
+                    erl_syntax:arity_qualifier(FuncName, Arity);
+                _ ->
+                    Node
+            end;
+        _ ->
+            Node
     end.
 
 lay_text_float(Str) ->
