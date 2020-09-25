@@ -38,6 +38,7 @@
 -define(NOUSER, undefined).
 
 -type clause_t() :: case_expr |
+                    simple_fun_expr |
                     fun_expr |
                     if_expr |
                     receive_expr |
@@ -56,6 +57,7 @@
          inline_items = {when_over, 25} :: inlining(),
          inline_attributes = all :: inlining(),
          force_inlining = false :: boolean(),
+         inline_simple_funs = true :: boolean(),
          inline_clause_bodies = false :: boolean(),
          inline_expressions = false :: boolean(),
          unquote_atoms = true :: boolean(),
@@ -133,6 +135,7 @@ layout(Node, EmptyLines, Options) ->
         #ctxt{paper = maps:get(paper, Options, ?PAPER),
               ribbon = maps:get(ribbon, Options, ?RIBBON),
               break_indent = maps:get(break_indent, Options, ?BREAK_INDENT),
+              inline_simple_funs = maps:get(inline_simple_funs, Options, true),
               inline_clause_bodies = maps:get(inline_clause_bodies, Options, false),
               inline_expressions = maps:get(inline_expressions, Options, false),
               inline_items = maps:get(inline_items, Options, {when_over, 25}),
@@ -304,6 +307,8 @@ lay_no_comments(Node, Ctxt) ->
             case Ctxt#ctxt.clause of
                 fun_expr ->
                     make_fun_clause(D1, D2, D3, Ctxt);
+                simple_fun_expr ->
+                    make_simple_fun_clause(D1, D2, D3, Ctxt);
                 {function, N} ->
                     make_fun_clause(N, D1, D2, D3, Ctxt);
                 if_expr ->
@@ -341,8 +346,16 @@ lay_no_comments(Node, Ctxt) ->
         fun_expr ->
             Ctxt1 = reset_prec(Ctxt),
             case erl_syntax:fun_expr_clauses(Node) of
-                [Clause] -> % Just one
-                    DClause = lay(Clause, Ctxt1#ctxt{clause = fun_expr}),
+                [Clause] -> % Just one clause
+                    % We force inlining here, to prevent fun() -> x end to use 3 lines
+                    % if inline_simple_funs is true. Otherwise treat them as the rest
+                    % of the code
+                    DClause =
+                        lay(Clause,
+                            Ctxt1#ctxt{inline_clause_bodies =
+                                           Ctxt1#ctxt.inline_simple_funs orelse
+                                               Ctxt1#ctxt.inline_clause_bodies,
+                                       clause = simple_fun_expr}),
                     sep([beside(text("fun"), DClause), text("end")]);
                 Clauses ->
                     lay_fun_sep(lay_clauses(Clauses, fun_expr, Ctxt1), Ctxt1)
@@ -692,10 +705,7 @@ lay_no_comments(Node, Ctxt) ->
             D2 =
                 [beside(text("_:_*"), lay(N, Ctxt1))
                  || erl_syntax:type(N) =/= integer orelse erl_syntax:integer_value(N) =/= 0],
-            F =
-                fun(D, _) ->
-                       D
-                end,
+            F = fun(D, _) -> D end,
             D = lay_items(D1 ++ D2, Ctxt1, F),
             beside(lay_text_float("<<"), beside(D, lay_text_float(">>")));
         fun_type ->
@@ -994,6 +1004,12 @@ lay_clauses(Cs, Type, Ctxt) ->
 %% Note that for the clause-making functions, the guard argument
 %% can be `none', which has different interpretations in different
 %% contexts.
+make_simple_fun_clause(P, G, B, Ctxt) ->
+    D = make_fun_clause_head(none, P, Ctxt),
+    % Since this anonymous fun has a single clause, we don't need to indent its
+    % body _that_ much
+    make_case_clause(D, G, B, Ctxt#ctxt{break_indent = 0}).
+
 make_fun_clause(P, G, B, Ctxt) ->
     make_fun_clause(none, P, G, B, Ctxt).
 
