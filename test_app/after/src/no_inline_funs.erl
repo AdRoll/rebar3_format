@@ -7,7 +7,7 @@
 short() ->
     F =
         fun() ->
-               f
+           f
         end,
     G =
         fun G() ->
@@ -28,14 +28,14 @@ short() ->
                 h
         end,
     fun(I) ->
-           I(I)
+       I(I)
     end.
 
 long() ->
     FunctionWithLongName =
         fun() ->
-               A = {function, [with, {a, <<"really">>, <<"extremely">>, long}, long], body},
-               [even, more, than, A, single, expression]
+           A = {function, [with, {a, <<"really">>, <<"extremely">>, long}, long], body},
+           [even, more, than, A, single, expression]
         end,
     GenericFunctionWithLongName =
         fun GenericFunctionWithLongName() ->
@@ -56,6 +56,6 @@ long() ->
                 h
         end,
     fun(IncrediblyLongVariableName) ->
-           {IncrediblyLongFunctionName(IncrediblyLongVariableName),
-            IncrediblyLongFunctionName(IncrediblyLongVariableName)}
+       {IncrediblyLongFunctionName(IncrediblyLongVariableName),
+        IncrediblyLongFunctionName(IncrediblyLongVariableName)}
     end.

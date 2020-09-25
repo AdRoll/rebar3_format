@@ -203,17 +203,17 @@ long_fun() ->
         VeryVeryLongName1,
         VeryVeryLongName2,
         VeryVeryLongName3) ->
-           {X1,
-            X2,
-            X3,
-            X4,
-            Y1,
-            Y2,
-            Y3,
-            Y4,
-            VeryVeryLongName1,
-            VeryVeryLongName2,
-            VeryVeryLongName3}
+       {X1,
+        X2,
+        X3,
+        X4,
+        Y1,
+        Y2,
+        Y3,
+        Y4,
+        VeryVeryLongName1,
+        VeryVeryLongName2,
+        VeryVeryLongName3}
     end.
 
 -spec long_bin() -> binary().
