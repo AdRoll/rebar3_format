@@ -441,6 +441,11 @@ lay_no_comments(Node, Ctxt) ->
                         %% because the parser doesn't recognize them as such.
                         Ctxt2 = Ctxt1#ctxt{force_arity_qualifiers = true},
                         lay_application(N, Args, Ctxt2);
+                    ignore_xref ->
+                        %% We need to convert 2-tuples to arity qualifiers here
+                        %% because the parser doesn't recognize them as such.
+                        Ctxt2 = Ctxt1#ctxt{force_arity_qualifiers = true},
+                        lay_application(N, Args, Ctxt2);
                     _ when Args =:= none ->
                         lay(N, Ctxt1);
                     _ ->
