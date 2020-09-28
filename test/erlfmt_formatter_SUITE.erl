@@ -36,7 +36,8 @@ action(_Config) ->
     {ok, _} = rebar3_format_prv:do(Args2),
 
     erlfmt:validator(fun(_, {path, Out}, _) ->
-                        file:write_file(filename:join(Out, "brackets.erl"), "something different"),
+                        file:write_file(
+                            filename:join(Out, "brackets.erl"), "something different"),
                         {ok, []}
                      end),
     {error, _} = rebar3_format_prv:do(Args1).
