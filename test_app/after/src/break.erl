@@ -7,7 +7,7 @@ break_on_receive() ->
         {this, will, be, indented} ->
             but_this:is(short)
         after 1000 ->
-                  this:too(should, go, below)
+            this:too(should, go, below)
     end.
 
 break_on_try() ->
