@@ -67,9 +67,6 @@ apply_per_file_opts(File, Opts) ->
         true ->
             ignore;
         false ->
-            MergeF =
-                fun(Map, Acc) ->
-                       maps:merge(Acc, Map)
-                end,
+            MergeF = fun(Map, Acc) -> maps:merge(Acc, Map) end,
             lists:foldl(MergeF, Opts, FileOpts)
     end.

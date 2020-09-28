@@ -1,9 +1,14 @@
 -module(funs).
 
+-format #{inline_simple_funs => false}.
+
 -export([short/0, long/0]).
 
 short() ->
-    F = fun() -> f end,
+    F =
+        fun() ->
+           f
+        end,
     G =
         fun G() ->
                 G()
@@ -22,7 +27,9 @@ short() ->
             I(h) ->
                 h
         end,
-    fun(I) -> I(I) end.
+    fun(I) ->
+       I(I)
+    end.
 
 long() ->
     FunctionWithLongName =

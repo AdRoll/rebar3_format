@@ -76,6 +76,9 @@ The plugin supports the following configuration options in the `format` section 
             * When the flag is `none`, the formatter will place each item in its own line.
             * When the flag is `{when_over, N}` the formatter will work as `none` for lists with up to `N` elements, and it will inline longer lists.
             * The default value is `{when_over, 25}` to properly accommodate large binaries or lists.
+        + `inline_simple_funs` (`boolean()`):
+            * Specifies if anonymous function bodies should be placed in the same line as the function clause head in case for anonymous functions with just one clause if `paper` and `ribbon` allows it or if these simple funs should be indented as all the others.
+            * The default value is `true`.
         + `inline_clause_bodies` (`boolean()`):
             * Specifies if clause bodies (for `case`, `function`, etc. statements) should be placed in the same line as the clause heads if `paper` and `ribbon` allows it or if all bodies should be placed in the next line after their clause heads.
             * The default value is `false`.
@@ -138,6 +141,7 @@ The idea is to take advantage of `rebar3` profiles and write the following on yo
             {formatter, default_formatter},
             {options, #{
                 inline_clause_bodies => false, % she doesn't like one-liners
+                inline_simple_funs => false, % and she's adamant about it
                 inline_items => all % but she does like long lists of items
             }}
         ]}

@@ -1,5 +1,7 @@
 -module(funs).
 
+-format #{inline_simple_funs => false}.
+
 -export [short/0, long/0].
 
 short() ->

@@ -1,5 +1,5 @@
 ---
-name: Style Request
+name: Style Ideas
 about: Suggest an idea for code styling
 title: ''
 labels: configuration idea, style change
