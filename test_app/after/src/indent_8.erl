@@ -92,9 +92,8 @@ receive_after(ExpressionsThatAreReallyTooLongForALine) ->
         receive
                 clauses ->
                         should:be(indented_using:break_indent(8))
-                after
-                        ExpressionsThatAreReallyTooLongForALine ->
-                                should:be(indented_using:break_indent(8))
+                after ExpressionsThatAreReallyTooLongForALine ->
+                        should:be(indented_using:break_indent(8))
         end.
 
 try_expr() ->
