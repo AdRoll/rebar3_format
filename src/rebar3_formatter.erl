@@ -44,7 +44,9 @@ format_file(File, #{opts := Opts, module := Module, state := State} = Formatter)
 %%      are not formatting to it
 -spec ignore(file:filename_all(), t()) -> ok.
 ignore(File, #{opts := #{output_dir := OutputDir}}) when not is_atom(OutputDir) ->
-    OutFile = filename:join(filename:absname(OutputDir), File),
+    OutFile =
+        filename:join(
+            filename:absname(OutputDir), File),
     ok = filelib:ensure_dir(OutFile),
     {ok, _} = file:copy(File, OutFile),
     ok;

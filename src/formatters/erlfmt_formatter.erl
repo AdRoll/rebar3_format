@@ -32,7 +32,9 @@ format_file(File, nostate, OptionsMap) ->
             OutputDir ->
                 %% We understand output dirs differently than erlfmt.
                 %% We use relative subpaths.
-                OFile = filename:join(filename:absname(OutputDir), File),
+                OFile =
+                    filename:join(
+                        filename:absname(OutputDir), File),
                 {{path, filename:dirname(OFile)}, OFile}
         end,
     {ok, Code} = file:read_file(File),

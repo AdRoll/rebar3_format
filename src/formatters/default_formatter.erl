@@ -899,7 +899,9 @@ undodge_macro(T) ->
         atom ->
             case get_node_text(T) of
                 "?" ->
-                    erl_syntax:macro(erl_syntax:variable(erl_syntax:atom_name(T)));
+                    erl_syntax:macro(
+                        erl_syntax:variable(
+                            erl_syntax:atom_name(T)));
                 _ ->
                     T
             end;
@@ -1126,12 +1128,31 @@ lay_application(Name, Arguments, Ctxt) ->
             MacroVar = erl_syntax:variable([$? | atom_to_list(erl_syntax:variable_name(Arg))]),
             lay_application(MacroVar, Args, Ctxt);
         _ ->
-            {PrecL, Prec} = func_prec(), %
-            D1 = lay(Name, set_prec(Ctxt, PrecL)),
-            As = lay_items(Arguments, reset_prec(Ctxt), fun lay/2),
-            D = beside(D1, beside(text("("), beside(As, lay_text_float(")")))),
+            {PrecL, Prec} = func_prec(),
+            DName = beside(lay(Name, set_prec(Ctxt, PrecL)), text("(")),
+            DArgs = beside(lay_items(Arguments, reset_prec(Ctxt), fun lay/2), lay_text_float(")")),
+            D =
+                case is_qualified_function_composition(Name, Arguments) of
+                    true ->
+                        vertical([DName, nest(Ctxt#ctxt.break_indent, DArgs)]);
+                    _ ->
+                        beside(DName, DArgs)
+                end,
             maybe_parentheses(D, Prec, Ctxt)
     end.
+
+%% @doc Is this a function composition of two fully-qualified names.
+%%      i.e. something like a_module:a_fun(another_module:another_func(...))
+%%      The idea in this scenario is to indent that with the heuristic thinking that such
+%%      a function composition will result in a very long line.
+is_qualified_function_composition(_, []) ->
+    false;
+is_qualified_function_composition(Outside, [FirstArg | _]) ->
+    module_qualifier == erl_syntax:type(Outside) andalso
+        erl_syntax:type(FirstArg) == application andalso
+            module_qualifier ==
+                erl_syntax:type(
+                    erl_syntax:application_operator(FirstArg)).
 
 seq([H], _Separator, Ctxt, Fun) ->
     [Fun(H, Ctxt)];

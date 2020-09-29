@@ -978,7 +978,8 @@ get_func_node(Node) ->
 unfold_function_names(Ns) ->
     F =
         fun({Atom, Arity}) ->
-           erl_syntax:arity_qualifier(erl_syntax:atom(Atom), erl_syntax:integer(Arity))
+           erl_syntax:arity_qualifier(
+               erl_syntax:atom(Atom), erl_syntax:integer(Arity))
         end,
     erl_syntax:list([F(N) || N <- Ns]).
 
