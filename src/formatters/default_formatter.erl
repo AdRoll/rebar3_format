@@ -44,8 +44,7 @@
                     receive_expr |
                     try_expr |
                     {function, prettypr:document()} |
-                    spec |
-                    simple_spec.
+                    spec.
 -type inlining() :: all | none | {when_over, pos_integer()}.
 
 -record(ctxt,
@@ -406,15 +405,20 @@ lay_no_comments(Node, Ctxt) ->
                         [FuncName, FuncTypes] = erl_syntax:tuple_elements(SpecTuple),
                         Name = get_func_node(FuncName),
                         Types = concrete_dodging_macros(FuncTypes),
-                        D1 =
-                            case Types of
-                                [Type] ->
-                                    lay(Type, Ctxt#ctxt{clause = simple_spec});
-                                Types ->
-                                    lay_clauses(Types, spec, Ctxt1)
-                            end,
-                        beside(follow(lay(N, Ctxt1), lay(Name, Ctxt1), Ctxt1#ctxt.break_indent),
-                               D1);
+                        case Types of
+                            [Type] ->
+                                lay_simple_spec(follow(lay(N, Ctxt1),
+                                                       lay(Name, Ctxt1),
+                                                       Ctxt1#ctxt.break_indent),
+                                                Type,
+                                                Ctxt1);
+                            Types ->
+                                D1 = lay_clauses(Types, spec, Ctxt1),
+                                beside(follow(lay(N, Ctxt1),
+                                              lay(Name, Ctxt1),
+                                              Ctxt1#ctxt.break_indent),
+                                       D1)
+                        end;
                     Tag when Tag =:= type; Tag =:= opaque ->
                         [TypeTuple] = Args,
                         [Name, Type, Elements] = erl_syntax:tuple_elements(TypeTuple),
@@ -740,18 +744,11 @@ lay_no_comments(Node, Ctxt) ->
             D1 = lay(erl_syntax:constrained_function_type_body(Node), Ctxt1),
             Ctxt2 = Ctxt1#ctxt{clause = undefined},
             D2 = lay(erl_syntax:constrained_function_type_argument(Node), Ctxt2),
-            case Ctxt#ctxt.clause of
-                simple_spec ->
-                    par([D1, beside(lay_text_float("when "), D2)]);
-                spec ->
-                    par([D1, beside(lay_text_float("when "), D2)], Ctxt#ctxt.break_indent)
-            end;
+            par([D1, beside(lay_text_float("when "), D2)], Ctxt#ctxt.break_indent);
         function_type ->
             {Before, After} =
                 case Ctxt#ctxt.clause of
                     spec ->
-                        {"", ""};
-                    simple_spec ->
                         {"", ""};
                     _ ->
                         {"fun(", ")"}
@@ -1045,6 +1042,22 @@ split_string_next([X | Xs], N, L, As) ->
     split_string_first(Xs, N - 1, L - 1, [X | As]);
 split_string_next([], N, L, As) ->
     split_string_first([], N, L, As).
+
+%% @doc Produces the layout for a spec/callback with a single clause that has a
+%%      when... Which is a scenario that's common enough to deserve its own
+%%      implementation. That allows us to place the when, if indented, closer to
+%%      the margin and not floating below the params of the function in question
+lay_simple_spec(NameDoc, Node, Ctxt) ->
+    case erl_syntax:type(Node) of
+        constrained_function_type ->
+            Ctxt1 = reset_prec(Ctxt),
+            D1 = lay(erl_syntax:constrained_function_type_body(Node), Ctxt1#ctxt{clause = spec}),
+            D2 = lay(erl_syntax:constrained_function_type_argument(Node), Ctxt1),
+            par([beside(NameDoc, D1), beside(lay_text_float("when "), D2)],
+                Ctxt1#ctxt.break_indent);
+        function_type ->
+            beside(NameDoc, lay(Node, Ctxt#ctxt{clause = spec}))
+    end.
 
 %% Note that there is nothing in `lay_clauses' that actually requires
 %% that the elements have type `clause'; it just sets up the proper
