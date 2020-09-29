@@ -3,7 +3,7 @@
 -export([a_fun/0]).
 -export([another_fun/0]).
 
--dialyzer([{nowarn_function, {a_fun, 0}}]).
+-dialyzer([{nowarn_function, a_fun/0}]).
 
 -attribute(x).
 -attribute(y).
