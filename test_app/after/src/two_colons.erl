@@ -8,4 +8,4 @@
 
 -type rec() :: #rec{record_type_field :: w}.
 
--spec x(Constraint, AnnotatedType :: annotated_type) -> w  when Constraint :: constraint.
+-spec x(Constraint, AnnotatedType :: annotated_type) -> w when Constraint :: constraint.

@@ -26,13 +26,13 @@
          long_lc/0, long_bc/0, long_arglist/7, long_rec/0, long_map/0]).
 -export([short/0, exact/0, long/0]).
 
--spec short_tuple() -> {T, T, T}  when T :: {x, y, z}.
+-spec short_tuple() -> {T, T, T} when T :: {x, y, z}.
 short_tuple() ->
     X = {x, y, z},
     Y = {x, y, z},
     {X, Y, {x, y, z}}.
 
--spec short_list() -> [T | [T]]  when T :: [x | y | z].
+-spec short_list() -> [T | [T]] when T :: [x | y | z].
 short_list() ->
     X = [x, y, z],
     Y = [x, y | z],
@@ -77,7 +77,7 @@ short_rec() ->
 short_map() ->
     #{x => x, y => y, z => z}.
 
--spec long_tuple() -> {T, T, T}  when T :: {x, y, z}.
+-spec long_tuple() -> {T, T, T} when T :: {x, y, z}.
 long_tuple() ->
     X =
         {x1,
@@ -118,17 +118,17 @@ long_tuple() ->
       very_very_long_name_3}}.
 
 -spec long_list() -> [T | [T]]
-                when T :: [x1 |
-                           x2 |
-                           x3 |
-                           x4 |
-                           y1 |
-                           y2 |
-                           y3 |
-                           y4 |
-                           very_very_long_name_1 |
-                           very_very_long_name_2 |
-                           very_very_long_name_3].
+               when T :: [x1 |
+                          x2 |
+                          x3 |
+                          x4 |
+                          y1 |
+                          y2 |
+                          y3 |
+                          y4 |
+                          very_very_long_name_1 |
+                          very_very_long_name_2 |
+                          very_very_long_name_3].
 long_list() ->
     X =
         [x1,
