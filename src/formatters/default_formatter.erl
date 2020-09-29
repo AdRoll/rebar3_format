@@ -44,7 +44,8 @@
                     receive_expr |
                     try_expr |
                     {function, prettypr:document()} |
-                    spec.
+                    spec |
+                    simple_spec.
 -type inlining() :: all | none | {when_over, pos_integer()}.
 
 -record(ctxt,
@@ -405,7 +406,13 @@ lay_no_comments(Node, Ctxt) ->
                         [FuncName, FuncTypes] = erl_syntax:tuple_elements(SpecTuple),
                         Name = get_func_node(FuncName),
                         Types = concrete_dodging_macros(FuncTypes),
-                        D1 = lay_clauses(Types, spec, Ctxt1),
+                        D1 =
+                            case Types of
+                                [Type] ->
+                                    lay(Type, Ctxt#ctxt{clause = simple_spec});
+                                Types ->
+                                    lay_clauses(Types, spec, Ctxt1)
+                            end,
                         beside(follow(lay(N, Ctxt1), lay(Name, Ctxt1), Ctxt1#ctxt.break_indent),
                                D1);
                     Tag when Tag =:= type; Tag =:= opaque ->
@@ -733,11 +740,18 @@ lay_no_comments(Node, Ctxt) ->
             D1 = lay(erl_syntax:constrained_function_type_body(Node), Ctxt1),
             Ctxt2 = Ctxt1#ctxt{clause = undefined},
             D2 = lay(erl_syntax:constrained_function_type_argument(Node), Ctxt2),
-            par([D1, beside(lay_text_float("when "), D2)], Ctxt#ctxt.break_indent);
+            case Ctxt#ctxt.clause of
+                simple_spec ->
+                    par([D1, beside(lay_text_float("when "), D2)]);
+                spec ->
+                    par([D1, beside(lay_text_float("when "), D2)], Ctxt#ctxt.break_indent)
+            end;
         function_type ->
             {Before, After} =
                 case Ctxt#ctxt.clause of
                     spec ->
+                        {"", ""};
+                    simple_spec ->
                         {"", ""};
                     _ ->
                         {"fun(", ")"}
