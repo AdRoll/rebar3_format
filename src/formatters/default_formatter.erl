@@ -733,7 +733,7 @@ lay_no_comments(Node, Ctxt) ->
             D1 = lay(erl_syntax:constrained_function_type_body(Node), Ctxt1),
             Ctxt2 = Ctxt1#ctxt{clause = undefined},
             D2 = lay(erl_syntax:constrained_function_type_argument(Node), Ctxt2),
-            par([D1, beside(lay_text_float("when "), D2)]);
+            par([D1, beside(lay_text_float("when "), D2)], Ctxt#ctxt.break_indent);
         function_type ->
             {Before, After} =
                 case Ctxt#ctxt.clause of

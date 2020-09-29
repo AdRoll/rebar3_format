@@ -118,17 +118,17 @@ long_tuple() ->
       very_very_long_name_3}}.
 
 -spec long_list() -> [T | [T]]
-               when T :: [x1 |
-                          x2 |
-                          x3 |
-                          x4 |
-                          y1 |
-                          y2 |
-                          y3 |
-                          y4 |
-                          very_very_long_name_1 |
-                          very_very_long_name_2 |
-                          very_very_long_name_3].
+                   when T :: [x1 |
+                              x2 |
+                              x3 |
+                              x4 |
+                              y1 |
+                              y2 |
+                              y3 |
+                              y4 |
+                              very_very_long_name_1 |
+                              very_very_long_name_2 |
+                              very_very_long_name_3].
 long_list() ->
     X =
         [x1,
