@@ -54,9 +54,8 @@ format_error({unformatted_files, Files}) ->
     Msg = "The following files are not properly formatted:\n~p",
     io_lib:format(Msg, [Files]);
 format_error({erl_parse, File, Error}) ->
-    Msg =
-        "Error while parsing ~s: ~p.\n\tTry running with DEBUG=1 for "
-        "more information",
+    Msg = "Error while parsing ~s: ~p.\n\tTry running with DEBUG=1 for "
+          "more information",
     io_lib:format(Msg, [File, Error]);
 format_error(Reason) ->
     io_lib:format("Unknown Formatting Error: ~p", [Reason]).

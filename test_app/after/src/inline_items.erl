@@ -79,8 +79,7 @@ short_map() ->
 
 -spec long_tuple() -> {T, T, T} when T :: {x, y, z}.
 long_tuple() ->
-    X =
-        {x1,
+    X = {x1,
          x2,
          x3,
          x4,
@@ -91,8 +90,7 @@ long_tuple() ->
          very_very_long_name_1,
          very_very_long_name_2,
          very_very_long_name_3},
-    Y =
-        {x1,
+    Y = {x1,
          x2,
          x3,
          x4,
@@ -130,8 +128,7 @@ long_tuple() ->
                 very_very_long_name_2 |
                 very_very_long_name_3].
 long_list() ->
-    X =
-        [x1,
+    X = [x1,
          x2,
          x3,
          x4,
@@ -142,8 +139,7 @@ long_list() ->
          very_very_long_name_1,
          very_very_long_name_2,
          very_very_long_name_3],
-    Y =
-        [x1,
+    Y = [x1,
          x2,
          x3,
          x4,
@@ -219,8 +215,7 @@ long_fun() ->
 
 -spec long_bin() -> binary().
 long_bin() ->
-    X =
-        <<1,
+    X = <<1,
           1,
           1,
           1,
@@ -232,8 +227,7 @@ long_bin() ->
           333333333333333333,
           333333333333333333,
           333333333333333333>>,
-    Y =
-        <<1:1,
+    Y = <<1:1,
           1:1,
           1:1,
           1:1,
