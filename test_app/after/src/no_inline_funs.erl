@@ -5,22 +5,18 @@
 -export([short/0, long/0]).
 
 short() ->
-    F =
-        fun() ->
+    F = fun() ->
            f
         end,
-    G =
-        fun G() ->
+    G = fun G() ->
                 G()
         end,
-    H =
-        fun (f) ->
+    H = fun (f) ->
                 F();
             (g) ->
                 G()
         end,
-    I =
-        fun I(f) ->
+    I = fun I(f) ->
                 H(f);
             I(g) ->
                 H(g);
