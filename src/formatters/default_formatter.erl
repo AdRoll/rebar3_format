@@ -1163,7 +1163,7 @@ lay_application(Name, Arguments, Ctxt) ->
             D =
                 case not Ctxt#ctxt.inline_qualified_function_composition andalso
                          is_qualified_function_composition(Name, Arguments)
-                    of
+                of
                     true ->
                         vertical([DName, nest(Ctxt#ctxt.break_indent, DArgs)]);
                     _ ->
