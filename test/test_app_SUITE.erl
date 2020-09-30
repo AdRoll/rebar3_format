@@ -14,7 +14,7 @@ test_app(_Config) ->
     IgnoredFiles =
         case string:to_integer(
                  erlang:system_info(otp_release))
-        of
+            of
             {N, []} when N >= 23 ->
                 {ignore, ["src/*_ignore.erl", "src/ignored_file_config.erl"]};
             _ ->
