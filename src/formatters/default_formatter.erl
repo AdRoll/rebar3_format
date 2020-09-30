@@ -341,8 +341,7 @@ lay_no_comments(Node, Ctxt) ->
             Ctxt1 = reset_prec(Ctxt),
             D1 = lay(erl_syntax:case_expr_argument(Node), Ctxt1),
             D2 = lay_clauses(erl_syntax:case_expr_clauses(Node), case_expr, Ctxt1),
-            sep([par([follow(text("case"), D1, Ctxt1#ctxt.break_indent), text("of")],
-                     Ctxt1#ctxt.break_indent),
+            sep([par([follow(text("case"), D1, Ctxt1#ctxt.break_indent), text("of")]),
                  nest(Ctxt1#ctxt.break_indent, D2),
                  text("end")]);
         if_expr ->

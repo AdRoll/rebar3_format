@@ -61,3 +61,18 @@ multi_try_expr() ->
     try there:are(2), expressions:in(this_block) catch
         A:Catch:Expression -> formatter:should(indent,A,Catch,Expression)
     end.
+
+long_case_of() ->
+    case whereis(ServerAndTable) =/= undefined orelse counter_sup:start_child([ServerAndTable, Name]) of
+        thing ->
+            thong
+    end.
+
+long_try_of() ->
+    try whereis(ServerAndTable) =/= undefined orelse counter_sup:start_child([ServerAndTable, Name]) of
+        thing ->
+            thong
+    catch
+        _:_ ->
+            thung
+    end.
