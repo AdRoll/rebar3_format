@@ -60,6 +60,7 @@
          force_arity_qualifiers = false :: boolean(),
          inline_simple_funs = true :: boolean(),
          inline_clause_bodies = false :: boolean(),
+         inline_qualified_function_composition = false :: boolean(),
          inline_expressions = false :: boolean(),
          unquote_atoms = true :: boolean(),
          empty_lines = [] :: [pos_integer()],
@@ -138,6 +139,8 @@ layout(Node, EmptyLines, Options) ->
               break_indent = maps:get(break_indent, Options, ?BREAK_INDENT),
               inline_simple_funs = maps:get(inline_simple_funs, Options, true),
               inline_clause_bodies = maps:get(inline_clause_bodies, Options, false),
+              inline_qualified_function_composition =
+                  maps:get(inline_qualified_function_composition, Options, false),
               inline_expressions = maps:get(inline_expressions, Options, false),
               inline_items = maps:get(inline_items, Options, {when_over, 25}),
               inline_attributes = maps:get(inline_attributes, Options, all),
@@ -1159,7 +1162,9 @@ lay_application(Name, Arguments, Ctxt) ->
             DName = beside(lay(Name, set_prec(Ctxt, PrecL)), text("(")),
             DArgs = beside(lay_items(Arguments, reset_prec(Ctxt), fun lay/2), lay_text_float(")")),
             D =
-                case is_qualified_function_composition(Name, Arguments) of
+                case not Ctxt#ctxt.inline_qualified_function_composition andalso
+                         is_qualified_function_composition(Name, Arguments)
+                    of
                     true ->
                         vertical([DName, nest(Ctxt#ctxt.break_indent, DArgs)]);
                     _ ->
