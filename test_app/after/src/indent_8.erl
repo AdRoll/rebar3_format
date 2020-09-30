@@ -39,7 +39,7 @@ case_expr() ->
                                  "of",
                                  should:be(
                                          indented_using:break_indent(8)))
-                of
+        of
                 clauses ->
                         should:be(
                                 indented_using:break_indent(8))
