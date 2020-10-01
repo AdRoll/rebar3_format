@@ -33,6 +33,5 @@ comparers(A, B) when is_integer(A) and A /= B ->
     bad;
 comparers(A, B) when is_integer(A) andalso A /= B ->
     good;
-comparers(A, B)
-    when A =:= B orelse B =/= A -> % :P
+comparers(A, B) when A =:= B orelse B =/= A ->
     A == B orelse (B /= A and (A =< 1)) or B < 0 or (B > 100) and (A >= ugly).
