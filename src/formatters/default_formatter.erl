@@ -63,6 +63,7 @@
          inline_qualified_function_composition = false :: boolean(),
          inline_expressions = false :: boolean(),
          unquote_atoms = true :: boolean(),
+         parenthesize_infix_operations = false :: boolean(),
          empty_lines = [] :: [pos_integer()],
          encoding = epp:default_encoding() :: epp:source_encoding()}).
 
@@ -144,6 +145,8 @@ layout(Node, EmptyLines, Options) ->
               inline_expressions = maps:get(inline_expressions, Options, false),
               inline_items = maps:get(inline_items, Options, {when_over, 25}),
               inline_attributes = maps:get(inline_attributes, Options, all),
+              parenthesize_infix_operations =
+                  maps:get(parenthesize_infix_operations, Options, false),
               unquote_atoms = maps:get(unquote_atoms, Options, true),
               empty_lines = EmptyLines,
               encoding = maps:get(encoding, Options, epp:default_encoding())}).
@@ -259,9 +262,9 @@ lay_no_comments(Node, Ctxt) ->
                     _ ->
                         {0, 0, 0}
                 end,
-            D1 = lay(erl_syntax:infix_expr_left(Node), set_prec(Ctxt, PrecL)),
+            D1 = lay_nested_infix_expr(erl_syntax:infix_expr_left(Node), set_prec(Ctxt, PrecL)),
             D2 = lay(Operator, reset_prec(Ctxt)),
-            D3 = lay(erl_syntax:infix_expr_right(Node), set_prec(Ctxt, PrecR)),
+            D3 = lay_nested_infix_expr(erl_syntax:infix_expr_right(Node), set_prec(Ctxt, PrecR)),
             D4 = par([D1, D2, D3], Ctxt#ctxt.break_indent),
             maybe_parentheses(D4, Prec, Ctxt);
         prefix_expr ->
@@ -926,6 +929,33 @@ maybe_convert_to_qualifier(Node, #ctxt{force_arity_qualifiers = true}) ->
             Node
     end.
 
+lay_nested_infix_expr(Node, Ctxt = #ctxt{parenthesize_infix_operations = false}) ->
+    lay(Node, Ctxt);
+lay_nested_infix_expr(Node, Ctxt = #ctxt{parenthesize_infix_operations = true}) ->
+    D1 = lay(Node, Ctxt),
+    case erl_syntax:type(Node) of
+        infix_expr ->
+            Operator = erl_syntax:infix_expr_operator(Node),
+            Prec =
+                case erl_syntax:type(Operator) of
+                    operator ->
+                        {_, P, _} = inop_prec(erl_syntax:operator_name(Operator)),
+                        P;
+                    _ ->
+                        0
+                end,
+            % If we *should* add parentheses semantic-wise, lay/2 will take care
+            % of that, thanks to maybe_parentheses/3
+            case needs_parentheses(Prec, Ctxt) of
+                true ->
+                    D1;
+                false ->
+                    lay_parentheses(D1, Ctxt)
+            end;
+        _ ->
+            D1
+    end.
+
 lay_text_float(Str) ->
     floating(text(Str)).
 
@@ -944,12 +974,15 @@ lay_parentheses(D, _Ctxt) ->
     beside(lay_text_float("("), beside(D, lay_text_float(")"))).
 
 maybe_parentheses(D, Prec, Ctxt) ->
-    case Ctxt#ctxt.prec of
-        P when P > Prec ->
+    case needs_parentheses(Prec, Ctxt) of
+        true ->
             lay_parentheses(D, Ctxt);
-        _ ->
+        false ->
             D
     end.
+
+needs_parentheses(Prec, Ctxt) ->
+    Ctxt#ctxt.prec > Prec.
 
 lay_string(Node, Ctxt) ->
     S0 = erl_syntax:string_literal(Node, Ctxt#ctxt.encoding),
