@@ -14,7 +14,7 @@ A rebar plugin for code formatting
 Add the plugin to your rebar config:
 
 ```erlang
-{plugins, [rebar3_format]}
+{project_plugins, [rebar3_format]}
 ```
 
 Then just call your plugin directly in an existing application:
@@ -180,7 +180,7 @@ You also get `-format` attribute compliance (including `-format ignore.`) for fr
 If you want to use @old-reliable's [steamroller](https://github.com/old-reliable/steamroller), you just need to add the following things to your `rebar.config` file:
 
 ```erlang
-{plugins, [rebar3_format, steamroller]}.
+{project_plugins, [rebar3_format, steamroller]}.
 
 {format, [
 {files, ["src/*.erl", "include/*.hrl"]},
@@ -194,7 +194,7 @@ If you want to use @old-reliable's [steamroller](https://github.com/old-reliable
 If you want to use @whatsapp's [erlfmt](https://github.com/whatsapp/erlfmt), you just need to add the following things to your `rebar.config` file:
 
 ```erlang
-{plugins, [rebar3_format, erlfmt]}.
+{project_plugins, [rebar3_format, erlfmt]}.
 {format, [
     {files, ["src/*.erl", "include/*.hrl"]},
     {ignore, ["src/*_ignore.erl", "src/ignored_file_config.erl"]},
