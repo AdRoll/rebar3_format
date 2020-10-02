@@ -90,6 +90,9 @@ The plugin supports the following configuration options in the `format` section 
         + `inline_expressions` (`boolean()`):
             * Specifies if sequential expressions in a clause should be placed in the same line if `paper` and `ribbon` allows it or if each expression should be placed in its own line.
             * The default value is `false`.
+        + `parenthesize_infix_operations` (`boolean()`):
+            * Specifies if parentheses should be added around composed [infix operations](https://erlang.org/doc/reference_manual/expressions.html#arithmetic-expressions) to avoid confusion around precedence.
+            * The default value is `false`.
         + `preserve_empty_lines` (`boolean()`):
             * Specifies if blank lines between statements should be preserved when formatting.
             * Keep in mind that blank lines between clauses, between items in tuples, lists, etc, between attributes, and so on will not be affected by this configuration and therefore they'll be unconditionally removed.
