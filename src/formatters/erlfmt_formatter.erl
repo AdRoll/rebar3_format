@@ -19,26 +19,7 @@ init(_, _) ->
 -spec format_file(file:filename_all(), nostate, rebar3_formatter:opts()) ->
                      rebar3_formatter:result().
 format_file(File, nostate, OptionsMap) ->
-    {Out, OutFile} =
-        case maps:get(output_dir, OptionsMap, current) of
-            current -> %% Action can only be 'format'
-                {replace, File};
-            none ->
-                %% Action can only be 'verify'
-                %% We need to dump the output somewhere since erlfmt has no
-                %% concept of verify / check / etc.
-                OFile = filename:join("/tmp", File),
-                {{path, filename:dirname(OFile)}, OFile};
-            OutputDir ->
-                %% We understand output dirs differently than erlfmt.
-                %% We use relative subpaths.
-                OFile =
-                    filename:join(
-                        filename:absname(OutputDir), File),
-                {{path, filename:dirname(OFile)}, OFile}
-        end,
     {ok, Code} = file:read_file(File),
-
     Pragma =
         case maps:get(require_pragma, OptionsMap, false) of
             true ->
@@ -58,26 +39,32 @@ format_file(File, nostate, OptionsMap) ->
             Width ->
                 [{width, Width}, {pragma, Pragma}]
         end,
-    case format_file(File, Pragma, Out, Options) of
-        skip ->
-            unchanged;
-        {ok, _} ->
-            case file:read_file(OutFile) of
-                {ok, Code} ->
-                    unchanged;
-                {ok, _} ->
-                    changed
-            end;
-        {error, Reason} ->
-            erlang:error(Reason)
-    end.
 
-format_file(File, Pragma, Out, Options) ->
-    try
-        erlfmt:format_file(File, Out, Options)
-    catch
-        error:undef -> % Old version
-            erlfmt:format_file(File, {Pragma, Out});
-        _:{error, Reason} ->
-            {error, Reason}
-    end.
+    {Result, NewCode} =
+        case erlfmt:format_file(File, Options) of
+            {skip, Skipped} ->
+                {unchanged, Skipped};
+            {ok, Formatted, _} ->
+                case unicode:characters_to_binary(Formatted) of
+                    Code ->
+                        {unchanged, Code};
+                    FormattedBin ->
+                        {changed, FormattedBin}
+                end;
+            {error, Reason} ->
+                erlang:error(Reason)
+        end,
+
+    ok = maybe_save_file(maps:get(output_dir, OptionsMap), File, NewCode),
+    Result.
+
+maybe_save_file(none, _File, _Formatted) ->
+    ok;
+maybe_save_file(current, File, Formatted) ->
+    file:write_file(File, Formatted);
+maybe_save_file(OutputDir, File, Formatted) ->
+    OutFile =
+        filename:join(
+            filename:absname(OutputDir), File),
+    ok = filelib:ensure_dir(OutFile),
+    file:write_file(OutFile, Formatted).
