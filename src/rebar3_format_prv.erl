@@ -16,7 +16,7 @@ init(State) ->
                            [{files,
                              $f,
                              "files",
-                             string,
+                             [string],
                              "List of files and directories to be formatted"},
                             {verify, $v, "verify", boolean, "Just verify, don't format"},
                             {output,
@@ -74,8 +74,8 @@ get_action(Args) ->
 get_files(Args, State) ->
     Patterns =
         case lists:keyfind(files, 1, Args) of
-            {files, Wildcard} ->
-                [Wildcard];
+            {files, Files} ->
+                Files;
             false ->
                 FormatConfig = rebar_state:get(State, format, []),
                 case proplists:get_value(files, FormatConfig, undefined) of
