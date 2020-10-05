@@ -37,7 +37,9 @@ format_file(File, nostate, OptionsMap) ->
             undefined ->
                 [{pragma, Pragma}];
             Width ->
-                [{width, Width}, {pragma, Pragma}]
+                [{width, Width}, % support for v0.7.0
+                 {print_width, Width},
+                 {pragma, Pragma}]
         end,
 
     {Result, NewCode} =
