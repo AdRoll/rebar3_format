@@ -1,10 +1,10 @@
 -module(erlfmt_formatter_SUITE).
 
 -export([all/0]).
--export([action/1, output_dir/1, pragma/1, width/1]).
+-export([action/1, output_dir/1, pragma/1, print_width/1, old_version/1]).
 
 all() ->
-    [action, output_dir, pragma, width].
+    [action, output_dir, pragma, print_width, old_version].
 
 action(_Config) ->
     erlfmt:validator(fun(File, _) ->
@@ -82,7 +82,27 @@ pragma(_Config) ->
                                         {[], something}),
     {ok, _} = rebar3_format_prv:do(Args4).
 
-width(_Config) ->
+print_width(_Config) ->
+    % When there is no defined print_width
+    erlfmt:validator(fun(File, Opts) ->
+                        "src/minimal.erl" = File,
+                        false = proplists:is_defined(print_width, Opts),
+                        {ok, ["-module(minimal).\n"], []}
+                     end),
+    Args1 = rebar_state:command_parsed_args(init(), {[], something}),
+    {ok, _} = rebar3_format_prv:do(Args1),
+
+    % When print_width has a value, erlfmt's print_width should be it
+    erlfmt:validator(fun(File, Opts) ->
+                        "minimal.erl" = filename:basename(File),
+                        50 = proplists:get_value(print_width, Opts, undefined),
+                        {skip, "-module(minimal).\n"}
+                     end),
+    Args2 = rebar_state:command_parsed_args(init(#{print_width => 50}), {[], something}),
+    {ok, _} = rebar3_format_prv:do(Args2).
+
+%% @doc support for v0.7.0
+old_version(_Config) ->
     % When there is no defined print_width
     erlfmt:validator(fun(File, Opts) ->
                         "src/minimal.erl" = File,

@@ -207,7 +207,7 @@ If you want to use [@whatsapp](https://github.com/whatsapp)'s [erlfmt](https://g
 ```
 
 #### Compatibility Note
-`erlfmt_formatter` is compatible with version `v0.7.0` of `erlfmt`, which is currently available at [hex.pm](https://hex.pm/packages/erlfmt/0.7.0).
+`erlfmt_formatter` is compatible with version `v0.7.0` and `v0.8.0` of `erlfmt`, which are currently available at [hex.pm](https://hex.pm/packages/erlfmt).
 
 
 ## Implementing your own Formatter
