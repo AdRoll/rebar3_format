@@ -1,15 +1,54 @@
 # Changelog
 
-## [0.4.1](https://github.com/AdRoll/rebar3_format/tree/0.4.1) (2020-08-19)
+## [0.5.0](https://github.com/AdRoll/rebar3_format/tree/0.5.0) (2020-10-06)
 
-[Full Changelog](https://github.com/AdRoll/rebar3_format/compare/0.4.0...0.4.1)
+[Full Changelog](https://github.com/AdRoll/rebar3_format/compare/0.4.0...0.5.0)
+
+**Implemented enhancements:**
+
+- New release of erlfmt \(v0.8.0\) [\#180](https://github.com/AdRoll/rebar3_format/issues/180)
+- New release of erlfmt [\#149](https://github.com/AdRoll/rebar3_format/issues/149)
 
 **Closed issues:**
 
+- rebar3 project\_plugins \> plugins [\#173](https://github.com/AdRoll/rebar3_format/issues/173)
+- Single-character variable assigment [\#168](https://github.com/AdRoll/rebar3_format/issues/168)
+- Formatting multiline lists [\#161](https://github.com/AdRoll/rebar3_format/issues/161)
+- Blank line before `export\_type` [\#160](https://github.com/AdRoll/rebar3_format/issues/160)
+- ignore\_xref's content style [\#158](https://github.com/AdRoll/rebar3_format/issues/158)
+- Blanks line inside -ifdef block [\#157](https://github.com/AdRoll/rebar3_format/issues/157)
+- Long specs with when [\#150](https://github.com/AdRoll/rebar3_format/issues/150)
+- Reduce indentation on after [\#147](https://github.com/AdRoll/rebar3_format/issues/147)
+- Report the results of --verify in a non-erlang-ish way [\#145](https://github.com/AdRoll/rebar3_format/issues/145)
+- Allow --files to receive a list of wildcards instead of just one [\#144](https://github.com/AdRoll/rebar3_format/issues/144)
+- Prevent right part of a multiline assignation to go in a second line in certain conditions [\#143](https://github.com/AdRoll/rebar3_format/issues/143)
+- Indent one-claused anonymous functions less severely [\#142](https://github.com/AdRoll/rebar3_format/issues/142)
+- Format -dialyzer with name/arity [\#141](https://github.com/AdRoll/rebar3_format/issues/141)
+- Indent on function composition [\#140](https://github.com/AdRoll/rebar3_format/issues/140)
+- Parentheses around infix operations [\#139](https://github.com/AdRoll/rebar3_format/issues/139)
+- rebar3\_format skips meaningful parentheses [\#137](https://github.com/AdRoll/rebar3_format/issues/137)
 - Make compatible with erlfmt 0.6.0 [\#135](https://github.com/AdRoll/rebar3_format/issues/135)
+- Opening and closing bracket position [\#5](https://github.com/AdRoll/rebar3_format/issues/5)
 
 **Merged pull requests:**
 
+- Fix \#180: erlfmt 0.8.0 [\#181](https://github.com/AdRoll/rebar3_format/pull/181) ([elbrujohalcon](https://github.com/elbrujohalcon))
+- \[fix \#144\] handle more than 1 wildcard [\#179](https://github.com/AdRoll/rebar3_format/pull/179) ([juanbono](https://github.com/juanbono))
+- \[Fix \#145\] Report the results of --verify in a non-erlang-ish way [\#178](https://github.com/AdRoll/rebar3_format/pull/178) ([elbrujohalcon](https://github.com/elbrujohalcon))
+- \[Fix \#149\] Add support for erlfmt 0.7.0 [\#177](https://github.com/AdRoll/rebar3_format/pull/177) ([elbrujohalcon](https://github.com/elbrujohalcon))
+- \[Fix \#139\] parentheses around infix operators [\#176](https://github.com/AdRoll/rebar3_format/pull/176) ([elbrujohalcon](https://github.com/elbrujohalcon))
+- \[Fix \#168\] Avoid indeting match expressions if it's just a short var [\#175](https://github.com/AdRoll/rebar3_format/pull/175) ([elbrujohalcon](https://github.com/elbrujohalcon))
+- \[Fix \#173\] Use/recommend project\_plugins, instead of plugins [\#174](https://github.com/AdRoll/rebar3_format/pull/174) ([elbrujohalcon](https://github.com/elbrujohalcon))
+- Put \#140 / \#153 behind a flag [\#172](https://github.com/AdRoll/rebar3_format/pull/172) ([elbrujohalcon](https://github.com/elbrujohalcon))
+- \[Fix \#163\] Indent case…of like try…of [\#171](https://github.com/AdRoll/rebar3_format/pull/171) ([elbrujohalcon](https://github.com/elbrujohalcon))
+- Indent long specs on when [\#170](https://github.com/AdRoll/rebar3_format/pull/170) ([elbrujohalcon](https://github.com/elbrujohalcon))
+- \[Fix \#147\] Reduce indentation for after clauses [\#169](https://github.com/AdRoll/rebar3_format/pull/169) ([elbrujohalcon](https://github.com/elbrujohalcon))
+- Inline simple funs even more aggressively [\#156](https://github.com/AdRoll/rebar3_format/pull/156) ([elbrujohalcon](https://github.com/elbrujohalcon))
+- \[Fix \#141\] Format -dialyzer properly [\#155](https://github.com/AdRoll/rebar3_format/pull/155) ([elbrujohalcon](https://github.com/elbrujohalcon))
+- \[Fix \#142\] Remove space in single-clause anonymous function defintions [\#154](https://github.com/AdRoll/rebar3_format/pull/154) ([elbrujohalcon](https://github.com/elbrujohalcon))
+- \[Fix \#140\] Indent on function composition [\#153](https://github.com/AdRoll/rebar3_format/pull/153) ([elbrujohalcon](https://github.com/elbrujohalcon))
+- Add helper scripts for git hooks [\#146](https://github.com/AdRoll/rebar3_format/pull/146) ([elbrujohalcon](https://github.com/elbrujohalcon))
+- Create CODE\_OF\_CONDUCT.md [\#138](https://github.com/AdRoll/rebar3_format/pull/138) ([elbrujohalcon](https://github.com/elbrujohalcon))
 - \[Fix \#135\] Compatibilize with erlfmt 0.6.0 and 0.5.1 [\#136](https://github.com/AdRoll/rebar3_format/pull/136) ([elbrujohalcon](https://github.com/elbrujohalcon))
 
 ## [0.4.0](https://github.com/AdRoll/rebar3_format/tree/0.4.0) (2020-08-19)
