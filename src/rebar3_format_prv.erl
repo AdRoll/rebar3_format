@@ -16,7 +16,7 @@ init(State) ->
                            [{files,
                              $f,
                              "files",
-                             [string],
+                             string,
                              "List of files and directories to be formatted"},
                             {verify, $v, "verify", boolean, "Just verify, don't format"},
                             {output,
@@ -72,18 +72,19 @@ get_action(Args) ->
 
 -spec get_files(proplists:proplist(), rebar_state:t()) -> [file:filename_all()].
 get_files(Args, State) ->
+    FilesFromArgs = [Value || {Key, Value} <- Args, Key == files],
     Patterns =
-        case lists:keyfind(files, 1, Args) of
-            {files, Files} ->
-                Files;
-            false ->
+        case FilesFromArgs of
+            [] ->
                 FormatConfig = rebar_state:get(State, format, []),
                 case proplists:get_value(files, FormatConfig, undefined) of
                     undefined ->
                         ["src/**/*.[he]rl"];
                     Wildcards ->
                         Wildcards
-                end
+                end;
+            Files ->
+                Files
         end,
     [File || Pattern <- Patterns, File <- filelib:wildcard(Pattern)].
 
