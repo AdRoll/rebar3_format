@@ -81,7 +81,7 @@ The plugin supports the following configuration options in the `format` section 
             * The default value is `true`.
         + `inline_qualified_function_composition` (`boolean()`):
             * Specifies if composed qualified function calls (e.g. `module1:function1(module2:function2(...`) should stay in the same line if they fit or if the formatter should always put the internal function call in the next line.
-            * Because of how OTP's `prettypr` is built (which is the tool we're using to finally print the formatted code) we can't indent these function calls _only if it doesn't fit in a line_, at least not without adding an extra space to the right of `(` for _all_ function applications. That's why this switch is all-or-none.
+            * Because of how OTP's `prettypr` is built (which is the tool we're using to finally print the formatted code) we can't indent these function calls _only if it doesn't fit in a line_, at least not without adding an extra space to the right of `(` for _all_ function applications. That's why this switch is all-or-none. You can a more detailed explanation of this behaviour [here](https://github.com/AdRoll/rebar3_format/issues/188#issuecomment-704884776).
             * The non-inlining only applies when both functions that are composed are fully qualified (we're using _fully-qualified_ as a _proxy_ for _has a long name_); e.g. in this case `d(f:f(g:g(h(…))))` the formatter will always write `g:g(...)` in the next row, but not `h(...)` nor `f:f(...)` will be moved to a new row.
             * The default value is `false`.
         + `inline_clause_bodies` (`boolean()`):
