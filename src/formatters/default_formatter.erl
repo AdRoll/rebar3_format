@@ -297,8 +297,9 @@ lay_no_comments(Node, Ctxt) ->
             Pattern = erl_syntax:match_expr_pattern(Node),
             D1 = lay(Pattern, set_prec(Ctxt, PrecL)),
             D2 = lay(erl_syntax:match_expr_body(Node), set_prec(Ctxt, PrecR)),
-            D3 = case erl_syntax:type(Pattern) == variable andalso
-                          length(erl_syntax:variable_literal(Pattern)) < Ctxt#ctxt.break_indent
+            D3 = case erl_syntax:type(Pattern) == underscore orelse
+                          erl_syntax:type(Pattern) == variable andalso
+                              length(erl_syntax:variable_literal(Pattern)) < Ctxt#ctxt.break_indent
                  of
                      true -> %% Single short variable on the left, don't nest
                          follow(beside(D1, lay_text_float(" =")), D2, Ctxt#ctxt.break_indent);
