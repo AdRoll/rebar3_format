@@ -17,4 +17,4 @@ x(Be) ->
 
 x() ->
     SinceThisVariableIsLong =
-        this:code(should, be, indented, below, the, underscore, since, it, goes, over, paper).
+        this:code(should, be, indented, below, the, variable, since, it, goes, over, paper).
