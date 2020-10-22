@@ -433,7 +433,7 @@ lay_no_comments(Node, Ctxt) ->
                         As = concrete_dodging_macros(Elements),
                         D1 = follow(lay(N, Ctxt1), lay_application(Name, As, Ctxt1)),
                         D2 = lay(concrete_dodging_macros(Type), Ctxt1),
-                        lay_double_colon(D1, D2, Ctxt1, with_preceding_space);
+                        lay_double_colon(D1, D2, Ctxt1);
                     Tag when Tag =:= export_type; Tag =:= optional_callbacks ->
                         [FuncNames] = Args,
                         As = unfold_function_names(FuncNames),
@@ -663,7 +663,7 @@ lay_no_comments(Node, Ctxt) ->
             Ctxt1 = reset_prec(Ctxt),
             D1 = lay(erl_syntax:typed_record_field_body(Node), Ctxt1),
             D2 = lay(erl_syntax:typed_record_field_type(Node), set_prec(Ctxt, Prec)),
-            D3 = lay_double_colon(D1, D2, Ctxt1, without_preceding_space),
+            D3 = lay_double_colon(D1, D2, Ctxt1),
             maybe_parentheses(D3, Prec, Ctxt);
         try_expr ->
             Ctxt1 = reset_prec(Ctxt),
@@ -707,7 +707,7 @@ lay_no_comments(Node, Ctxt) ->
             {_, Prec, _} = type_inop_prec('::'),
             D1 = lay(erl_syntax:annotated_type_name(Node), reset_prec(Ctxt)),
             D2 = lay(erl_syntax:annotated_type_body(Node), set_prec(Ctxt, Prec)),
-            D3 = lay_double_colon(D1, D2, Ctxt, with_preceding_space),
+            D3 = lay_double_colon(D1, D2, Ctxt),
             maybe_parentheses(D3, Prec, Ctxt);
         type_application ->
             Name = erl_syntax:type_application_name(Node),
@@ -775,7 +775,7 @@ lay_no_comments(Node, Ctxt) ->
                     {PrecL, Prec, PrecR} = type_inop_prec('::'),
                     D1 = lay(Var, set_prec(Ctxt, PrecL)),
                     D2 = lay(Type, set_prec(Ctxt, PrecR)),
-                    D3 = lay_double_colon(D1, D2, Ctxt, with_preceding_space),
+                    D3 = lay_double_colon(D1, D2, Ctxt),
                     maybe_parentheses(D3, Prec, Ctxt);
                 false ->
                     lay_application(Name, Args, Ctxt)
@@ -815,7 +815,7 @@ lay_no_comments(Node, Ctxt) ->
             Ctxt1 = reset_prec(Ctxt),
             D1 = lay(erl_syntax:record_type_field_name(Node), Ctxt1),
             D2 = lay(erl_syntax:record_type_field_type(Node), Ctxt1),
-            lay_double_colon(D1, D2, Ctxt1, without_preceding_space);
+            lay_double_colon(D1, D2, Ctxt1);
         tuple_type ->
             case erl_syntax:tuple_type_elements(Node) of
                 any_size ->
@@ -1390,9 +1390,5 @@ get_node_text(Node) ->
             undefined
     end.
 
-lay_double_colon(D1, D2, Ctxt, with_preceding_space) ->
-    par([beside(D1, lay_text_float(" ::")), D2], Ctxt#ctxt.break_indent);
-lay_double_colon(D1, D2, Ctxt, without_preceding_space) ->
-    par([D1, lay_text_float("::"), D2], Ctxt#ctxt.break_indent).
-
-%% =====================================================================
+lay_double_colon(D1, D2, Ctxt) ->
+    par([beside(D1, lay_text_float(" ::")), D2], Ctxt#ctxt.break_indent).
