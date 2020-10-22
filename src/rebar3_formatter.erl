@@ -3,10 +3,11 @@
 
 -export([new/3, format_file/2, ignore/2, action/1]).
 
--type opts() :: #{output_dir => none | current | file:filename_all(),
-                  encoding => none | epp:source_encoding(),
-                  action => verify | format,
-                  _ => _}.
+-type opts() ::
+    #{output_dir => none | current | file:filename_all(),
+      encoding => none | epp:source_encoding(),
+      action => verify | format,
+      _ => _}.
 -type result() :: changed | unchanged.
 -type state() :: term().
 

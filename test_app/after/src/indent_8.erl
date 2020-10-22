@@ -55,8 +55,8 @@ if_expr() ->
                         ok
         end.
 
--type
-         a_type_with_a_very_long_name() :: this_type:definition_doesnt_fit_in(a:line()).
+-type a_type_with_a_very_long_name() ::
+        this_type:definition_doesnt_fit_in(a:line()).
 
 -spec a_function_with_a_very_long_name() ->
                                               a_type_with_a_very_long_name().

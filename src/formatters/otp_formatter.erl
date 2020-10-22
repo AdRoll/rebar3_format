@@ -48,13 +48,14 @@
 -define(NOHOOK, none).
 
 -type hook() :: none | fun((erl_syntax:syntaxTree(), _, _) -> prettypr:document()).
--type clause_t() :: case_expr |
-                    fun_expr |
-                    if_expr |
-                    receive_expr |
-                    try_expr |
-                    {function, prettypr:document()} |
-                    spec.
+-type clause_t() ::
+    case_expr |
+    fun_expr |
+    if_expr |
+    receive_expr |
+    try_expr |
+    {function, prettypr:document()} |
+    spec.
 
 -record(ctxt,
         {prec = 0 :: integer(),

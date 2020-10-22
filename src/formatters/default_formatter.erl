@@ -37,14 +37,15 @@
 -define(BREAK_INDENT, 4).
 -define(NOUSER, undefined).
 
--type clause_t() :: case_expr |
-                    simple_fun_expr |
-                    fun_expr |
-                    if_expr |
-                    receive_expr |
-                    try_expr |
-                    {function, prettypr:document()} |
-                    spec.
+-type clause_t() ::
+    case_expr |
+    simple_fun_expr |
+    fun_expr |
+    if_expr |
+    receive_expr |
+    try_expr |
+    {function, prettypr:document()} |
+    spec.
 -type inlining() :: all | none | {when_over, pos_integer()}.
 
 -record(ctxt,
@@ -400,12 +401,12 @@ lay_no_comments(Node, Ctxt) ->
             %% attribute name, without following parentheses.
             Ctxt1 = reset_prec(Ctxt),
             Args = erl_syntax:attribute_arguments(Node),
-            N = case erl_syntax:attribute_name(Node) of
-                    {atom, _, 'if'} ->
-                        erl_syntax:variable('if');
-                    N0 ->
-                        N0
-                end,
+            %% NOTE: The preceding $- must be part of the name of the attribute.
+            %%       That's because we want indentation to start counting from
+            %%       that character on, and not from the first character on the
+            %%       attribute name.
+            N = erl_syntax:variable([$- | erl_syntax:atom_name(
+                                              erl_syntax:attribute_name(Node))]),
             D = case attribute_name(Node) of
                     Tag when Tag =:= spec; Tag =:= callback ->
                         [SpecTuple] = Args,
@@ -430,12 +431,9 @@ lay_no_comments(Node, Ctxt) ->
                         [TypeTuple] = Args,
                         [Name, Type, Elements] = erl_syntax:tuple_elements(TypeTuple),
                         As = concrete_dodging_macros(Elements),
-                        D1 = lay_application(Name, As, Ctxt1),
+                        D1 = follow(lay(N, Ctxt1), lay_application(Name, As, Ctxt1)),
                         D2 = lay(concrete_dodging_macros(Type), Ctxt1),
-                        beside(follow(lay(N, Ctxt1),
-                                      beside(D1, lay_text_float(" :: ")),
-                                      Ctxt1#ctxt.break_indent),
-                               D2);
+                        lay_double_colon(D1, D2, Ctxt1, with_preceding_space);
                     Tag when Tag =:= export_type; Tag =:= optional_callbacks ->
                         [FuncNames] = Args,
                         As = unfold_function_names(FuncNames),
@@ -482,7 +480,7 @@ lay_no_comments(Node, Ctxt) ->
                     _ ->
                         lay_application(N, Args, Ctxt1)
                 end,
-            beside(lay_text_float("-"), beside(D, lay_text_float(".")));
+            beside(D, lay_text_float("."));
         binary ->
             Ctxt1 = reset_prec(Ctxt),
             Es = lay_items(erl_syntax:binary_fields(Node), Ctxt1, fun lay/2),
@@ -1385,7 +1383,7 @@ get_node_text(Node) ->
     end.
 
 lay_double_colon(D1, D2, Ctxt, with_preceding_space) ->
-    follow(beside(D1, lay_text_float(" ::")), D2, Ctxt#ctxt.break_indent);
+    par([beside(D1, lay_text_float(" ::")), D2], Ctxt#ctxt.break_indent);
 lay_double_colon(D1, D2, Ctxt, without_preceding_space) ->
     par([D1, lay_text_float("::"), D2], Ctxt#ctxt.break_indent).
 
