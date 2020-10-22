@@ -588,18 +588,26 @@ lay_no_comments(Node, Ctxt) ->
             lay_parentheses(D, Ctxt);
         receive_expr ->
             Ctxt1 = reset_prec(Ctxt),
-            D1 = lay_clauses(erl_syntax:receive_expr_clauses(Node), receive_expr, Ctxt1),
-            D2 = case erl_syntax:receive_expr_timeout(Node) of
-                     none ->
-                         D1;
-                     T ->
-                         D3 = beside(lay_text_float("after "), lay(T, Ctxt1)),
-                         D4 = lay_clause_expressions(erl_syntax:receive_expr_action(Node),
-                                                     Ctxt1,
-                                                     fun lay/2),
-                         vertical([D1, append_clause_body(D4, D3, Ctxt1)])
-                 end,
-            sep([text("receive"), nest(Ctxt1#ctxt.break_indent, D2), text("end")]);
+            case {erl_syntax:receive_expr_clauses(Node), erl_syntax:receive_expr_timeout(Node)} of
+                {Clauses, none} ->
+                    D1 = lay_clauses(Clauses, receive_expr, Ctxt1),
+                    sep([text("receive"), nest(Ctxt1#ctxt.break_indent, D1), text("end")]);
+                {[], T} ->
+                    D1 = beside(lay_text_float("receive after "), lay(T, Ctxt1)),
+                    D2 = lay_clause_expressions(erl_syntax:receive_expr_action(Node),
+                                                Ctxt1,
+                                                fun lay/2),
+                    D3 = append_clause_body(D2, D1, Ctxt1),
+                    sep([D3, text("end")]);
+                {Clauses, T} ->
+                    D1 = lay_clauses(Clauses, receive_expr, Ctxt1),
+                    D2 = beside(lay_text_float("after "), lay(T, Ctxt1)),
+                    D3 = lay_clause_expressions(erl_syntax:receive_expr_action(Node),
+                                                Ctxt1,
+                                                fun lay/2),
+                    D4 = append_clause_body(D3, D2, Ctxt1),
+                    sep([text("receive"), nest(Ctxt1#ctxt.break_indent, D1), D4, text("end")])
+            end;
         record_access ->
             {PrecL, Prec, PrecR} = inop_prec('#'),
             D1 = lay(erl_syntax:record_access_argument(Node), set_prec(Ctxt, PrecL)),
