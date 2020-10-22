@@ -35,7 +35,11 @@ parentheses() ->
      [[code, <<"        look         ">>, like], "lisp", to,
       [{[<<"(      you or me or them?)">>]}]]}.
 
-receive_expr() -> receive with -> {no, timeout} end.
+receive_expr() ->
+    receive with -> {no, timeout} end,
+    receive after 1000 -> {only, timeout} end,
+    receive with -> expression and also after 1000 -> timeout end,
+    receive after with:a(very, long and strange, but, possible, timeout, expression, that, is, super, extensive) -> yeah end.
 
 record_index_expr(List) -> lists:keyfind(a, #rec.key, List).
 
