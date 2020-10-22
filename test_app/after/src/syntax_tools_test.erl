@@ -98,8 +98,8 @@ foo2(A, B) ->
       ?macro_argument1(receive
                            M ->
                                M
-                           after 100 ->
-                               3
+                       after 100 ->
+                           3
                        end),
       ?macro_argument1(try
                            foo5(A)
