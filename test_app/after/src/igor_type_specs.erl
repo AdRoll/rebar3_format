@@ -68,7 +68,9 @@ b() ->
     end.
 
 -spec c(Atom :: atom(), Integer :: integer()) -> {atom(), integer()};
-       (X, Y) -> {atom(), float()} when X :: atom(), Y :: float();
+       (X, Y) -> {atom(), float()}
+           when X :: atom(),
+                Y :: float();
        (integer(), atom()) -> {integer(), atom()}.
 c(A, B) ->
     _ = integer,
