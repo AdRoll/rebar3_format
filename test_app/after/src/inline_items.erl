@@ -253,8 +253,7 @@ long_bin() ->
 
 -spec long_guard(integer()) -> integer().
 long_guard(VeryVeryLongName)
-    when is_integer(VeryVeryLongName),
-         VeryVeryLongName < 2,
+    when is_integer(VeryVeryLongName), VeryVeryLongName < 2,
          VeryVeryLongName < 3;
          VeryVeryLongName > 2 andalso VeryVeryLongName > 3 ->
     if VeryVeryLongName >= -1;

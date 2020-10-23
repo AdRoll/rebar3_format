@@ -13,10 +13,16 @@ handle_call(_, _, _) ->
     ok.
 
 -callback metric(Name, Value, Type) -> Result
-    when Name :: binary(), Value :: value(), Type :: metric_type(), Result :: ok.
+    when Name :: binary(),
+         Value :: value(),
+         Type :: metric_type(),
+         Result :: ok.
 
 -spec metric(Name, Value, Type) -> Result
-    when Name :: binary(), Value :: value(), Type :: metric_type(), Result :: ok.
+    when Name :: binary(),
+         Value :: value(),
+         Type :: metric_type(),
+         Result :: ok.
 metric(_, _, _) ->
     ok.
 
@@ -48,7 +54,10 @@ send(_, _, _, _) ->
                        {Result :: result}.
 
 -spec something(With, Multiple, Clauses) -> Result
-                   when With :: with, Multiple :: multiple, Clauses :: clauses, Result :: result;
+                   when With :: with,
+                        Multiple :: multiple,
+                        Clauses :: clauses,
+                        Result :: result;
                (With, Multiple, Clauses) -> Result
                    when With :: [with],
                         Multiple :: [multiple],

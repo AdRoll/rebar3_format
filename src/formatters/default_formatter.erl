@@ -57,7 +57,8 @@
          user = ?NOUSER :: term(),
          inline_items = {when_over, 25} :: inlining(),
          inline_attributes = all :: inlining(),
-         force_inlining = false :: boolean(),
+         within_disjunction = false :: boolean(),
+         force_indentation = false :: boolean(),
          force_arity_qualifiers = false :: boolean(),
          inline_simple_funs = true :: boolean(),
          inline_clause_bodies = false :: boolean(),
@@ -440,7 +441,7 @@ lay_no_comments(Node, Ctxt) ->
                         %% We force inlining of list items and use inline_attributes to
                         %% format the list of functions
                         Ctxt2 =
-                            Ctxt1#ctxt{force_inlining = true,
+                            Ctxt1#ctxt{force_indentation = true,
                                        inline_items = Ctxt1#ctxt.inline_attributes},
                         beside(lay(N, Ctxt1),
                                beside(text("("), beside(lay(As, Ctxt2), lay_text_float(")"))));
@@ -457,7 +458,7 @@ lay_no_comments(Node, Ctxt) ->
                         %% We force inlining of list items and use inline_attributes to
                         %% format the lists within these attributes
                         Ctxt2 =
-                            Ctxt1#ctxt{force_inlining = true,
+                            Ctxt1#ctxt{force_indentation = true,
                                        inline_items = Ctxt1#ctxt.inline_attributes},
                         lay_application(N, Args, Ctxt2);
                     dialyzer ->
@@ -526,13 +527,28 @@ lay_no_comments(Node, Ctxt) ->
                     floating(break(beside(text(spaces(P)), D)))
             end;
         conjunction ->
-            lay_items(erl_syntax:conjunction_body(Node), reset_prec(Ctxt), fun lay/2);
+            ExprDocs =
+                seq(erl_syntax:conjunction_body(Node),
+                    lay_text_float(","),
+                    reset_prec(Ctxt),
+                    fun lay/2),
+            case Ctxt#ctxt.within_disjunction of
+                true ->
+                    %% We're in a clause guard, since all clause guards are lists
+                    %% of (at least one) disjunction items.
+                    par(ExprDocs);
+                false ->
+                    %% We're in a "fake" conjunction, i.e. the 'when' piece of a
+                    %% constrained_function_type and we want those types laid out
+                    %% one in each row.
+                    vertical(ExprDocs)
+            end;
         disjunction ->
-            %% For clarity, we don't paragraph-format
-            %% disjunctions; only conjunctions (see above).
+            %% For clarity, we don't paragraph-format disjunctions;
+            %% only conjunctions within disjunctions (see above).
             sep(seq(erl_syntax:disjunction_body(Node),
                     lay_text_float(";"),
-                    reset_prec(Ctxt),
+                    reset_prec(Ctxt#ctxt{within_disjunction = true}),
                     fun lay/2));
         error_marker ->
             E = erl_syntax:error_marker_info(Node),
@@ -1329,7 +1345,7 @@ lay_items(Exprs, Separator, Ctxt = #ctxt{inline_items = {when_over, N}}, Fun)
     par(seq(Exprs, Separator, Ctxt, Fun));
 lay_items(Exprs,
           Separator,
-          Ctxt = #ctxt{force_inlining = true, inline_items = {when_over, N}},
+          Ctxt = #ctxt{force_indentation = true, inline_items = {when_over, N}},
           Fun)
     when length(Exprs) =< N ->
     vertical(seq(Exprs, Separator, Ctxt, Fun));
@@ -1340,7 +1356,7 @@ lay_items(Exprs, Separator, Ctxt = #ctxt{inline_items = all}, Fun) ->
     par(seq(Exprs, Separator, Ctxt, Fun));
 lay_items(Exprs,
           Separator,
-          Ctxt = #ctxt{force_inlining = true, inline_items = none},
+          Ctxt = #ctxt{force_indentation = true, inline_items = none},
           Fun) ->
     vertical(seq(Exprs, Separator, Ctxt, Fun));
 lay_items(Exprs, Separator, Ctxt = #ctxt{inline_items = none}, Fun) ->

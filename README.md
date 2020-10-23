@@ -71,7 +71,7 @@ The plugin supports the following configuration options in the `format` section 
             * The default value is `all`, i.e. always put as many functions/types on each row as possible.
         + `inline_items` (`all | none | {when_over, pos_integer()}`):
             * Specifies the desired behavior when the formatter needs to use multiple lines for a multi-item structure (i.e. tuple, list, map, etc.).
-            * **NOTE:** If the formatter can put all items in the same row, it will do it, regardless of this configuration.
+            * **NOTE:** If the formatter can put all items in the same row, it will do it, regardless of this configuration. This is to prevent short lists, binaries or tuples to be spread out in multiple lines.
             * When this option is `all`, the formatter will try to fit as many items in each line as permitted by `paper` and `ribbon`.
             * When the flag is `none`, the formatter will place each item in its own line.
             * When the flag is `{when_over, N}` the formatter will work as `none` for lists with up to `N` elements, and it will inline longer lists.
