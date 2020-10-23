@@ -11,8 +11,7 @@
                  those:that_use_types(with_very_long_names),
          what_about =
                  fields_with:very_long_values(
-                         and_very:long_type_names())
-                 ::
+                         and_very:long_type_names()) ::
                  they:also(should:be(indented_using:break_indent(8)))}).
 
 infix_expr() ->
@@ -55,8 +54,8 @@ if_expr() ->
                         ok
         end.
 
--type
-         a_type_with_a_very_long_name() :: this_type:definition_doesnt_fit_in(a:line()).
+-type a_type_with_a_very_long_name() ::
+        this_type:definition_doesnt_fit_in(a:line()).
 
 -spec a_function_with_a_very_long_name() ->
                                               a_type_with_a_very_long_name().
@@ -110,9 +109,9 @@ receive_after(ExpressionsThatAreReallyTooLongForALine) ->
                 clauses ->
                         should:be(
                                 indented_using:break_indent(8))
-                after ExpressionsThatAreReallyTooLongForALine ->
-                        should:be(
-                                indented_using:break_indent(8))
+        after ExpressionsThatAreReallyTooLongForALine ->
+                should:be(
+                        indented_using:break_indent(8))
         end.
 
 try_expr() ->

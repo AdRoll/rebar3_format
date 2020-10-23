@@ -4,25 +4,25 @@
 
 -callback handle_call(term(), {pid(), reference()}, state()) ->
                          {reply, Reply, state()} | {stop, unexpected_call, state()}
-     when Reply :: ok | {error, {already_registered, pid()}}.
+    when Reply :: ok | {error, {already_registered, pid()}}.
 
 -spec handle_call(term(), {pid(), reference()}, state()) ->
                      {reply, Reply, state()} | {stop, unexpected_call, state()}
-     when Reply :: ok | {error, {already_registered, pid()}}.
+    when Reply :: ok | {error, {already_registered, pid()}}.
 handle_call(_, _, _) ->
     ok.
 
 -callback metric(Name, Value, Type) -> Result
-     when Name :: binary(),
-          Value :: value(),
-          Type :: metric_type(),
-          Result :: ok.
+    when Name :: binary(),
+         Value :: value(),
+         Type :: metric_type(),
+         Result :: ok.
 
 -spec metric(Name, Value, Type) -> Result
-     when Name :: binary(),
-          Value :: value(),
-          Type :: metric_type(),
-          Result :: ok.
+    when Name :: binary(),
+         Value :: value(),
+         Type :: metric_type(),
+         Result :: ok.
 metric(_, _, _) ->
     ok.
 
