@@ -37,14 +37,15 @@
 -define(BREAK_INDENT, 4).
 -define(NOUSER, undefined).
 
--type clause_t() :: case_expr |
-                    simple_fun_expr |
-                    fun_expr |
-                    if_expr |
-                    receive_expr |
-                    try_expr |
-                    {function, prettypr:document()} |
-                    spec.
+-type clause_t() ::
+    case_expr |
+    simple_fun_expr |
+    fun_expr |
+    if_expr |
+    receive_expr |
+    try_expr |
+    {function, prettypr:document()} |
+    spec.
 -type inlining() :: all | none | {when_over, pos_integer()}.
 
 -record(ctxt,
