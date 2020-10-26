@@ -50,6 +50,7 @@
 
 -record(ctxt,
         {prec = 0 :: integer(),
+         sub_indent = ?BREAK_INDENT :: non_neg_integer(),
          break_indent = ?BREAK_INDENT :: non_neg_integer(),
          clause = undefined :: clause_t() | undefined,
          paper = ?PAPER :: integer(),
@@ -136,10 +137,12 @@ remove_trailing_spaces(Formatted) ->
 -spec layout(erl_syntax:syntaxTree(), [pos_integer()], rebar3_formatter:opts()) ->
                 prettypr:document().
 layout(Node, EmptyLines, Options) ->
+    BreakIndent = maps:get(break_indent, Options, ?BREAK_INDENT),
     lay(Node,
         #ctxt{paper = maps:get(paper, Options, ?PAPER),
               ribbon = maps:get(ribbon, Options, ?RIBBON),
-              break_indent = maps:get(break_indent, Options, ?BREAK_INDENT),
+              break_indent = BreakIndent,
+              sub_indent = maps:get(sub_indent, Options, BreakIndent),
               inline_simple_funs = maps:get(inline_simple_funs, Options, true),
               inline_clause_bodies = maps:get(inline_clause_bodies, Options, false),
               inline_qualified_function_composition =
@@ -1154,7 +1157,7 @@ append_clause_body(B, D, Ctxt) ->
 append_guard(none, D, _) ->
     D;
 append_guard(G, D, Ctxt) ->
-    par([D, follow(text("when"), G, Ctxt#ctxt.break_indent)], Ctxt#ctxt.break_indent).
+    par([D, follow(text("when"), G, Ctxt#ctxt.sub_indent)], Ctxt#ctxt.break_indent).
 
 lay_bit_types([T], Ctxt) ->
     lay(T, Ctxt);
