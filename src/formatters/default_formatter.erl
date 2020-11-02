@@ -620,7 +620,7 @@ lay_no_comments(Node, Ctxt) ->
             Argument = erl_syntax:record_access_argument(Node),
             D1 = case erl_syntax:type(Argument) of
                      record_access ->
-                         lay(Argument, set_prec(Ctxt, Prec)); % Because A#b.c#d.e#f.g is valid Erlan
+                         lay(Argument, set_prec(Ctxt, Prec)); % A#b.c#d.e#f.g is valid Erlang
                      _ ->
                          lay(Argument, set_prec(Ctxt, PrecL))
                  end,
