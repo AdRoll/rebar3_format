@@ -9,4 +9,6 @@
 
 -mixin([{a_module, [new/1, feature/2, log_params/2]}]).
 
+-inline([something/4]).
+
 -ignore_xref(metric/4).
