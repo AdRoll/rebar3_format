@@ -617,7 +617,13 @@ lay_no_comments(Node, Ctxt) ->
             end;
         record_access ->
             {PrecL, Prec, PrecR} = inop_prec('#'),
-            D1 = lay(erl_syntax:record_access_argument(Node), set_prec(Ctxt, PrecL)),
+            Argument = erl_syntax:record_access_argument(Node),
+            D1 = case erl_syntax:type(Argument) of
+                     record_access ->
+                         lay(Argument, set_prec(Ctxt, Prec)); % A#b.c#d.e#f.g is valid Erlang
+                     _ ->
+                         lay(Argument, set_prec(Ctxt, PrecL))
+                 end,
             D2 = beside(lay_text_float("."),
                         lay(erl_syntax:record_access_field(Node), set_prec(Ctxt, PrecR))),
             T = erl_syntax:record_access_type(Node),
