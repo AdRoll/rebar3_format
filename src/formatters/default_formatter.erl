@@ -24,7 +24,12 @@
          follow/3,
          empty/0]).
 -import(erl_parse,
-        [preop_prec/1, func_prec/0, max_prec/0, type_inop_prec/1, type_preop_prec/1]).
+        [preop_prec/1,
+         inop_prec/1,
+         func_prec/0,
+         max_prec/0,
+         type_inop_prec/1,
+         type_preop_prec/1]).
 
 -define(PADDING, 2).
 -define(PAPER, 100).
@@ -1402,11 +1407,3 @@ get_node_text(Node) ->
 
 lay_double_colon(D1, D2, Ctxt) ->
     par([beside(D1, lay_text_float(" ::")), D2], Ctxt#ctxt.break_indent).
-
-%% @doc This fixes an issue with erl_parse where it thinks that the following
-%%      code requires parentheses:
-%%      <pre>A#record.with_another#record.with_another#record.in_it</pre>
-inop_prec('#') ->
-    {800, 700, 700};
-inop_prec(Op) ->
-    erl_parse:inop_prec(Op).
