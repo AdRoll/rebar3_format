@@ -1,7 +1,6 @@
 -compile(export_all).
 
--format #{paper => 80,
-          ribbon => 75}.
+-format #{paper => 80, ribbon => 75}.
 
 matches() ->
     % Short

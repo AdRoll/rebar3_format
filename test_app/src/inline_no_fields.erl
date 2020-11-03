@@ -1,5 +1,7 @@
 -module(inline_no_fields).
 
+-format #{inline_fields => none}.
+
 -export [f/1].
 
 -record(a, {small, with}).

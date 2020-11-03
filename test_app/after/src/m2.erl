@@ -24,10 +24,6 @@ bar(A, B) -> A * B.
 
 -record(rec, {a, b}).
 
-record() ->
-    #rec{a = 3,
-         b = 0}.
+record() -> #rec{a = 3, b = 0}.
 
-record_update(V, #rec{a = V0} = R) ->
-    R#rec{a = V0 + V,
-          b = V0}.
+record_update(V, #rec{a = V0} = R) -> R#rec{a = V0 + V, b = V0}.

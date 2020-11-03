@@ -46,7 +46,7 @@
     try_expr |
     {function, prettypr:document()} |
     spec.
--type inlining() :: all | none | {when_over, pos_integer()}.
+-type inlining() :: all | none | {when_over, pos_integer()} | {when_under, pos_integer()}.
 
 -record(ctxt,
         {prec = 0 :: integer(),
@@ -57,7 +57,7 @@
          ribbon = ?RIBBON :: integer(),
          user = ?NOUSER :: term(),
          inline_items = {when_over, 25} :: inlining(),
-         inline_fields = none :: inlining(),
+         inline_fields = {when_under, 3} :: inlining(),
          inline_attributes = all :: inlining(),
          within_disjunction = false :: boolean(),
          force_indentation = false :: boolean(),
@@ -150,7 +150,7 @@ layout(Node, EmptyLines, Options) ->
                   maps:get(inline_qualified_function_composition, Options, false),
               inline_expressions = maps:get(inline_expressions, Options, false),
               inline_items = maps:get(inline_items, Options, {when_over, 25}),
-              inline_fields = maps:get(inline_fields, Options, none),
+              inline_fields = maps:get(inline_fields, Options, {when_under, 3}),
               inline_attributes = maps:get(inline_attributes, Options, all),
               parenthesize_infix_operations =
                   maps:get(parenthesize_infix_operations, Options, false),
@@ -1298,9 +1298,7 @@ tidy_char(Node, Encoding) ->
             Text
     end.
 
-tidy_atom(Node,
-          #ctxt{encoding = Encoding,
-                unquote_atoms = true}) ->
+tidy_atom(Node, #ctxt{encoding = Encoding, unquote_atoms = true}) ->
     erl_syntax:atom_literal(Node, Encoding);
 tidy_atom(Node, #ctxt{encoding = Encoding}) ->
     case erl_syntax:is_tree(Node) of
@@ -1346,6 +1344,12 @@ lay_fields(Exprs, Ctxt = #ctxt{inline_fields = {when_over, N}}, Fun)
 lay_fields(Exprs, Ctxt = #ctxt{inline_fields = {when_over, N}}, Fun)
     when length(Exprs) =< N ->
     vertical(seq(Exprs, lay_text_float(","), Ctxt, Fun));
+lay_fields(Exprs, Ctxt = #ctxt{inline_fields = {when_under, N}}, Fun)
+    when length(Exprs) < N ->
+    par(seq(Exprs, lay_text_float(","), Ctxt, Fun));
+lay_fields(Exprs, Ctxt = #ctxt{inline_fields = {when_under, N}}, Fun)
+    when length(Exprs) >= N ->
+    vertical(seq(Exprs, lay_text_float(","), Ctxt, Fun));
 lay_fields(Exprs, Ctxt = #ctxt{inline_fields = all}, Fun) ->
     par(seq(Exprs, lay_text_float(","), Ctxt, Fun));
 lay_fields(Exprs, Ctxt = #ctxt{inline_fields = none}, Fun) ->
@@ -1359,22 +1363,30 @@ lay_items(Exprs, Separator, Ctxt = #ctxt{inline_items = {when_over, N}}, Fun)
     par(seq(Exprs, Separator, Ctxt, Fun));
 lay_items(Exprs,
           Separator,
-          Ctxt =
-              #ctxt{force_indentation = true,
-                    inline_items = {when_over, N}},
+          Ctxt = #ctxt{force_indentation = true, inline_items = {when_over, N}},
           Fun)
     when length(Exprs) =< N ->
     vertical(seq(Exprs, Separator, Ctxt, Fun));
 lay_items(Exprs, Separator, Ctxt = #ctxt{inline_items = {when_over, N}}, Fun)
     when length(Exprs) =< N ->
     sep(seq(Exprs, Separator, Ctxt, Fun));
+lay_items(Exprs, Separator, Ctxt = #ctxt{inline_items = {when_under, N}}, Fun)
+    when length(Exprs) < N ->
+    par(seq(Exprs, Separator, Ctxt, Fun));
+lay_items(Exprs,
+          Separator,
+          Ctxt = #ctxt{force_indentation = true, inline_items = {when_under, N}},
+          Fun)
+    when length(Exprs) >= N ->
+    vertical(seq(Exprs, Separator, Ctxt, Fun));
+lay_items(Exprs, Separator, Ctxt = #ctxt{inline_items = {when_under, N}}, Fun)
+    when length(Exprs) >= N ->
+    sep(seq(Exprs, Separator, Ctxt, Fun));
 lay_items(Exprs, Separator, Ctxt = #ctxt{inline_items = all}, Fun) ->
     par(seq(Exprs, Separator, Ctxt, Fun));
 lay_items(Exprs,
           Separator,
-          Ctxt =
-              #ctxt{force_indentation = true,
-                    inline_items = none},
+          Ctxt = #ctxt{force_indentation = true, inline_items = none},
           Fun) ->
     vertical(seq(Exprs, Separator, Ctxt, Fun));
 lay_items(Exprs, Separator, Ctxt = #ctxt{inline_items = none}, Fun) ->

@@ -6,7 +6,5 @@
 
 f(A) ->
     B = C = A#record.with_another#record.with_another#record.in_it,
-    D = A#record{with_another =
-                     #record{with_another = #record{in_it = B},
-                             in_it = C}},
+    D = A#record{with_another = #record{with_another = #record{in_it = B}, in_it = C}},
     (normalize(D))#record.with_another#record.in_it.

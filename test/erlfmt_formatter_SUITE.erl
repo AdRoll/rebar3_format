@@ -67,8 +67,7 @@ pragma(_Config) ->
                         {ok, ["-module(minimal).\n"], []}
                      end),
     Args3 =
-        rebar_state:command_parsed_args(init(#{require_pragma => false,
-                                               insert_pragma => true}),
+        rebar_state:command_parsed_args(init(#{require_pragma => false, insert_pragma => true}),
                                         {[], something}),
     {ok, _} = rebar3_format_prv:do(Args3),
 
@@ -79,8 +78,7 @@ pragma(_Config) ->
                         {ok, ["-module(minimal).\n"], []}
                      end),
     Args4 =
-        rebar_state:command_parsed_args(init(#{require_pragma => false,
-                                               insert_pragma => false}),
+        rebar_state:command_parsed_args(init(#{require_pragma => false, insert_pragma => false}),
                                         {[], something}),
     {ok, _} = rebar3_format_prv:do(Args4).
 

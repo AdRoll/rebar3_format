@@ -32,25 +32,15 @@
 -record(r0, {}).
 -record(r, {f1 :: integer(), f2 = a :: atom(), f3 :: fun(), f4 = 7}).
 
--type r0() ::
-    #r0{} |
-    #r{f1 :: 3} |
-    #r{f1 :: 3,
-       f2 :: sju}.
+-type r0() :: #r0{} | #r{f1 :: 3} | #r{f1 :: 3, f2 :: sju}.
 -type m1() :: #{} | map().
--type m2() ::
-    #{a := m1(),
-      b => #{} | fy:m2()}.
+-type m2() :: #{a := m1(), b => #{} | fy:m2()}.
 %-type m3() :: #{...}.
 %-type m4() :: #{_ => _, ...}.
 %-type m5() :: #{any() => any(), ...}.
 -type m3() :: #{any() => any()}.
--type m4() ::
-    #{_ => _,
-      any() => any()}.
--type m5() ::
-    #{any() => any(),
-      any() => any()}.
+-type m4() :: #{_ => _, any() => any()}.
+-type m5() :: #{any() => any(), any() => any()}.
 -type b1() :: B1 :: binary() | (BitString :: bitstring()).
 -type pair(A, B) :: {A, B}.
 
@@ -59,8 +49,7 @@ f({R, R}) ->
     _ = ?MODULE_STRING ++ "hej",
     _ = <<"foo">>,
     _ = R#r.f1,
-    _ = R#r{f1 = 17,
-            f2 = b},
+    _ = R#r{f1 = 17, f2 = b},
     {1, 1}.
 
 -spec type_specs:b() -> pos_integer().

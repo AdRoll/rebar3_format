@@ -140,8 +140,7 @@ foo3() ->
 
 foo4(A, B, #state{c = C} = S) ->
     Ls = foo3(),
-    S1 = #state{a = 1,
-                b = 2},
+    S1 = #state{a = 1, b = 2},
     [foo2(A, Ls),
      B,
      C,
