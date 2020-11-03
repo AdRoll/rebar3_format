@@ -5,7 +5,7 @@
 -export [these/0, functions/0, shouldnt/0, be/0, inlined/0].
 
 -callback these() -> {elements, should, be, inlined}.
--callback functions() -> #{should => be, inlined => {as, well}}.
+-callback functions() -> [should | be | inlined | {as, well}].
 -callback shouldnt() -> should.
 -callback be() -> ok.
 -callback inlined(even, If, they, have, arguments) -> If.
@@ -22,7 +22,7 @@
 
 -export_type [these/0, types/0, shouldnt/0, be/0, inlined/0, either/0].
 
--type the_attributes(Of, This, Type) :: #{should => Of, be => This, inlined => Type}.
+-type the_attributes(Of, This, Type) :: #{should => Of, be => This, inlined => Type, but => the, map => respects, inline_fields => none}.
 
 -record(the_fields, {'of', this, record, should, be, inlined, too}).
 

@@ -3,28 +3,14 @@
 %%      per line if they're large.
 -module inline_items.
 
--record(short_rec, {x, y, z}).
--record(long_rec, {
-    x1 = x1 :: x1,
-    x2 = x2 :: x2,
-    x3 = x3 :: x3,
-    y1 = y1 :: y1,
-    y2 = y2 :: y2,
-    y3 = y3 :: y3,
-    very_very_long_name_1 = very_very_long_name_1 :: very_very_long_name_1,
-    very_very_long_name_2 = very_very_long_name_2 :: very_very_long_name_2,
-    very_very_long_name_3 = very_very_long_name_3 :: very_very_long_name_3
-}).
-
 -format #{paper => 80}.
 
 -export [short_tuple/0, short_list/0, short_fun/0].
 -export [short_bin/0, short_guard/1, short_lc/0].
--export [short_bc/0, short_arglist/3, short_rec/0].
--export [short_map/0].
+-export [short_bc/0, short_arglist/3].
 
 -export [long_tuple/0, long_list/0, long_fun/0, long_bin/0, long_guard/1, long_lc/0, long_bc/0,
-         long_arglist/7, long_rec/0, long_map/0].
+         long_arglist/7].
 
 -export [short/0, exact/0, long/0].
 
@@ -70,14 +56,6 @@ short_bc() ->
 -spec short_arglist(number(), number(), number()) -> number().
 short_arglist(X, Y, Z) -> X+Y+Z.
 
--spec short_rec() -> #short_rec{x :: x, y :: y, z :: z}.
-short_rec() -> #short_rec{x = x, y = y, z = z}.
-
--spec short_map() -> #{x => x, y => y, z := z}.
-short_map() -> #{x => x, y => y, z => z}.
-
-
-
 -spec long_tuple() -> {T, T, T} when T :: {x, y, z}.
 long_tuple() ->
     X = {x1, x2, x3, x4, y1, y2, y3, y4, very_very_long_name_1, very_very_long_name_2, very_very_long_name_3},
@@ -119,50 +97,6 @@ long_bc() ->
 -spec long_arglist(number(), number(), number(), float(), non_neg_integer(), non_neg_integer(), non_neg_integer()) -> number().
 long_arglist(X1, X2, X3, Y1, VeryVeryLongName1, VeryVeryLongName2, VeryVeryLongName3) ->
     X1 + X2 + X3 + Y1 + VeryVeryLongName1 + VeryVeryLongName2 + VeryVeryLongName3.
-
--spec long_rec() -> #long_rec{
-    x1 :: x1,
-    x2 :: x2,
-    x3 :: x3,
-    y1 :: y1,
-    y2 :: y2,
-    y3 :: y3,
-    very_very_long_name_1 :: very_very_long_name_1,
-    very_very_long_name_2 :: very_very_long_name_2,
-    very_very_long_name_3 :: very_very_long_name_3
-}.
-long_rec() -> #long_rec{
-    x1 = x1,
-    x2 = x2,
-    x3 = x3,
-    y1 = y1,
-    y2 = y2,
-    y3 = y3,
-    very_very_long_name_1 = very_very_long_name_1,
-    very_very_long_name_2 = very_very_long_name_2,
-    very_very_long_name_3 = very_very_long_name_3}.
-
--spec long_map() -> #{
-    x1 := x1,
-    x2 := x2,
-    x3 := x3,
-    y1 := y1,
-    y2 := y2,
-    y3 := y3,
-    very_very_long_name_1 := very_very_long_name_1,
-    very_very_long_name_2 := very_very_long_name_2,
-    very_very_long_name_3 := very_very_long_name_3
-}.
-long_map() -> #{
-    x1 => x1,
-    x2 => x2,
-    x3 => x3,
-    y1 => y1,
-    y2 => y2,
-    y3 => y3,
-    very_very_long_name_1 => very_very_long_name_1,
-    very_very_long_name_2 => very_very_long_name_2,
-    very_very_long_name_3 => very_very_long_name_3}.
 
 short() ->
     [these,items,should,'not',be,inlined,since,they,are,less,than,25].

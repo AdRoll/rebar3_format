@@ -57,6 +57,7 @@
          ribbon = ?RIBBON :: integer(),
          user = ?NOUSER :: term(),
          inline_items = {when_over, 25} :: inlining(),
+         inline_fields = none :: inlining(),
          inline_attributes = all :: inlining(),
          within_disjunction = false :: boolean(),
          force_indentation = false :: boolean(),
@@ -149,6 +150,7 @@ layout(Node, EmptyLines, Options) ->
                   maps:get(inline_qualified_function_composition, Options, false),
               inline_expressions = maps:get(inline_expressions, Options, false),
               inline_items = maps:get(inline_items, Options, {when_over, 25}),
+              inline_fields = maps:get(inline_fields, Options, none),
               inline_attributes = maps:get(inline_attributes, Options, all),
               parenthesize_infix_operations =
                   maps:get(parenthesize_infix_operations, Options, false),
@@ -632,7 +634,7 @@ lay_no_comments(Node, Ctxt) ->
         record_expr ->
             Ctxt1 = reset_prec(Ctxt),
             D1 = lay(erl_syntax:record_expr_type(Node), Ctxt1),
-            D2 = lay_items(erl_syntax:record_expr_fields(Node), Ctxt1, fun lay/2),
+            D2 = lay_fields(erl_syntax:record_expr_fields(Node), Ctxt1, fun lay/2),
             D3 = beside(beside(lay_text_float("#"), D1),
                         beside(text("{"), beside(D2, lay_text_float("}")))),
             Arg = erl_syntax:record_expr_argument(Node),
@@ -654,7 +656,7 @@ lay_no_comments(Node, Ctxt) ->
             maybe_parentheses(D3, Prec, Ctxt);
         map_expr ->
             Ctxt1 = reset_prec(Ctxt),
-            D1 = lay_items(erl_syntax:map_expr_fields(Node), Ctxt1, fun lay/2),
+            D1 = lay_fields(erl_syntax:map_expr_fields(Node), Ctxt1, fun lay/2),
             D2 = beside(text("#{"), beside(D1, lay_text_float("}"))),
             Arg = erl_syntax:map_expr_argument(Node),
             lay_expr_argument(Arg, D2, Ctxt);
@@ -801,7 +803,7 @@ lay_no_comments(Node, Ctxt) ->
                     text("map()");
                 Fs ->
                     Ctxt1 = reset_prec(Ctxt),
-                    Es = lay_items(Fs, Ctxt1, fun lay/2),
+                    Es = lay_fields(Fs, Ctxt1, fun lay/2),
                     D = beside(lay_text_float("#{"), beside(Es, lay_text_float("}"))),
                     {Prec, _PrecR} = type_preop_prec('#'),
                     maybe_parentheses(D, Prec, Ctxt)
@@ -823,7 +825,7 @@ lay_no_comments(Node, Ctxt) ->
         record_type ->
             {Prec, _PrecR} = type_preop_prec('#'),
             D1 = beside(text("#"), lay(erl_syntax:record_type_name(Node), reset_prec(Ctxt))),
-            Es = lay_items(erl_syntax:record_type_fields(Node), reset_prec(Ctxt), fun lay/2),
+            Es = lay_fields(erl_syntax:record_type_fields(Node), reset_prec(Ctxt), fun lay/2),
             D2 = beside(D1, beside(text("{"), beside(Es, lay_text_float("}")))),
             maybe_parentheses(D2, Prec, Ctxt);
         record_type_field ->
@@ -1296,7 +1298,9 @@ tidy_char(Node, Encoding) ->
             Text
     end.
 
-tidy_atom(Node, #ctxt{encoding = Encoding, unquote_atoms = true}) ->
+tidy_atom(Node,
+          #ctxt{encoding = Encoding,
+                unquote_atoms = true}) ->
     erl_syntax:atom_literal(Node, Encoding);
 tidy_atom(Node, #ctxt{encoding = Encoding}) ->
     case erl_syntax:is_tree(Node) of
@@ -1336,6 +1340,17 @@ number_from_text(Text, Default) ->
             Text
     end.
 
+lay_fields(Exprs, Ctxt = #ctxt{inline_fields = {when_over, N}}, Fun)
+    when length(Exprs) > N ->
+    par(seq(Exprs, lay_text_float(","), Ctxt, Fun));
+lay_fields(Exprs, Ctxt = #ctxt{inline_fields = {when_over, N}}, Fun)
+    when length(Exprs) =< N ->
+    vertical(seq(Exprs, lay_text_float(","), Ctxt, Fun));
+lay_fields(Exprs, Ctxt = #ctxt{inline_fields = all}, Fun) ->
+    par(seq(Exprs, lay_text_float(","), Ctxt, Fun));
+lay_fields(Exprs, Ctxt = #ctxt{inline_fields = none}, Fun) ->
+    vertical(seq(Exprs, lay_text_float(","), Ctxt, Fun)).
+
 lay_items(Exprs, Ctxt, Fun) ->
     lay_items(Exprs, lay_text_float(","), Ctxt, Fun).
 
@@ -1344,7 +1359,9 @@ lay_items(Exprs, Separator, Ctxt = #ctxt{inline_items = {when_over, N}}, Fun)
     par(seq(Exprs, Separator, Ctxt, Fun));
 lay_items(Exprs,
           Separator,
-          Ctxt = #ctxt{force_indentation = true, inline_items = {when_over, N}},
+          Ctxt =
+              #ctxt{force_indentation = true,
+                    inline_items = {when_over, N}},
           Fun)
     when length(Exprs) =< N ->
     vertical(seq(Exprs, Separator, Ctxt, Fun));
@@ -1355,7 +1372,9 @@ lay_items(Exprs, Separator, Ctxt = #ctxt{inline_items = all}, Fun) ->
     par(seq(Exprs, Separator, Ctxt, Fun));
 lay_items(Exprs,
           Separator,
-          Ctxt = #ctxt{force_indentation = true, inline_items = none},
+          Ctxt =
+              #ctxt{force_indentation = true,
+                    inline_items = none},
           Fun) ->
     vertical(seq(Exprs, Separator, Ctxt, Fun));
 lay_items(Exprs, Separator, Ctxt = #ctxt{inline_items = none}, Fun) ->

@@ -140,7 +140,8 @@ foo3() ->
 
 foo4(A, B, #state{c = C} = S) ->
     Ls = foo3(),
-    S1 = #state{a = 1, b = 2},
+    S1 = #state{a = 1,
+                b = 2},
     [foo2(A, Ls),
      B,
      C,
@@ -151,7 +152,9 @@ foo4(A, B, #state{c = C} = S) ->
      A:?macro_simple1(),
      A:process_info(self()),
      A:B(3),
-     S#state{a = 2, b = B, d = S1}].
+     S#state{a = 2,
+             b = B,
+             d = S1}].
 
 foo5(A) ->
     try foo2(A, A) of

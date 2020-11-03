@@ -11,7 +11,10 @@
 -type result() :: changed | unchanged.
 -type state() :: term().
 
--opaque t() :: #{module := module(), opts := opts(), state := state()}.
+-opaque t() ::
+    #{module := module(),
+      opts := opts(),
+      state := state()}.
 
 -export_type([opts/0, result/0, t/0]).
 
@@ -26,12 +29,18 @@
 %% @doc Build a formatter.
 -spec new(module(), opts(), undefined | rebar_state:t()) -> t().
 new(Module, Opts, RebarState) ->
-    #{module => Module, opts => Opts, state => Module:init(Opts, RebarState)}.
+    #{module => Module,
+      opts => Opts,
+      state => Module:init(Opts, RebarState)}.
 
 %% @doc Format a file.
 %%      Apply formatting rules to a file containing erlang code.
 -spec format_file(file:filename_all(), t()) -> result().
-format_file(File, #{opts := Opts, module := Module, state := State} = Formatter) ->
+format_file(File,
+            #{opts := Opts,
+              module := Module,
+              state := State} =
+                Formatter) ->
     case apply_per_file_opts(File, Opts) of
         ignore ->
             ignore(File, Formatter),

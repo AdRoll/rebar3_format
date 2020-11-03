@@ -16,10 +16,14 @@
 -type some_type() :: map().
 -type some_other_type() :: {a, #{list() => term()}}.
 
--spec foo1(Map :: #{a => integer(), b => term()}) -> term().
+-spec foo1(Map ::
+               #{a => integer(),
+                 b => term()}) ->
+              term().
 %% @doc Gets value from map.
 
-foo1(#{a := 1, b := V}) ->
+foo1(#{a := 1,
+       b := V}) ->
     V.
 
 %% @spec foo2(some_type(), Type2 :: some_other_type(), map()) -> Value
@@ -27,9 +31,15 @@ foo1(#{a := 1, b := V}) ->
 
 -spec foo2(Type1 :: some_type(),
            Type2 :: some_other_type(),
-           Map :: #{get => value, value => binary()}) ->
+           Map ::
+               #{get => value,
+                 value => binary()}) ->
               binary().
-foo2(Type1, {a, #{"a" := _}}, #{get := value, value := B}) when is_map(Type1) ->
+foo2(Type1,
+     {a, #{"a" := _}},
+     #{get := value,
+       value := B})
+    when is_map(Type1) ->
     B.
 
 %% from supervisor 18.0

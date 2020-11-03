@@ -1,6 +1,7 @@
 -module(brackets).
 
--format #{inline_items => all, paper => 50}.
+-format #{inline_items => all,
+          paper => 50}.
 
 -compile(export_all).
 
@@ -62,5 +63,7 @@ lc() ->
         or_have:filters(Nicely)].
 
 map() ->
-    #{maps => should, also => behave,
-      nicely => in, regards => [to, indentation]}.
+    #{maps => should,
+      also => behave,
+      nicely => in,
+      regards => [to, indentation]}.
