@@ -53,3 +53,42 @@ string
 ",
 {ok, X}.
 
+right_after_parentheses(A,B) ->
+    lists:foldl( %% post-comment
+                %% pre-comment (I guess)
+                fun(_, Acc) -> Acc end,
+                B,
+                A),
+    lists:foldl  %% post-comment 2
+               (fun(_, Acc) -> Acc end, B, A),
+    lists:foldl %% post-comment 3
+               (
+               %% pre-comment 3 (I hope)
+                fun([to, many, parameters, here, we, must, indent], Acc) -> Acc end, B, A),
+    lists:foldl(
+        %% pre-comment 4
+        fun(_, Acc) -> Acc end,
+        B,
+        A),
+    lists:foldl( %% post-comment
+                 %% second-post-comment (maybe?)
+                %% pre-comment (I guess)
+                %% second-pre-comment (I don't know)
+                fun(_, Acc) -> Acc end,
+                B,
+                A),
+    lists:foldl  %% post-comment 2
+                 %% second-post-comment (?)
+               (fun(_, Acc) -> Acc end, B, A),
+    lists:foldl %% post-comment 3
+                %% second-post-comment 3
+               (
+               %% pre-comment 3 (I hope)
+               %% second-pre-comment 3 (?)
+                fun([to, many, parameters, here, we, must, indent], Acc) -> Acc end, B, A),
+    lists:foldl(
+        %% pre-comment 4
+        %% second-pre-comment 4
+        fun(_, Acc) -> Acc end,
+        B,
+        A).

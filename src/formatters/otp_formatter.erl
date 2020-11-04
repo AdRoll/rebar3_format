@@ -628,6 +628,7 @@ lay_no_comments(Node, Ctxt) ->
             end;
         comment ->
             D = stack_comment_lines(erl_syntax:comment_text(Node)),
+
             %% Default padding for standalone comments is empty.
             case erl_syntax:comment_padding(Node) of
                 none -> floating(break(D));
@@ -808,6 +809,7 @@ lay_no_comments(Node, Ctxt) ->
         type_application ->
             Name = erl_syntax:type_application_name(Node),
             Arguments = erl_syntax:type_application_arguments(Node),
+
             %% Prefer shorthand notation.
             case erl_syntax_lib:analyze_type_application(Node) of
                 {nil, 0} -> text("[]");
