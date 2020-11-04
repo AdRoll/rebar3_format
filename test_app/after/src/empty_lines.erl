@@ -31,7 +31,10 @@ a_fun(With, Some, Arguments) ->
     an:expression(that,
                   occupies,
                   Some,
-                  #{lines => since, it => uses, a => [long, list], 'of' => Arguments}),
+                  #{lines => since,
+                    it => uses,
+                    a => [long, list],
+                    'of' => Arguments}),
 
     %% ^ a couple of empty lines below the aforementioned long expression
     another:expression(With, smaller, size),
@@ -46,5 +49,7 @@ a_fun(With, Some, Arguments) ->
                   has,
                   Some,
                   {empty, lines, inside},
-                  #{and_it => uses, a => [long, list], 'of' => Arguments}),
+                  #{and_it => uses,
+                    a => [long, list],
+                    'of' => Arguments}),
     no_empty_line_above_me.

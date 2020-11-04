@@ -9,7 +9,7 @@
          inlined/0]).
 
 -callback these() -> {elements, should, be, inlined}.
--callback functions() -> #{should => be, inlined => {as, well}}.
+-callback functions() -> [should | be | inlined | {as, well}].
 -callback shouldnt() -> should.
 -callback be() -> ok.
 -callback inlined(even, If, they, have, arguments) -> If.
@@ -36,7 +36,13 @@
               inlined/0,
               either/0]).
 
--type the_attributes(Of, This, Type) :: #{should => Of, be => This, inlined => Type}.
+-type the_attributes(Of, This, Type) ::
+    #{should => Of,
+      be => This,
+      inlined => Type,
+      but => the,
+      map => respects,
+      inline_fields => none}.
 
 -record(the_fields, {'of', this, record, should, be, inlined, too}).
 

@@ -151,7 +151,9 @@ foo4(A, B, #state{c = C} = S) ->
      A:?macro_simple1(),
      A:process_info(self()),
      A:B(3),
-     S#state{a = 2, b = B, d = S1}].
+     S#state{a = 2,
+             b = B,
+             d = S1}].
 
 foo5(A) ->
     try foo2(A, A) of

@@ -67,18 +67,18 @@ The plugin supports the following configuration options in the `format` section 
         + `unquote_atoms` (`boolean()`):
             * Specifies whether the formatter should remove quotes from atoms that don't need them (e.g. `'this_one'`) or not.
             * The default value is `true`, i.e. the formatter won't preserve your quotes if they're not needed, unless you explicitely ask for.
-        + `inline_attributes` (`all | none | {when_over, pos_integer()}`):
+        + `inline_attributes` (`inlining()`):
             * Specifies the desired behavior for inlining attributes with lists, like `-export`, `-export_type` and `-optional_callbacks`.
-            * When this option is `all`, the formatter will try to fit as many items in each line as permitted by `paper` and `ribbon`.
-            * When the flag is `none`, the formatter will place each item in its own line.
-            * When the flag is `{when_over, N}` the formatter will work as `none` for lists with up to `N` elements, and it will inline longer lists.
+            * See `inlining()` type definition below for a list of options.
             * The default value is `all`, i.e. always put as many functions/types on each row as possible.
-        + `inline_items` (`all | none | {when_over, pos_integer()}`):
+        + `inline_fields` (`inlining()`):
+            * Specifies the desired behavior for inlining lists of map and record fields.
+            * See `inlining()` type definition below for a list of options.
+            * The default value is `{when_under, 3}`, i.e. always place each field in its own line, unless there is only 1 or 2 of them.
+        + `inline_items` (`inlining()`):
             * Specifies the desired behavior when the formatter needs to use multiple lines for a multi-item structure (i.e. tuple, list, map, etc.).
             * **NOTE:** If the formatter can put all items in the same row, it will do it, regardless of this configuration. This is to prevent short lists, binaries or tuples to be spread out in multiple lines.
-            * When this option is `all`, the formatter will try to fit as many items in each line as permitted by `paper` and `ribbon`.
-            * When the flag is `none`, the formatter will place each item in its own line.
-            * When the flag is `{when_over, N}` the formatter will work as `none` for lists with up to `N` elements, and it will inline longer lists.
+            * See `inlining()` type definition below for a list of options.
             * The default value is `{when_over, 25}` to properly accommodate large binaries or lists.
         + `inline_simple_funs` (`boolean()`):
             * Specifies if anonymous function bodies should be placed in the same line as the function clause head in case for anonymous functions with just one clause if `paper` and `ribbon` allows it or if these simple funs should be indented as all the others.
@@ -110,6 +110,15 @@ The plugin supports the following configuration options in the `format` section 
     - List of wildcard patterns representing the files that the formatter will ignore when formatting.
     - Note that it will ignore the files set for formatting either with the `files` option or using `--files` in the command line if they match one of the given wildcards.
     - You can also ignore a specific file adding the attribute `-format(ignore)` in it.
+
+#### Configuration Types
+
+* `inlining() :: all | none | {when_over, pos_integer()} | {when_under, pos_integer()}`:
+    - Options that allow this type of configuration will work this way:
+        + When this option is `all`, the formatter will try to fit as many items in each line as permitted by `paper` and `ribbon`.
+        + When the flag is `none`, the formatter will place each item in its own line.
+        + When the flag is `{when_over, N}` the formatter will work as `none` for lists with up to `N` elements, and it will inline longer lists.
+        + When the flag is `{when_under, N}` the formatter will work as `none` for lists with more than `N` elements, and it will inline shorter lists.
 
 ### Per-File Configuration
 

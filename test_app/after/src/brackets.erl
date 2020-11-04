@@ -62,5 +62,7 @@ lc() ->
         or_have:filters(Nicely)].
 
 map() ->
-    #{maps => should, also => behave,
-      nicely => in, regards => [to, indentation]}.
+    #{maps => should,
+      also => behave,
+      nicely => in,
+      regards => [to, indentation]}.
