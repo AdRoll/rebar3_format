@@ -407,6 +407,7 @@ lay_no_comments(Node, Ctxt) ->
             %% attribute name, without following parentheses.
             Ctxt1 = reset_prec(Ctxt),
             Args = erl_syntax:attribute_arguments(Node),
+
             %% NOTE: The preceding $- must be part of the name of the attribute.
             %%       That's because we want indentation to start counting from
             %%       that character on, and not from the first character on the
@@ -443,6 +444,7 @@ lay_no_comments(Node, Ctxt) ->
                     Tag when Tag =:= export_type; Tag =:= optional_callbacks ->
                         [FuncNames] = Args,
                         As = unfold_function_names(FuncNames),
+
                         %% We force inlining of list items and use inline_attributes to
                         %% format the list of functions
                         Ctxt2 =
@@ -514,6 +516,7 @@ lay_no_comments(Node, Ctxt) ->
             end;
         comment ->
             D = stack_comment_lines(erl_syntax:comment_text(Node)),
+
             %% Default padding for standalone comments is empty.
             case erl_syntax:comment_padding(Node) of
                 none ->
@@ -729,6 +732,7 @@ lay_no_comments(Node, Ctxt) ->
         type_application ->
             Name = erl_syntax:type_application_name(Node),
             Arguments = erl_syntax:type_application_arguments(Node),
+
             %% Prefer shorthand notation.
             case erl_syntax_lib:analyze_type_application(Node) of
                 {nil, 0} ->
@@ -968,6 +972,7 @@ lay_nested_infix_expr(Node, Ctxt = #ctxt{parenthesize_infix_operations = true}) 
                     _ ->
                         0
                 end,
+
             % If we *should* add parentheses semantic-wise, lay/2 will take care
             % of that, thanks to maybe_parentheses/3
             case needs_parentheses(Prec, Ctxt) of
@@ -1025,6 +1030,7 @@ lay_string(Node, Ctxt) ->
                 %% Probably malformed node text
                 S0
         end,
+
     %% S includes leading/trailing double-quote characters. The segment
     %% width is 2/3 of the ribbon width - this seems to work well.
     W = Ctxt#ctxt.ribbon * 2 div 3,
@@ -1115,6 +1121,7 @@ lay_clauses(Cs, Type, Ctxt) ->
 %% contexts.
 make_simple_fun_clause(P, G, B, Ctxt) ->
     D = make_fun_clause_head(none, P, Ctxt),
+
     % Since this anonymous fun has a single clause, we don't need to indent its
     % body _that_ much
     make_case_clause(D, G, B, Ctxt#ctxt{break_indent = 0}).
@@ -1200,8 +1207,10 @@ lay_application(Name, Arguments, Ctxt) ->
             lay_application(MacroVar, Args, Ctxt);
         _ ->
             {PrecL, Prec} = func_prec(),
-            DName = beside(lay(Name, set_prec(Ctxt, PrecL)), text("(")),
-            DArgs = beside(lay_items(Arguments, reset_prec(Ctxt), fun lay/2), lay_text_float(")")),
+            {CommentedName, CommentedArgs} = move_comments(Name, Arguments),
+            DName = beside(lay(CommentedName, set_prec(Ctxt, PrecL)), text("(")),
+            DArgs =
+                beside(lay_items(CommentedArgs, reset_prec(Ctxt), fun lay/2), lay_text_float(")")),
             D = case not Ctxt#ctxt.inline_qualified_function_composition andalso
                          is_qualified_function_composition(Name, Arguments)
                 of
@@ -1211,6 +1220,20 @@ lay_application(Name, Arguments, Ctxt) ->
                         beside(DName, DArgs)
                 end,
             maybe_parentheses(D, Prec, Ctxt)
+    end.
+
+%% @doc If the name has postcomments and/or the first argument has precomments
+%%      they get moved *too much*. So we convert them all into precomments, since
+%%      that's how the look better.
+move_comments(Name, []) ->
+    {Name, []};
+move_comments(Name, [Arg0 | Args]) ->
+    case {erl_syntax:get_postcomments(Name), erl_syntax:get_precomments(Arg0)} of
+        {[], _} ->
+            {Name, [Arg0 | Args]};
+        {PostComments, PreComments} ->
+            {erl_syntax:set_postcomments(Name, []),
+             [erl_syntax:set_precomments(Arg0, PostComments ++ PreComments) | Args]}
     end.
 
 %% @doc Is this a function composition of two fully-qualified names.
