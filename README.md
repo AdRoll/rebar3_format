@@ -104,7 +104,7 @@ The plugin supports the following configuration options in the `format` section 
             * The default value is `false`.
         + `spaces_around_fields` (`boolean()`):
             * Specifies if an expression such as `#{a => map, "with" => "fields"}` should be formatted as `#{ a => map, "with" => "fields" }`.
-            * This parameter works on map and record expressions and types, but of course it doesn't affect tuples.
+            * This parameter works on map and record expressions and types, but it doesn't affect tuples.
             * The default value is `false`.
         + `preserve_empty_lines` (`boolean()`):
             * Specifies if blank lines between statements should be preserved when formatting.
