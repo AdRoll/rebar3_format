@@ -66,6 +66,8 @@
          inline_clause_bodies = false :: boolean(),
          inline_qualified_function_composition = false :: boolean(),
          inline_expressions = false :: boolean(),
+         spaces_within_parentheses = false :: boolean(),
+         spaces_around_fields = true :: boolean(),
          unquote_atoms = true :: boolean(),
          parenthesize_infix_operations = false :: boolean(),
          empty_lines = [] :: [pos_integer()],
@@ -155,6 +157,8 @@ layout(Node, EmptyLines, Options) ->
               parenthesize_infix_operations =
                   maps:get(parenthesize_infix_operations, Options, false),
               unquote_atoms = maps:get(unquote_atoms, Options, true),
+              spaces_within_parentheses = maps:get(spaces_within_parentheses, Options, false),
+              spaces_around_fields = maps:get(spaces_around_fields, Options, true),
               empty_lines = EmptyLines,
               encoding = maps:get(encoding, Options, epp:default_encoding())}).
 
@@ -298,6 +302,7 @@ lay_no_comments(Node, Ctxt) ->
         application ->
             lay_application(erl_syntax:application_operator(Node),
                             erl_syntax:application_arguments(Node),
+                            Ctxt#ctxt.spaces_within_parentheses,
                             Ctxt);
         match_expr ->
             {PrecL, Prec, PrecR} = inop_prec('='),
@@ -1200,24 +1205,33 @@ lay_type_par_text(Name, Value, Text, Ctxt) ->
     par([D1, lay_text_float(Text), D2], Ctxt1#ctxt.break_indent).
 
 lay_application(Name, Arguments, Ctxt) ->
+    lay_application(Name, Arguments, false, Ctxt).
+
+lay_application(Name, Arguments, SpacesWithinParentheses, Ctxt) ->
     case erl_syntax:type(Name) of
         macro ->
             [Arg | Args] = Arguments,
             MacroVar = erl_syntax:variable([$? | atom_to_list(erl_syntax:variable_name(Arg))]),
-            lay_application(MacroVar, Args, Ctxt);
+            lay_application(MacroVar, Args, SpacesWithinParentheses, Ctxt);
         _ ->
             {PrecL, Prec} = func_prec(),
             {CommentedName, CommentedArgs} = move_comments(Name, Arguments),
             DName = beside(lay(CommentedName, set_prec(Ctxt, PrecL)), text("(")),
-            DArgs =
-                beside(lay_items(CommentedArgs, reset_prec(Ctxt), fun lay/2), lay_text_float(")")),
+            DArgs = lay_items(CommentedArgs, reset_prec(Ctxt), fun lay/2),
+            DClosingParen = lay_text_float(")"),
             D = case not Ctxt#ctxt.inline_qualified_function_composition andalso
                          is_qualified_function_composition(Name, Arguments)
                 of
                     true ->
-                        vertical([DName, nest(Ctxt#ctxt.break_indent, DArgs)]);
+                        vertical([DName,
+                                  nest(Ctxt#ctxt.break_indent, beside(DArgs, DClosingParen))]);
                     _ ->
-                        beside(DName, DArgs)
+                        case SpacesWithinParentheses andalso CommentedArgs /= [] of
+                            false ->
+                                beside(DName, beside(DArgs, DClosingParen));
+                            true ->
+                                par([par([DName, DArgs], Ctxt#ctxt.break_indent), DClosingParen])
+                        end
                 end,
             maybe_parentheses(D, Prec, Ctxt)
     end.
