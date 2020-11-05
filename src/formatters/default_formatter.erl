@@ -641,12 +641,11 @@ lay_no_comments(Node, Ctxt) ->
             maybe_parentheses(beside(D1, D3), Prec, Ctxt);
         record_expr ->
             Ctxt1 = reset_prec(Ctxt),
-            D1 = lay(erl_syntax:record_expr_type(Node), Ctxt1),
-            D2 = lay_fields(erl_syntax:record_expr_fields(Node), Ctxt1, fun lay/2),
-            D3 = beside(beside(lay_text_float("#"), D1),
-                        beside(text("{"), beside(D2, lay_text_float("}")))),
+            D1 = beside(beside(lay_text_float("#"), lay(erl_syntax:record_expr_type(Node), Ctxt1)),
+                        text("{")),
+            D2 = lay_fields(D1, erl_syntax:record_expr_fields(Node), Ctxt1, fun lay/2),
             Arg = erl_syntax:record_expr_argument(Node),
-            lay_expr_argument(Arg, D3, Ctxt);
+            lay_expr_argument(Arg, D2, Ctxt);
         record_field ->
             Ctxt1 = reset_prec(Ctxt),
             D1 = lay(erl_syntax:record_field_name(Node), Ctxt1),
@@ -664,10 +663,9 @@ lay_no_comments(Node, Ctxt) ->
             maybe_parentheses(D3, Prec, Ctxt);
         map_expr ->
             Ctxt1 = reset_prec(Ctxt),
-            D1 = lay_fields(erl_syntax:map_expr_fields(Node), Ctxt1, fun lay/2),
-            D2 = beside(text("#{"), beside(D1, lay_text_float("}"))),
+            D1 = lay_fields(text("#{"), erl_syntax:map_expr_fields(Node), Ctxt1, fun lay/2),
             Arg = erl_syntax:map_expr_argument(Node),
-            lay_expr_argument(Arg, D2, Ctxt);
+            lay_expr_argument(Arg, D1, Ctxt);
         map_field_assoc ->
             Name = erl_syntax:map_field_assoc_name(Node),
             Value = erl_syntax:map_field_assoc_value(Node),
@@ -812,8 +810,7 @@ lay_no_comments(Node, Ctxt) ->
                     text("map()");
                 Fs ->
                     Ctxt1 = reset_prec(Ctxt),
-                    Es = lay_fields(Fs, Ctxt1, fun lay/2),
-                    D = beside(lay_text_float("#{"), beside(Es, lay_text_float("}"))),
+                    D = lay_fields(lay_text_float("#{"), Fs, Ctxt1, fun lay/2),
                     {Prec, _PrecR} = type_preop_prec('#'),
                     maybe_parentheses(D, Prec, Ctxt)
             end;
@@ -833,9 +830,9 @@ lay_no_comments(Node, Ctxt) ->
             maybe_parentheses(D3, Prec, Ctxt);
         record_type ->
             {Prec, _PrecR} = type_preop_prec('#'),
-            D1 = beside(text("#"), lay(erl_syntax:record_type_name(Node), reset_prec(Ctxt))),
-            Es = lay_fields(erl_syntax:record_type_fields(Node), reset_prec(Ctxt), fun lay/2),
-            D2 = beside(D1, beside(text("{"), beside(Es, lay_text_float("}")))),
+            D1 = beside(beside(text("#"), lay(erl_syntax:record_type_name(Node), reset_prec(Ctxt))),
+                        text("{")),
+            D2 = lay_fields(D1, erl_syntax:record_type_fields(Node), reset_prec(Ctxt), fun lay/2),
             maybe_parentheses(D2, Prec, Ctxt);
         record_type_field ->
             Ctxt1 = reset_prec(Ctxt),
@@ -1374,6 +1371,9 @@ number_from_text(Text, Default) ->
         {_, _} ->
             Text
     end.
+
+lay_fields(Opening, Exprs, Ctxt = #ctxt{spaces_around_fields = _}, Fun) ->
+    beside(Opening, beside(lay_fields(Exprs, Ctxt, Fun), lay_text_float("}"))).
 
 lay_fields(Exprs, Ctxt = #ctxt{inline_fields = {when_over, N}}, Fun)
     when length(Exprs) > N ->
