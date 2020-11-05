@@ -99,7 +99,7 @@ The plugin supports the following configuration options in the `format` section 
             * The default value is `false`.
         + `spaces_around_arguments` (`boolean()`):
             * Specifies if an expression such as `a_function:call("with", "arguments")` should be formatted as `a_function:call( "with", "argments" )`.
-            * This parameter doesn't apply to **every expression** written within parenetheses (e.g. attributes, function types, etc.). It only applies to function calls with at least one parameter.
+            * This parameter doesn't apply to **every expression** with arguments (e.g. attributes, function types, etc.). It only applies to function calls (i.e. _applications_).
             * Although this configuration doesn't override the value of `inline_qualified_function_composition`, we strongly recommend you to use `inline_qualified_function_composition => true` if you use `spaces_within_parentheses => true`.
             * The default value is `false`.
         + `spaces_around_fields` (`boolean()`):
