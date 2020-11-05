@@ -66,7 +66,7 @@
          inline_clause_bodies = false :: boolean(),
          inline_qualified_function_composition = false :: boolean(),
          inline_expressions = false :: boolean(),
-         spaces_within_parentheses = false :: boolean(),
+         spaces_around_arguments = false :: boolean(),
          spaces_around_fields = false :: boolean(),
          unquote_atoms = true :: boolean(),
          parenthesize_infix_operations = false :: boolean(),
@@ -157,7 +157,7 @@ layout(Node, EmptyLines, Options) ->
               parenthesize_infix_operations =
                   maps:get(parenthesize_infix_operations, Options, false),
               unquote_atoms = maps:get(unquote_atoms, Options, true),
-              spaces_within_parentheses = maps:get(spaces_within_parentheses, Options, false),
+              spaces_around_arguments = maps:get(spaces_around_arguments, Options, false),
               spaces_around_fields = maps:get(spaces_around_fields, Options, false),
               empty_lines = EmptyLines,
               encoding = maps:get(encoding, Options, epp:default_encoding())}).
@@ -302,7 +302,7 @@ lay_no_comments(Node, Ctxt) ->
         application ->
             lay_application(erl_syntax:application_operator(Node),
                             erl_syntax:application_arguments(Node),
-                            Ctxt#ctxt.spaces_within_parentheses,
+                            Ctxt#ctxt.spaces_around_arguments,
                             Ctxt);
         match_expr ->
             {PrecL, Prec, PrecR} = inop_prec('='),

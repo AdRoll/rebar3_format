@@ -1,7 +1,6 @@
 -module(function_composition_spaces).
 
--format #{inline_qualified_function_composition => true,
-          spaces_within_parentheses => true}.
+-format #{inline_qualified_function_composition => true, spaces_around_arguments => true}.
 
 -export([local_calls/3, external_calls/0]).
 
