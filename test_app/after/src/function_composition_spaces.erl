@@ -12,7 +12,7 @@ local_calls(should, be, unaffected) ->
 external_calls() ->
     shouldnt:be(
         indented:every(
-            singe:time( [{even, "when", inlcuding}] ), local_calls( ?AND_MACROS, #{}, undefined )
+            singe:time( [{even, "when", including}] ), local_calls( ?AND_MACROS, #{}, undefined )
         ),
         local_calls( ?MACROS(should), be, unaffected )
     ),

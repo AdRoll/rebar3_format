@@ -10,7 +10,7 @@ local_calls(should, be, unaffected) ->
 external_calls() ->
     should:be(
         indented:every(
-            singe:time([{even, "when", inlcuding}]), local_calls(?AND_MACROS, #{}, undefined)),
+            singe:time([{even, "when", including}]), local_calls(?AND_MACROS, #{}, undefined)),
         local_calls(?MACROS(should), be, unaffected)),
     the_idea_is_to_force:long_module_and_function_names(
         to_be_put:in_the_next_row([{so, that},
