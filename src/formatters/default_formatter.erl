@@ -67,7 +67,7 @@
          inline_qualified_function_composition = false :: boolean(),
          inline_expressions = false :: boolean(),
          spaces_within_parentheses = false :: boolean(),
-         spaces_around_fields = true :: boolean(),
+         spaces_around_fields = false :: boolean(),
          unquote_atoms = true :: boolean(),
          parenthesize_infix_operations = false :: boolean(),
          empty_lines = [] :: [pos_integer()],
@@ -158,7 +158,7 @@ layout(Node, EmptyLines, Options) ->
                   maps:get(parenthesize_infix_operations, Options, false),
               unquote_atoms = maps:get(unquote_atoms, Options, true),
               spaces_within_parentheses = maps:get(spaces_within_parentheses, Options, false),
-              spaces_around_fields = maps:get(spaces_around_fields, Options, true),
+              spaces_around_fields = maps:get(spaces_around_fields, Options, false),
               empty_lines = EmptyLines,
               encoding = maps:get(encoding, Options, epp:default_encoding())}).
 
@@ -1372,8 +1372,11 @@ number_from_text(Text, Default) ->
             Text
     end.
 
-lay_fields(Opening, Exprs, Ctxt = #ctxt{spaces_around_fields = _}, Fun) ->
-    beside(Opening, beside(lay_fields(Exprs, Ctxt, Fun), lay_text_float("}"))).
+lay_fields(Opening, Exprs, Ctxt = #ctxt{spaces_around_fields = false}, Fun) ->
+    beside(Opening, beside(lay_fields(Exprs, Ctxt, Fun), lay_text_float("}")));
+lay_fields(Opening, Exprs, Ctxt = #ctxt{spaces_around_fields = true}, Fun) ->
+    par([par([Opening, lay_fields(Exprs, Ctxt, Fun)], Ctxt#ctxt.break_indent),
+         lay_text_float("}")]).
 
 lay_fields(Exprs, Ctxt = #ctxt{inline_fields = {when_over, N}}, Fun)
     when length(Exprs) > N ->
