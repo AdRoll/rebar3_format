@@ -1,5 +1,28 @@
 # Changelog
 
+## [0.7.0](https://github.com/AdRoll/rebar3_format/tree/0.7.0) (2020-11-06)
+
+[Full Changelog](https://github.com/AdRoll/rebar3_format/compare/0.6.0...0.7.0)
+
+**Fixed bugs:**
+
+- Jumpy Parentheses vs. Formatting Idempotence [\#200](https://github.com/AdRoll/rebar3_format/issues/200)
+
+**Closed issues:**
+
+- -inline should also accept arity qualifiers [\#201](https://github.com/AdRoll/rebar3_format/issues/201)
+- Accept concatenated record access [\#198](https://github.com/AdRoll/rebar3_format/issues/198)
+- Formatting multiline maps [\#162](https://github.com/AdRoll/rebar3_format/issues/162)
+- Spacing around parentheses / curly-braces [\#148](https://github.com/AdRoll/rebar3_format/issues/148)
+
+**Merged pull requests:**
+
+- \[Fix \#148\] Add options to space out parentheses and curly braces [\#206](https://github.com/AdRoll/rebar3_format/pull/206) ([elbrujohalcon](https://github.com/elbrujohalcon))
+- \[Fix \#200\] Fix arrangment of comments at the first paramter of an application [\#205](https://github.com/AdRoll/rebar3_format/pull/205) ([elbrujohalcon](https://github.com/elbrujohalcon))
+- \[Fix \#162\] Place \(by default\) each map/record field in its own line [\#204](https://github.com/AdRoll/rebar3_format/pull/204) ([elbrujohalcon](https://github.com/elbrujohalcon))
+- \[Fix \#198\] Allow A\#record.with\_another\#record.in\_it [\#203](https://github.com/AdRoll/rebar3_format/pull/203) ([elbrujohalcon](https://github.com/elbrujohalcon))
+- \[\#201\] \[Fix \#201\] Arity qualifiers for -inline [\#202](https://github.com/AdRoll/rebar3_format/pull/202) ([elbrujohalcon](https://github.com/elbrujohalcon))
+
 ## [0.6.0](https://github.com/AdRoll/rebar3_format/tree/0.6.0) (2020-10-26)
 
 [Full Changelog](https://github.com/AdRoll/rebar3_format/compare/0.5.0...0.6.0)
