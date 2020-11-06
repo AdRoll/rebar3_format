@@ -97,6 +97,15 @@ The plugin supports the following configuration options in the `format` section 
         + `parenthesize_infix_operations` (`boolean()`):
             * Specifies if parentheses should be added around composed [infix operations](https://erlang.org/doc/reference_manual/expressions.html#arithmetic-expressions) to avoid confusion around precedence.
             * The default value is `false`.
+        + `spaces_around_arguments` (`boolean()`):
+            * Specifies if an expression such as `a_function:call("with", "arguments")` should be formatted as `a_function:call( "with", "argments" )`.
+            * This parameter doesn't apply to **every expression** with arguments (e.g. attributes, function types, etc.). It only applies to function calls (i.e. _applications_).
+            * Although this configuration doesn't override the value of `inline_qualified_function_composition`, we strongly recommend you to use `inline_qualified_function_composition => true` if you use `spaces_within_parentheses => true`.
+            * The default value is `false`.
+        + `spaces_around_fields` (`boolean()`):
+            * Specifies if an expression such as `#{a => map, "with" => "fields"}` should be formatted as `#{ a => map, "with" => "fields" }`.
+            * This parameter works on map and record expressions and types, but it doesn't affect tuples.
+            * The default value is `false`.
         + `preserve_empty_lines` (`boolean()`):
             * Specifies if blank lines between statements should be preserved when formatting.
             * Keep in mind that blank lines between clauses, between items in tuples, lists, etc, between attributes, and so on will not be affected by this configuration and therefore they'll be unconditionally removed.
