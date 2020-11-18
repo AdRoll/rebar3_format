@@ -277,8 +277,13 @@ long_arglist(X1,
              VeryVeryLongName1,
              VeryVeryLongName2,
              VeryVeryLongName3) ->
-    X1 + X2 + X3 + Y1 + VeryVeryLongName1 + VeryVeryLongName2 +
-        VeryVeryLongName3.
+    X1
+    + X2
+    + X3
+    + Y1
+    + VeryVeryLongName1
+    + VeryVeryLongName2
+    + VeryVeryLongName3.
 
 short() ->
     [these,

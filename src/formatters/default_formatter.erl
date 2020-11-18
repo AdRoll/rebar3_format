@@ -265,19 +265,9 @@ lay_no_comments(Node, Ctxt) ->
         operator ->
             lay_text_float(erl_syntax:operator_literal(Node));
         infix_expr ->
-            Operator = erl_syntax:infix_expr_operator(Node),
-            {PrecL, Prec, PrecR} =
-                case erl_syntax:type(Operator) of
-                    operator ->
-                        inop_prec(erl_syntax:operator_name(Operator));
-                    _ ->
-                        {0, 0, 0}
-                end,
-            D1 = lay_nested_infix_expr(erl_syntax:infix_expr_left(Node), set_prec(Ctxt, PrecL)),
-            D2 = lay(Operator, reset_prec(Ctxt)),
-            D3 = lay_nested_infix_expr(erl_syntax:infix_expr_right(Node), set_prec(Ctxt, PrecR)),
-            D4 = par([D1, D2, D3], Ctxt#ctxt.break_indent),
-            maybe_parentheses(D4, Prec, Ctxt);
+            {Prec, Docs} = infix_expr_docs(Node, Ctxt),
+            D = sep(adjust_infix_expr_pars(Docs, Ctxt)),
+            maybe_parentheses(D, Prec, Ctxt);
         prefix_expr ->
             Operator = erl_syntax:prefix_expr_operator(Node),
             {{Prec, PrecR}, Name} =
@@ -309,8 +299,10 @@ lay_no_comments(Node, Ctxt) ->
             Pattern = erl_syntax:match_expr_pattern(Node),
             D1 = lay(Pattern, set_prec(Ctxt, PrecL)),
             D2 = lay(erl_syntax:match_expr_body(Node), set_prec(Ctxt, PrecR)),
-            D3 = case erl_syntax:type(Pattern) == underscore orelse
-                          erl_syntax:type(Pattern) == variable andalso
+            D3 = case erl_syntax:type(Pattern) == underscore
+                      orelse
+                          erl_syntax:type(Pattern) == variable
+                          andalso
                               length(erl_syntax:variable_literal(Pattern)) < Ctxt#ctxt.break_indent
                  of
                      true -> %% Single short variable on the left, don't nest
@@ -380,8 +372,8 @@ lay_no_comments(Node, Ctxt) ->
                     DClause =
                         lay(Clause,
                             Ctxt1#ctxt{inline_clause_bodies =
-                                           Ctxt1#ctxt.inline_simple_funs orelse
-                                               Ctxt1#ctxt.inline_clause_bodies,
+                                           Ctxt1#ctxt.inline_simple_funs
+                                           orelse Ctxt1#ctxt.inline_clause_bodies,
                                        clause = simple_fun_expr}),
                     sep([beside(text("fun"), DClause), text("end")]);
                 Clauses ->
@@ -1216,8 +1208,8 @@ lay_application(Name, Arguments, SpacesWithinParentheses, Ctxt) ->
             DName = beside(lay(CommentedName, set_prec(Ctxt, PrecL)), text("(")),
             DArgs = lay_items(CommentedArgs, reset_prec(Ctxt), fun lay/2),
             DClosingParen = lay_text_float(")"),
-            D = case not Ctxt#ctxt.inline_qualified_function_composition andalso
-                         is_qualified_function_composition(Name, Arguments)
+            D = case not Ctxt#ctxt.inline_qualified_function_composition
+                     andalso is_qualified_function_composition(Name, Arguments)
                 of
                     true ->
                         vertical([DName,
@@ -1232,6 +1224,64 @@ lay_application(Name, Arguments, SpacesWithinParentheses, Ctxt) ->
                 end,
             maybe_parentheses(D, Prec, Ctxt)
     end.
+
+%% @doc Recursive function that groups nested applications of the same infix
+%%      expression as a single list of docs.
+infix_expr_docs(Node, Ctxt) ->
+    Operator = erl_syntax:infix_expr_operator(Node),
+    {OperatorName, {PrecL, Prec, PrecR}} =
+        case erl_syntax:type(Operator) of
+            operator ->
+                ON = erl_syntax:operator_name(Operator),
+                {ON, inop_prec(ON)};
+            _ ->
+                {undefined, {0, 0, 0}}
+        end,
+    OpDoc = lay(Operator, reset_prec(Ctxt)),
+    LeftDocs =
+        infix_expr_docs(OperatorName, erl_syntax:infix_expr_left(Node), set_prec(Ctxt, PrecL)),
+    RightDocs =
+        infix_expr_docs(OperatorName, erl_syntax:infix_expr_right(Node), set_prec(Ctxt, PrecR)),
+    Ds = LeftDocs ++ [OpDoc | RightDocs],
+    {Prec, Ds}.
+
+infix_expr_docs(_, Node, Ctxt = #ctxt{parenthesize_infix_operations = true}) ->
+    [lay_nested_infix_expr(Node, Ctxt)];
+infix_expr_docs(OperatorName, Node, Ctxt) ->
+    case infix_expr_operator_name(Node) of
+        OperatorName ->
+            {InnerPrecL, DsL} = infix_expr_docs(Node, Ctxt),
+            case needs_parentheses(InnerPrecL, Ctxt) of
+                false ->
+                    DsL;
+                true ->
+                    [lay_nested_infix_expr(Node, Ctxt)]
+            end;
+        _ ->
+            [lay_nested_infix_expr(Node, Ctxt)]
+    end.
+
+infix_expr_operator_name(Node) ->
+    case erl_syntax:type(Node) of
+        infix_expr ->
+            Operator = erl_syntax:infix_expr_operator(Node),
+            case erl_syntax:type(Operator) of
+                operator ->
+                    erl_syntax:operator_name(Operator);
+                _ ->
+                    not_an_operator
+            end;
+        _ ->
+            not_an_operator
+    end.
+
+adjust_infix_expr_pars([Doc | Docs], Ctxt) ->
+    [Doc | adjust_infix_expr_pars(Docs, Ctxt, [])].
+
+adjust_infix_expr_pars([], _, Acc) ->
+    lists:reverse(Acc);
+adjust_infix_expr_pars([OpDoc, ExprDoc | Docs], Ctxt, Acc) ->
+    adjust_infix_expr_pars(Docs, Ctxt, [par([OpDoc, ExprDoc], Ctxt#ctxt.break_indent) | Acc]).
 
 %% @doc If the name has postcomments and/or the first argument has precomments
 %%      they get moved *too much*. So we convert them all into precomments, since
@@ -1254,11 +1304,13 @@ move_comments(Name, [Arg0 | Args]) ->
 is_qualified_function_composition(_, []) ->
     false;
 is_qualified_function_composition(Outside, [FirstArg | _]) ->
-    module_qualifier == erl_syntax:type(Outside) andalso
-        erl_syntax:type(FirstArg) == application andalso
-            module_qualifier ==
-                erl_syntax:type(
-                    erl_syntax:application_operator(FirstArg)).
+    module_qualifier == erl_syntax:type(Outside)
+    andalso erl_syntax:type(FirstArg) == application
+    andalso
+        module_qualifier
+        ==
+            erl_syntax:type(
+                erl_syntax:application_operator(FirstArg)).
 
 seq([H], _Separator, Ctxt, Fun) ->
     [Fun(H, Ctxt)];

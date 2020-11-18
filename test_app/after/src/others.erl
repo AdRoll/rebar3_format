@@ -107,16 +107,16 @@ multi_try_expr() ->
     end.
 
 long_case_of() ->
-    case whereis(ServerAndTable) =/= undefined orelse
-             counter_sup:start_child([ServerAndTable, Name])
+    case whereis(ServerAndTable) =/= undefined
+         orelse counter_sup:start_child([ServerAndTable, Name])
     of
         thing ->
             thong
     end.
 
 long_try_of() ->
-    try whereis(ServerAndTable) =/= undefined orelse
-            counter_sup:start_child([ServerAndTable, Name])
+    try whereis(ServerAndTable) =/= undefined
+        orelse counter_sup:start_child([ServerAndTable, Name])
     of
         thing ->
             thong
