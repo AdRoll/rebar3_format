@@ -1304,13 +1304,12 @@ move_comments(Name, [Arg0 | Args]) ->
 is_qualified_function_composition(_, []) ->
     false;
 is_qualified_function_composition(Outside, [FirstArg | _]) ->
-    module_qualifier == erl_syntax:type(Outside)
+    erl_syntax:type(Outside) == module_qualifier
     andalso erl_syntax:type(FirstArg) == application
     andalso
-        module_qualifier
-        ==
-            erl_syntax:type(
-                erl_syntax:application_operator(FirstArg)).
+        erl_syntax:type(
+            erl_syntax:application_operator(FirstArg))
+        == module_qualifier.
 
 seq([H], _Separator, Ctxt, Fun) ->
     [Fun(H, Ctxt)];
