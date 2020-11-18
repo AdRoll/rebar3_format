@@ -473,7 +473,11 @@ lay_no_comments(Node, Ctxt) ->
                             Ctxt1#ctxt{force_indentation = true,
                                        inline_items = Ctxt1#ctxt.inline_attributes},
                         lay_application(N, Args, Ctxt2);
-                    Tag when Tag =:= dialyzer; Tag =:= mixin; Tag =:= ignore_xref; Tag =:= inline ->
+                    Tag
+                        when Tag =:= dialyzer;
+                             Tag =:= mixin;
+                             Tag =:= ignore_xref;
+                             Tag =:= compile ->
                         %% We need to convert 2-tuples to arity qualifiers here
                         %% because the parser doesn't recognize them as such.
                         Ctxt2 = Ctxt1#ctxt{force_arity_qualifiers = true},
