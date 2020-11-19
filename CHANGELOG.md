@@ -1,22 +1,37 @@
 # Changelog
 
-## [0.7.0](https://github.com/AdRoll/rebar3_format/tree/0.7.0) (2020-11-06)
+## [0.8.0](https://github.com/AdRoll/rebar3_format/tree/0.8.0) (2020-11-19)
 
-[Full Changelog](https://github.com/AdRoll/rebar3_format/compare/0.6.0...0.7.0)
+[Full Changelog](https://github.com/AdRoll/rebar3_format/compare/0.6.0...0.8.0)
 
 **Fixed bugs:**
 
+- Name/Arity changed to tuple in compile inline directive [\#210](https://github.com/AdRoll/rebar3_format/issues/210)
+- Strange indentation of andalso guards [\#209](https://github.com/AdRoll/rebar3_format/issues/209)
 - Jumpy Parentheses vs. Formatting Idempotence [\#200](https://github.com/AdRoll/rebar3_format/issues/200)
+- Parsing error with parametrized macro [\#84](https://github.com/AdRoll/rebar3_format/issues/84)
+- We removed too many parentheses [\#74](https://github.com/AdRoll/rebar3_format/issues/74)
+- macro with ??  gives syntax error [\#53](https://github.com/AdRoll/rebar3_format/issues/53)
+- ktn\_dodger can't parse macros in specs [\#48](https://github.com/AdRoll/rebar3_format/issues/48)
+- Can't have concatenated string macros [\#22](https://github.com/AdRoll/rebar3_format/issues/22)
 
 **Closed issues:**
 
 - -inline should also accept arity qualifiers [\#201](https://github.com/AdRoll/rebar3_format/issues/201)
 - Accept concatenated record access [\#198](https://github.com/AdRoll/rebar3_format/issues/198)
+- Reduce indentation of multiline `andalso` [\#185](https://github.com/AdRoll/rebar3_format/issues/185)
 - Formatting multiline maps [\#162](https://github.com/AdRoll/rebar3_format/issues/162)
+- Style in record declaration [\#159](https://github.com/AdRoll/rebar3_format/issues/159)
 - Spacing around parentheses / curly-braces [\#148](https://github.com/AdRoll/rebar3_format/issues/148)
+- Formatting escript produces badarg [\#118](https://github.com/AdRoll/rebar3_format/issues/118)
 
 **Merged pull requests:**
 
+- Fix \#118: Parse escripts [\#215](https://github.com/AdRoll/rebar3_format/pull/215) ([elbrujohalcon](https://github.com/elbrujohalcon))
+- Fix \#74 by upgrading katana-code [\#214](https://github.com/AdRoll/rebar3_format/pull/214) ([elbrujohalcon](https://github.com/elbrujohalcon))
+- \[Fix \#185\] Place infix operators in columns [\#213](https://github.com/AdRoll/rebar3_format/pull/213) ([elbrujohalcon](https://github.com/elbrujohalcon))
+- \[Fix \#210\] Actually use arity qualifiers for inlining directives. [\#212](https://github.com/AdRoll/rebar3_format/pull/212) ([elbrujohalcon](https://github.com/elbrujohalcon))
+- Don't crash on weird macros [\#207](https://github.com/AdRoll/rebar3_format/pull/207) ([elbrujohalcon](https://github.com/elbrujohalcon))
 - \[Fix \#148\] Add options to space out parentheses and curly braces [\#206](https://github.com/AdRoll/rebar3_format/pull/206) ([elbrujohalcon](https://github.com/elbrujohalcon))
 - \[Fix \#200\] Fix arrangment of comments at the first paramter of an application [\#205](https://github.com/AdRoll/rebar3_format/pull/205) ([elbrujohalcon](https://github.com/elbrujohalcon))
 - \[Fix \#162\] Place \(by default\) each map/record field in its own line [\#204](https://github.com/AdRoll/rebar3_format/pull/204) ([elbrujohalcon](https://github.com/elbrujohalcon))
