@@ -112,6 +112,11 @@ The plugin supports the following configuration options in the `format` section 
             * This option is only used when `inline_expressions` is `false`.
             * If this option is `true`, one empty line will preserved for each group of empty lines that are placed between expressions in a clause.
             * The default value is `true`.
+        + `parse_macro_definitions` (`boolean()`):
+            * `ktn_dodger` (the module we use to parse the code) doesn't parse macro definitions by default. That's to prevent removing parentheses where they're actually meaningful in the context where the macro is used, but not in the context where it's defined.
+            * With this option in `true`, the formatter will instruct `ktn_dodger` to actually parse the macros.
+            * The default value is `true`.
+            * The idea is for users to turn it to `false` only for the module that contain macros that would be broken otherwise.
 * `files` (`[file:filename_all()]`):
     - List of wildcard patterns representing the files that will be formatted by default (i.e. when not using `--files` on command line).
     - The default value is `["src/**/*.?rl"]`

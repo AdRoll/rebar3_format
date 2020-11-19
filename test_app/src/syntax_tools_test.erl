@@ -6,6 +6,8 @@
 
 -module(syntax_tools_test).
 
+-format #{parse_macro_definitions => false}.
+
 -export([foo1/0,foo2/2,foo3/0,foo4/3,foo5/1]).
 
 -include_lib("kernel/include/file.hrl").
