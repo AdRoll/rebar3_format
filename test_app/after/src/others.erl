@@ -5,7 +5,7 @@
 strange_infix_operators(A, B) ->
     bnot (-(A rem B)).
 
--define(OUT_OF_CONTEXT_CLAUSE, true -> false ).
+-define(OUT_OF_CONTEXT_CLAUSE, true -> false).
 
 -record(rec, {key, value}).
 

@@ -31,4 +31,13 @@ another_hidden_function() ->
 -define(NO_ARGS(), result).
 -define(NO_PARENS, no_parens).
 
-other_function ( ? NO_ARGS ( ) , ? NO_PARENS , ? WITH_ARGS ( X ) , ? WITH_ARGS ( ? WITH_ARGS ( ? NO_ARGS ( ) ) ) ) -> { ? NO_ARGS ( ) , ? NO_PARENS , X } .
+other_function(?NO_ARGS(), ?NO_PARENS, ?WITH_ARGS(X), ?WITH_ARGS(?WITH_ARGS(?NO_ARGS()))) -> {?NO_ARGS(), ?NO_PARENS, X}.
+
+
+%% Careful with parentheses
+-define(Now(), 100).
+
+-define(Elapsed(Since), (?Now()-Since)).
+
+
+-define(Remains(Since, Remaining), N-?Elapsed(Since)).
