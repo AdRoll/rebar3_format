@@ -14,7 +14,7 @@
 -spec format(file:filename_all(), module(), rebar3_formatter:opts()) ->
                 rebar3_formatter:result().
 format(File, Formatter, Opts) ->
-    AST = get_ast(File),
+    AST = get_ast(File, Opts),
     QuickAST = get_quick_ast(File),
     Comments = get_comments(File),
     {ok, Original} = file:read_file(File),
@@ -38,8 +38,11 @@ format(File, Formatter, Opts) ->
             end
     end.
 
-get_ast(File) ->
-    case ktn_dodger:parse_file(File, [{scan_opts, [text]}, no_fail]) of
+get_ast(File, Opts) ->
+    DodgerOpts =
+        [{scan_opts, [text]}, no_fail]
+        ++ [parse_macro_definitions || maps:get(parse_macro_definitions, Opts, true)],
+    case ktn_dodger:parse_file(File, DodgerOpts) of
         {ok, AST} ->
             case [Error || {error, Error} <- AST] of
                 [] ->

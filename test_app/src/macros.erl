@@ -1,5 +1,7 @@
 -module(macros).
 
+-format #{parse_macro_definitions => false}.
+
 -define(ADULT_AGE, 21).
 -define(NEW_PERSON(Name, Age), #{name => Name, age => Age}).
 -define(SOMEONE, ?NEW_PERSON("Someone", 44)).
