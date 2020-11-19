@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.8.1](https://github.com/AdRoll/rebar3_format/tree/0.8.1) (2020-11-19)
+
+[Full Changelog](https://github.com/AdRoll/rebar3_format/compare/0.8.0...0.8.1)
+
+**Fixed bugs:**
+
+- We removed too many parentheses [\#74](https://github.com/AdRoll/rebar3_format/issues/74)
+
+**Closed issues:**
+
+- Add an option to parse macro definitions [\#217](https://github.com/AdRoll/rebar3_format/issues/217)
+
+**Merged pull requests:**
+
+- \[\#217\] Fix \#217: Put no-macro-parsing behind an option [\#218](https://github.com/AdRoll/rebar3_format/pull/218) ([elbrujohalcon](https://github.com/elbrujohalcon))
+
 ## [0.8.0](https://github.com/AdRoll/rebar3_format/tree/0.8.0) (2020-11-19)
 
 [Full Changelog](https://github.com/AdRoll/rebar3_format/compare/0.6.0...0.8.0)
@@ -10,7 +26,6 @@
 - Strange indentation of andalso guards [\#209](https://github.com/AdRoll/rebar3_format/issues/209)
 - Jumpy Parentheses vs. Formatting Idempotence [\#200](https://github.com/AdRoll/rebar3_format/issues/200)
 - Parsing error with parametrized macro [\#84](https://github.com/AdRoll/rebar3_format/issues/84)
-- We removed too many parentheses [\#74](https://github.com/AdRoll/rebar3_format/issues/74)
 - macro with ??  gives syntax error [\#53](https://github.com/AdRoll/rebar3_format/issues/53)
 - ktn\_dodger can't parse macros in specs [\#48](https://github.com/AdRoll/rebar3_format/issues/48)
 - Can't have concatenated string macros [\#22](https://github.com/AdRoll/rebar3_format/issues/22)
