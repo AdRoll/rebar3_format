@@ -1356,6 +1356,8 @@ empty_lines_to_add([Node | Nodes], Ctxt) ->
                     false ->
                         no_empty_line
                 end;
+            text -> % To handle the initial rows of escripts
+                no_empty_line;
             _ ->
                 empty_line
         end,
