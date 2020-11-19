@@ -8,8 +8,8 @@ numbers() ->
     Number = (((+1 + 2) + 3) - ((4 * 5) / 6)) + ((7 * 8) / (9 - 10)),
     Modulo = (100 div (7 div 3)) rem 5,
     Bits =
-        ((((bnot 2#001 band 2#010) bor 2#100) bxor 2#101) bsl 2#110) bsr
-            (2#111 band (2#100 bxor 2#101)),
+        ((((bnot 2#001 band 2#010) bor 2#100) bxor 2#101) bsl 2#110)
+        bsr (2#111 band (2#100 bxor 2#101)),
     (Number + Modulo) - Bits.
 
 booleans(A, B) when not B, A; A xor B ->

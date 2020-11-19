@@ -17,8 +17,9 @@
           they:also(should:be(indented_using:break_indent(1)))}).
 
 infix_expr() ->
- this:infix(expression) ++
-  should:be(indented) ++ using:break_indent(1).
+ this:infix(expression)
+ ++ should:be(indented)
+ ++ using:break_indent(1).
 
 prefix_expr() ->
  ThisPrefixExpressionShould =
@@ -134,6 +135,6 @@ when_clause(A, B, C)
    indented_using:sub_indent(1)));
 when_clause(Along, Blonb, Clong)
  when is_integer(Along),
-      Along >= Blong andalso
-       Clong rem Along =:= Blong ->
+      Along >= Blong
+      andalso Clong rem Along =:= Blong ->
  here:should(happen, the, same, thing).
