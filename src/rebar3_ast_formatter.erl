@@ -1,6 +1,8 @@
 %% @doc Default formatter for modules that use the AST to prettyprint code
 -module(rebar3_ast_formatter).
 
+-include_lib("kernel/include/file.hrl").
+
 -export([format/3]).
 
 -callback format(erl_syntax:forms(), [pos_integer()], rebar3_formatter:opts()) ->
@@ -110,5 +112,7 @@ maybe_save_file(OutputDir, File, Formatted) ->
         filename:join(
             filename:absname(OutputDir), File),
     ok = filelib:ensure_dir(OutFile),
+    {ok, FileInfo} = file:read_file_info(File),
     ok = file:write_file(OutFile, Formatted),
+    ok = file:change_mode(OutFile, FileInfo#file_info.mode),
     OutFile.
