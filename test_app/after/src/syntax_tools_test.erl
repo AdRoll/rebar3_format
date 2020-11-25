@@ -21,10 +21,10 @@
 % -?attrib([foo2/2]).
 
 -define(macro_simple1, ok).
--define(MACRO_SIMPLE2, (other)).
+-define(MACRO_SIMPLE2, ( other )).
 -define(macro_simple3, ?MODULE).
--define(macro_simple4, [?macro_simple3, ?MODULE, ?MACRO_SIMPLE2]).
--define(macro_simple5, (process_info)).
+-define(macro_simple4, [ ?macro_simple3 , ?MODULE , ?MACRO_SIMPLE2 ]).
+-define(macro_simple5, ( process_info )).
 -define(macro_string, "hello world").
 -define(macro_argument1(X), X + 3).
 -define(macro_argument2(X, Y), X + 3 * Y).
