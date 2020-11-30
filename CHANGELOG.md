@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.8.2](https://github.com/AdRoll/rebar3_format/tree/0.8.2) (2020-11-30)
+
+[Full Changelog](https://github.com/AdRoll/rebar3_format/compare/0.8.1...0.8.2)
+
+**Closed issues:**
+
+- Don't put every infix operator in columns [\#219](https://github.com/AdRoll/rebar3_format/issues/219)
+
+**Merged pull requests:**
+
+- \[Fix \#219\] Don't indent right after an operator [\#221](https://github.com/AdRoll/rebar3_format/pull/221) ([elbrujohalcon](https://github.com/elbrujohalcon))
+- Upgrade katana-code [\#220](https://github.com/AdRoll/rebar3_format/pull/220) ([elbrujohalcon](https://github.com/elbrujohalcon))
+
 ## [0.8.1](https://github.com/AdRoll/rebar3_format/tree/0.8.1) (2020-11-19)
 
 [Full Changelog](https://github.com/AdRoll/rebar3_format/compare/0.8.0...0.8.1)
