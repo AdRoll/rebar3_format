@@ -300,10 +300,9 @@ lay_no_comments(Node, Ctxt) ->
             D1 = lay(Pattern, set_prec(Ctxt, PrecL)),
             D2 = lay(erl_syntax:match_expr_body(Node), set_prec(Ctxt, PrecR)),
             D3 = case erl_syntax:type(Pattern) == underscore
-                      orelse
-                          erl_syntax:type(Pattern) == variable
-                          andalso
-                              length(erl_syntax:variable_literal(Pattern)) < Ctxt#ctxt.break_indent
+                      orelse erl_syntax:type(Pattern) == variable
+                             andalso length(erl_syntax:variable_literal(Pattern))
+                                     < Ctxt#ctxt.break_indent
                  of
                      true -> %% Single short variable on the left, don't nest
                          follow(beside(D1, lay_text_float(" =")), D2, Ctxt#ctxt.break_indent);
@@ -1285,7 +1284,7 @@ adjust_infix_expr_pars([Doc | Docs], Ctxt) ->
 adjust_infix_expr_pars([], _, Acc) ->
     lists:reverse(Acc);
 adjust_infix_expr_pars([OpDoc, ExprDoc | Docs], Ctxt, Acc) ->
-    adjust_infix_expr_pars(Docs, Ctxt, [par([OpDoc, ExprDoc], Ctxt#ctxt.break_indent) | Acc]).
+    adjust_infix_expr_pars(Docs, Ctxt, [beside(beside(OpDoc, text(" ")), ExprDoc) | Acc]).
 
 %% @doc If the name has postcomments and/or the first argument has precomments
 %%      they get moved *too much*. So we convert them all into precomments, since
@@ -1310,10 +1309,9 @@ is_qualified_function_composition(_, []) ->
 is_qualified_function_composition(Outside, [FirstArg | _]) ->
     erl_syntax:type(Outside) == module_qualifier
     andalso erl_syntax:type(FirstArg) == application
-    andalso
-        erl_syntax:type(
-            erl_syntax:application_operator(FirstArg))
-        == module_qualifier.
+    andalso erl_syntax:type(
+                erl_syntax:application_operator(FirstArg))
+            == module_qualifier.
 
 seq([H], _Separator, Ctxt, Fun) ->
     [Fun(H, Ctxt)];
