@@ -35,7 +35,6 @@
 -define(PAPER, 100).
 -define(RIBBON, 90).
 -define(BREAK_INDENT, 4).
--define(NOUSER, undefined).
 
 -type clause_t() ::
     case_expr |
@@ -55,7 +54,6 @@
          clause = undefined :: clause_t() | undefined,
          paper = ?PAPER :: integer(),
          ribbon = ?RIBBON :: integer(),
-         user = ?NOUSER :: term(),
          inline_items = {when_over, 25} :: inlining(),
          inline_fields = {when_under, 3} :: inlining(),
          inline_attributes = all :: inlining(),
