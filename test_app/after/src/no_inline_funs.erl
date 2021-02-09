@@ -55,3 +55,13 @@ long() ->
        {IncrediblyLongFunctionName(IncrediblyLongVariableName),
         IncrediblyLongFunctionName(IncrediblyLongVariableName)}
     end.
+
+clauses() ->
+    fun() ->
+       case with:some() of
+           clauses ->
+               that:should();
+           be ->
+               indented
+       end
+    end.
