@@ -69,7 +69,8 @@ foo2(A, B) ->
     %%       https://github.com/AdRoll/rebar3_format/issues/22
     %%    [?macro_string ?macro_string,
     [?macro_string,
-     "hello world more hello",
+     "hello world "
+     "more hello",
      [?macro_simple1,
       ?MACRO_SIMPLE2,
       ?macro_simple3,

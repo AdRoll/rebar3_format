@@ -13,13 +13,15 @@ all() ->
 
 
 superlong() ->
-  "This is a super super super super super super super super super super super super super super super super super super super super super super super super super super super super super long string!".
+  "This is a super super super super super super super super super super super super super super super super super super super super super super super super super super super super super long string!"
+  "Shouldn't be truncated since truncate_strings => false by default".
 
 heredoc() ->
 {ok, """
 This is
 a multiline
-heredoc
+heredoc but there are
+no multiline heredocs in Erlang :'(
 """}.
 
 repeat() ->
@@ -54,6 +56,5 @@ characters() ->
     {
     "\x63haracters with strange representations are preserved"
     ++ " in small strings",
-    "\x62ut they're not"
-    " preserved in multiblock strings"
+    "\x65v\x65n in multiblock strings"
     }.

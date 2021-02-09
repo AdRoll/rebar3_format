@@ -42,7 +42,11 @@ dummy_fn(A) ->
 % a multiline
 % comment
 multiline() ->
-    X = "\nThis is\na multiline\nstring\n",
+    X = "
+This is
+a multiline
+string
+",
     {ok, X}.
 
 right_after_parentheses(A, B) ->
