@@ -397,7 +397,6 @@ lay_no_comments(Node, Ctxt) ->
             %% a period. If the arguments is `none', we only output the
             %% attribute name, without following parentheses.
             Ctxt1 = reset_prec(Ctxt),
-            Args = erl_syntax:attribute_arguments(Node),
 
             %% NOTE: The preceding $- must be part of the name of the attribute.
             %%       That's because we want indentation to start counting from
@@ -405,9 +404,8 @@ lay_no_comments(Node, Ctxt) ->
             %%       attribute name.
             N = erl_syntax:variable([$- | erl_syntax:atom_name(
                                               erl_syntax:attribute_name(Node))]),
-            D = case attribute_name(Node) of
-                    Tag when Tag =:= spec; Tag =:= callback ->
-                        [SpecTuple] = Args,
+            D = case {attribute_name(Node), erl_syntax:attribute_arguments(Node)} of
+                    {Tag, [SpecTuple]} when Tag =:= spec; Tag =:= callback ->
                         [FuncName, FuncTypes] = erl_syntax:tuple_elements(SpecTuple),
                         Name = get_func_node(FuncName),
                         Types = concrete_dodging_macros(FuncTypes),
@@ -425,15 +423,13 @@ lay_no_comments(Node, Ctxt) ->
                                               Ctxt1#ctxt.break_indent),
                                        D1)
                         end;
-                    Tag when Tag =:= type; Tag =:= opaque ->
-                        [TypeTuple] = Args,
+                    {Tag, [TypeTuple]} when Tag =:= type; Tag =:= opaque ->
                         [Name, Type, Elements] = erl_syntax:tuple_elements(TypeTuple),
                         As = concrete_dodging_macros(Elements),
                         D1 = follow(lay(N, Ctxt1), lay_application(Name, As, Ctxt1)),
                         D2 = lay(concrete_dodging_macros(Type), Ctxt1),
                         lay_double_colon(D1, D2, Ctxt1);
-                    Tag when Tag =:= export_type; Tag =:= optional_callbacks ->
-                        [FuncNames] = Args,
+                    {Tag, [FuncNames]} when Tag =:= export_type; Tag =:= optional_callbacks ->
                         As = unfold_function_names(FuncNames),
 
                         %% We force inlining of list items and use inline_attributes to
@@ -443,23 +439,21 @@ lay_no_comments(Node, Ctxt) ->
                                        inline_items = Ctxt1#ctxt.inline_attributes},
                         beside(lay(N, Ctxt1),
                                beside(text("("), beside(lay(As, Ctxt2), lay_text_float(")"))));
-                    on_load ->
-                        [FuncName] = Args,
+                    {on_load, [FuncName]} ->
                         As = unfold_function_name(FuncName),
                         beside(lay(N, Ctxt1), beside(lay_text_float(" "), lay(As, Ctxt1)));
-                    format ->
-                        [Opts] = Args, % Always a single map
+                    {format, [Opts]} -> % Always a single map
                         D1 = lay(N, Ctxt),
                         As = lay(Opts, Ctxt),
                         beside(D1, beside(lay_text_float(" "), As));
-                    export ->
+                    {export, Args} ->
                         %% We force inlining of list items and use inline_attributes to
                         %% format the lists within these attributes
                         Ctxt2 =
                             Ctxt1#ctxt{force_indentation = true,
                                        inline_items = Ctxt1#ctxt.inline_attributes},
                         lay_application(N, Args, Ctxt2);
-                    Tag
+                    {Tag, Args}
                         when Tag =:= dialyzer;
                              Tag =:= mixin;
                              Tag =:= ignore_xref;
@@ -468,9 +462,20 @@ lay_no_comments(Node, Ctxt) ->
                         %% because the parser doesn't recognize them as such.
                         Ctxt2 = Ctxt1#ctxt{force_arity_qualifiers = true},
                         lay_application(N, Args, Ctxt2);
-                    _ when Args =:= none ->
+                    {_, none} ->
                         lay(N, Ctxt1);
-                    _ ->
+                    {_, [Arg]} ->
+                        case erl_syntax:type(Arg) == atom andalso erl_syntax:concrete(Arg) == ignore
+                        of
+                            true ->
+                                % handle stuff like -elvis ignore.
+                                D1 = lay(N, Ctxt),
+                                As = lay(Arg, Ctxt),
+                                beside(D1, beside(lay_text_float(" "), As));
+                            false ->
+                                lay_application(N, [Arg], Ctxt1)
+                        end;
+                    {_, Args} ->
                         lay_application(N, Args, Ctxt1)
                 end,
             beside(D, lay_text_float("."));
