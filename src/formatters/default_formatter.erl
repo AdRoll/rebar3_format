@@ -366,12 +366,7 @@ lay_no_comments(Node, Ctxt) ->
                     % We force inlining here, to prevent fun() -> x end to use 3 lines
                     % if inline_simple_funs is true. Otherwise treat them as the rest
                     % of the code
-                    DClause =
-                        lay(Clause,
-                            Ctxt1#ctxt{inline_clause_bodies =
-                                           Ctxt1#ctxt.inline_simple_funs
-                                           orelse Ctxt1#ctxt.inline_clause_bodies,
-                                       clause = simple_fun_expr}),
+                    DClause = lay(Clause, Ctxt1#ctxt{clause = simple_fun_expr}),
                     sep([beside(text("fun"), DClause), text("end")]);
                 Clauses ->
                     lay_fun_sep(lay_clauses(Clauses, fun_expr, Ctxt1), Ctxt1)
@@ -1119,7 +1114,12 @@ make_simple_fun_clause(P, G, B, Ctxt) ->
 
     % Since this anonymous fun has a single clause, we don't need to indent its
     % body _that_ much
-    make_case_clause(D, G, B, Ctxt#ctxt{break_indent = 0}).
+    append_clause_body(B,
+                       append_guard(G, D, Ctxt),
+                       Ctxt#ctxt{inline_clause_bodies =
+                                     Ctxt#ctxt.inline_simple_funs
+                                     orelse Ctxt#ctxt.inline_clause_bodies,
+                                 break_indent = 0}).
 
 make_fun_clause(P, G, B, Ctxt) ->
     make_fun_clause(none, P, G, B, Ctxt).

@@ -68,3 +68,12 @@ try_expr(Inline) ->
            rebar3, formatter]
     end.
 
+simple_fun_expr() ->
+    fun() ->
+        case with:some() of
+            clauses ->
+                that:should();
+            be ->
+                indented
+        end
+    end.
