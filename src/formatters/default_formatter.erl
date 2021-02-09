@@ -67,6 +67,7 @@
          spaces_around_arguments = false :: boolean(),
          spaces_around_fields = false :: boolean(),
          unquote_atoms = true :: boolean(),
+         truncate_strings = false :: boolean(),
          parenthesize_infix_operations = false :: boolean(),
          empty_lines = [] :: [pos_integer()],
          encoding = epp:default_encoding() :: epp:source_encoding()}).
@@ -155,6 +156,7 @@ layout(Node, EmptyLines, Options) ->
               parenthesize_infix_operations =
                   maps:get(parenthesize_infix_operations, Options, false),
               unquote_atoms = maps:get(unquote_atoms, Options, true),
+              truncate_strings = maps:get(truncate_strings, Options, false),
               spaces_around_arguments = maps:get(spaces_around_arguments, Options, false),
               spaces_around_fields = maps:get(spaces_around_fields, Options, false),
               empty_lines = EmptyLines,
@@ -1011,25 +1013,42 @@ needs_parentheses(Prec, Ctxt) ->
 lay_string(Node, Ctxt) ->
     S0 = erl_syntax:string_literal(Node, Ctxt#ctxt.encoding),
     Txt = get_node_text(Node),
-    S = try {erl_scan:string(S0), erl_scan:string(Txt)} of
+    S = try {interpret_string(S0), interpret_string(Txt)} of
             {Same, Same} ->
                 %% They're 'semantically' the same, but syntactically different
                 Txt;
             {_, _} ->
-                %% They're 'semantically' different. This might be the case when
-                %% the parser truncates a multi-line string. Or if the node text is
-                %% undefined.
+                %% They're 'semantically' different. We couldn't parse the text
+                %% correctly.
                 S0
         catch
             _:_ ->
                 %% Probably malformed node text
                 S0
         end,
+    lay_string_lines(string_lines(S), Ctxt).
 
+interpret_string(S) ->
+    {ok, Tokens, _} = erl_scan:string(S),
+    erl_parse:parse_exprs(Tokens ++ [{dot, 0}]).
+
+string_lines([$\" | S0]) ->
+    [$\" | S1] = lists:reverse(S0),
+    Ls = string:split(
+             lists:reverse(S1), "\"\n\"", all),
+    [[$\" | L] ++ [$\"] || L <- Ls].
+
+lay_string_lines([S], Ctxt) ->
+    lay_string_line(S, Ctxt);
+lay_string_lines([S | Ss], Ctxt) ->
+    above(lay_string_line(S, Ctxt), lay_string_lines(Ss, Ctxt)).
+
+lay_string_line(S, #ctxt{truncate_strings = true, ribbon = Ribbon}) ->
     %% S includes leading/trailing double-quote characters. The segment
     %% width is 2/3 of the ribbon width - this seems to work well.
-    W = Ctxt#ctxt.ribbon * 2 div 3,
-    lay_string(S, length(S), W).
+    lay_string(S, length(S), Ribbon * 2 div 3);
+lay_string_line(S, _) ->
+    text(S).
 
 lay_string(S, L, W) when L > W, W > 0 ->
     %% Note that L is the minimum, not the exact, printed length.
@@ -1037,8 +1056,7 @@ lay_string(S, L, W) when L > W, W > 0 ->
         {_S1, ""} ->
             text(S);
         {S1, S2} ->
-            above(text(S1 ++ "\""),
-                  lay_string([$" | S2], L - W + 1, W))  %" stupid emacs
+            above(text(S1 ++ "\""), lay_string([$" | S2], L - W + 1, W))
     end;
 lay_string(S, _L, _W) ->
     text(S).

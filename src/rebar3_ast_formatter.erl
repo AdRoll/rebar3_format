@@ -40,7 +40,7 @@ format(File, Formatter, Opts) ->
 
 get_ast(File, Opts) ->
     DodgerOpts =
-        [{scan_opts, [text]}, no_fail]
+        [{scan_opts, [text]}, no_fail, compact_strings]
         ++ [parse_macro_definitions || maps:get(parse_macro_definitions, Opts, true)],
     case ktn_dodger:parse_file(File, DodgerOpts) of
         {ok, AST} ->

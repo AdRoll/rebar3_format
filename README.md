@@ -67,6 +67,9 @@ The plugin supports the following configuration options in the `format` section 
         + `unquote_atoms` (`boolean()`):
             * Specifies whether the formatter should remove quotes from atoms that don't need them (e.g. `'this_one'`) or not.
             * The default value is `true`, i.e. the formatter won't preserve your quotes if they're not needed, unless you explicitely ask for.
+        + `truncate_strings` (`boolean()`):
+            * Specifies whether the formater should accomodate long strings into multiple lines using Erlang's consecutive string syntax. This is what the `otp_formatter` does, turning a long string into multiple same-length strings one per row to respect `paper` and `ribbon`.
+            * The default value is `false`, i.e. the formatter will keep the strings as it finds them.
         + `inline_attributes` (`inlining()`):
             * Specifies the desired behavior for inlining attributes with lists, like `-export`, `-export_type` and `-optional_callbacks`.
             * See `inlining()` type definition below for a list of options.
