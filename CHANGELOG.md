@@ -1,5 +1,25 @@
 # Changelog
 
+## [0.9.0](https://github.com/AdRoll/rebar3_format/tree/0.9.0) (2021-02-10)
+
+[Full Changelog](https://github.com/AdRoll/rebar3_format/compare/0.8.2...0.9.0)
+
+**Fixed bugs:**
+
+- inline\_simple\_funs overrides inline\_clause\_bodies [\#223](https://github.com/AdRoll/rebar3_format/issues/223)
+
+**Closed issues:**
+
+- Remove parentheses on simple attributes [\#227](https://github.com/AdRoll/rebar3_format/issues/227)
+- Don't rewrite strings [\#55](https://github.com/AdRoll/rebar3_format/issues/55)
+
+**Merged pull requests:**
+
+- Fix \#227: Don't put parentheses around 'ignore' [\#228](https://github.com/AdRoll/rebar3_format/pull/228) ([elbrujohalcon](https://github.com/elbrujohalcon))
+- \[Fix \#223\] Don't let inline\_simple\_funs affect inline\_clause\_bodies [\#226](https://github.com/AdRoll/rebar3_format/pull/226) ([elbrujohalcon](https://github.com/elbrujohalcon))
+- \[Fix \#55\] Properly handle contiguous strings… [\#225](https://github.com/AdRoll/rebar3_format/pull/225) ([elbrujohalcon](https://github.com/elbrujohalcon))
+- Kill dead code with fire 🔥 [\#224](https://github.com/AdRoll/rebar3_format/pull/224) ([elbrujohalcon](https://github.com/elbrujohalcon))
+
 ## [0.8.2](https://github.com/AdRoll/rebar3_format/tree/0.8.2) (2020-11-30)
 
 [Full Changelog](https://github.com/AdRoll/rebar3_format/compare/0.8.1...0.8.2)
