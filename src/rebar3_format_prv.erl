@@ -79,7 +79,13 @@ get_files(Args, State) ->
                 FormatConfig = rebar_state:get(State, format, []),
                 case proplists:get_value(files, FormatConfig, undefined) of
                     undefined ->
-                        ["src/**/*.[he]rl"];
+                        ["include/**/*.[he]rl",
+                         "include/**/*.app.src",
+                         "src/**/*.[he]rl",
+                         "src/**/*.app.src",
+                         "test/**/*.[he]rl",
+                         "test/**/*.app.src",
+                         "*.config"];
                     Wildcards ->
                         Wildcards
                 end;

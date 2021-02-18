@@ -75,9 +75,7 @@ get_comments(File) ->
     erl_comment_scan:file(File).
 
 format(File, AST, Formatter, Comments, Opts) ->
-    WithComments =
-        erl_recomment:recomment_forms(
-            erl_syntax:form_list(AST), Comments),
+    WithComments = erl_recomment:recomment_forms(AST, Comments),
     Formatted = Formatter:format(WithComments, empty_lines(File), Opts),
     insert_last_line(iolist_to_binary(Formatted)).
 

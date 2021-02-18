@@ -675,7 +675,12 @@ lay_no_comments(Node, Ctxt) ->
             D2 = lay(erl_syntax:size_qualifier_argument(Node), Ctxt1),
             beside(D1, beside(text(":"), D2));
         text ->
-            text(erl_syntax:text_string(Node));
+            case erl_syntax:get_ann(Node) of
+                [expression_dot] -> % see maybe_append/3
+                    empty();
+                _ ->
+                    text(erl_syntax:text_string(Node))
+            end;
         typed_record_field ->
             {_, Prec, _} = type_inop_prec('::'),
             Ctxt1 = reset_prec(Ctxt),
@@ -1337,9 +1342,26 @@ is_qualified_function_composition(Outside, [FirstArg | _]) ->
 seq([H], _Separator, Ctxt, Fun) ->
     [Fun(H, Ctxt)];
 seq([H | T], Separator, Ctxt, Fun) ->
-    [maybe_append(Separator, Fun(H, Ctxt)) | seq(T, Separator, Ctxt, Fun)];
+    [maybe_append(hd(T), Separator, Fun(H, Ctxt)) | seq(T, Separator, Ctxt, Fun)];
 seq([], _, _, _) ->
     [empty()].
+
+maybe_append(Next, Suffix, D) ->
+    try erl_syntax:type(Next) of
+        text ->
+            case erl_syntax:get_ann(Next) of
+                % This is introduced by ktn_dodger when parsing non-module files (e.g. app.src)
+                [expression_dot] ->
+                    beside(D, lay_text_float("."));
+                _ ->
+                    maybe_append(Suffix, D)
+            end;
+        _ ->
+            maybe_append(Suffix, D)
+    catch
+        error:{badarg, Next} -> % Sometimes lay_items is called with documents, not nodes.
+            maybe_append(Suffix, D)
+    end.
 
 maybe_append(none, D) ->
     D;
