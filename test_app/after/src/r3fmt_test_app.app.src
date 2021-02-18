@@ -1,0 +1,10 @@
+{application,
+ r3fmt_test_app,
+ [{description, "A test app for the rebar3 format plugin"},
+  {vsn, "0.0.1"},
+  {registered, []},
+  {applications, [kernel, stdlib]},
+  {env, []},
+  {modules, []},
+  {mod, {test_app, []}},
+  {licenses, ["MIT"]}]}.
