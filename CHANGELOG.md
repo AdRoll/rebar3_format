@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.10.0](https://github.com/AdRoll/rebar3_format/tree/0.10.0) (2021-02-18)
+
+[Full Changelog](https://github.com/AdRoll/rebar3_format/compare/0.9.0...0.10.0)
+
+**Implemented enhancements:**
+
+- Add inline\_return\_spec to enforce breaking on spec and callback [\#229](https://github.com/AdRoll/rebar3_format/issues/229)
+
+**Closed issues:**
+
+- Support formatting rebar.config [\#86](https://github.com/AdRoll/rebar3_format/issues/86)
+
+**Merged pull requests:**
+
+- \[\#86\] Add support for non-module files [\#230](https://github.com/AdRoll/rebar3_format/pull/230) ([elbrujohalcon](https://github.com/elbrujohalcon))
+
 ## [0.9.0](https://github.com/AdRoll/rebar3_format/tree/0.9.0) (2021-02-10)
 
 [Full Changelog](https://github.com/AdRoll/rebar3_format/compare/0.8.2...0.9.0)
@@ -11,6 +27,7 @@
 **Closed issues:**
 
 - Remove parentheses on simple attributes [\#227](https://github.com/AdRoll/rebar3_format/issues/227)
+- Don't put every infix operator in columns [\#219](https://github.com/AdRoll/rebar3_format/issues/219)
 - Don't rewrite strings [\#55](https://github.com/AdRoll/rebar3_format/issues/55)
 
 **Merged pull requests:**
@@ -19,19 +36,12 @@
 - \[Fix \#223\] Don't let inline\_simple\_funs affect inline\_clause\_bodies [\#226](https://github.com/AdRoll/rebar3_format/pull/226) ([elbrujohalcon](https://github.com/elbrujohalcon))
 - \[Fix \#55\] Properly handle contiguous strings… [\#225](https://github.com/AdRoll/rebar3_format/pull/225) ([elbrujohalcon](https://github.com/elbrujohalcon))
 - Kill dead code with fire 🔥 [\#224](https://github.com/AdRoll/rebar3_format/pull/224) ([elbrujohalcon](https://github.com/elbrujohalcon))
+- \[Fix \#219\] Don't indent right after an operator [\#221](https://github.com/AdRoll/rebar3_format/pull/221) ([elbrujohalcon](https://github.com/elbrujohalcon))
+- Upgrade katana-code [\#220](https://github.com/AdRoll/rebar3_format/pull/220) ([elbrujohalcon](https://github.com/elbrujohalcon))
 
 ## [0.8.2](https://github.com/AdRoll/rebar3_format/tree/0.8.2) (2020-11-30)
 
 [Full Changelog](https://github.com/AdRoll/rebar3_format/compare/0.8.1...0.8.2)
-
-**Closed issues:**
-
-- Don't put every infix operator in columns [\#219](https://github.com/AdRoll/rebar3_format/issues/219)
-
-**Merged pull requests:**
-
-- \[Fix \#219\] Don't indent right after an operator [\#221](https://github.com/AdRoll/rebar3_format/pull/221) ([elbrujohalcon](https://github.com/elbrujohalcon))
-- Upgrade katana-code [\#220](https://github.com/AdRoll/rebar3_format/pull/220) ([elbrujohalcon](https://github.com/elbrujohalcon))
 
 ## [0.8.1](https://github.com/AdRoll/rebar3_format/tree/0.8.1) (2020-11-19)
 
