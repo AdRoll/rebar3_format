@@ -737,7 +737,7 @@ lay_no_comments(Node, Ctxt) ->
             Arguments = erl_syntax:type_application_arguments(Node),
 
             %% Prefer shorthand notation.
-            case erl_syntax_lib:analyze_type_application(Node) of
+            try erl_syntax_lib:analyze_type_application(Node) of
                 {nil, 0} ->
                     text("[]");
                 {list, 1} ->
@@ -749,6 +749,9 @@ lay_no_comments(Node, Ctxt) ->
                     D1 = lay(A, reset_prec(Ctxt)),
                     beside(text("["), beside(D1, text(", ...]")));
                 _ ->
+                    lay_application(Name, Arguments, Ctxt)
+            catch
+                syntax_error -> % Damn macros!!
                     lay_application(Name, Arguments, Ctxt)
             end;
         bitstring_type ->
