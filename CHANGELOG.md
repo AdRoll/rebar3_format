@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.10.1](https://github.com/AdRoll/rebar3_format/tree/0.10.1) (2021-02-19)
+
+[Full Changelog](https://github.com/AdRoll/rebar3_format/compare/0.10.0...0.10.1)
+
+**Fixed bugs:**
+
+- Macros in module qualifiers within types [\#231](https://github.com/AdRoll/rebar3_format/issues/231)
+
+**Merged pull requests:**
+
+- \[Fix \#231\] Handle macros in specs and types [\#232](https://github.com/AdRoll/rebar3_format/pull/232) ([elbrujohalcon](https://github.com/elbrujohalcon))
+
 ## [0.10.0](https://github.com/AdRoll/rebar3_format/tree/0.10.0) (2021-02-18)
 
 [Full Changelog](https://github.com/AdRoll/rebar3_format/compare/0.9.0...0.10.0)
