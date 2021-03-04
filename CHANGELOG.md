@@ -16,10 +16,6 @@
 
 [Full Changelog](https://github.com/AdRoll/rebar3_format/compare/0.9.0...0.10.0)
 
-**Implemented enhancements:**
-
-- Add inline\_return\_spec to enforce breaking on spec and callback [\#229](https://github.com/AdRoll/rebar3_format/issues/229)
-
 **Closed issues:**
 
 - Support formatting rebar.config [\#86](https://github.com/AdRoll/rebar3_format/issues/86)
