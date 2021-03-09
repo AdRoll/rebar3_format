@@ -126,7 +126,7 @@ The plugin supports the following configuration options in the `format` section 
 * `ignore` (`[file:filename_all()]`):
     - List of wildcard patterns representing the files that the formatter will ignore when formatting.
     - Note that it will ignore the files set for formatting either with the `files` option or using `--files` in the command line if they match one of the given wildcards.
-    - You can also ignore a specific file adding the attribute `-format(ignore)` in it.
+    - You can also ignore a specific file adding the attribute `-format(ignore).` in it or the comment `% @format ignore.`
 
 #### Configuration Types
 
@@ -144,6 +144,14 @@ You can tweak any of the formatter options for a particular file, using the `for
 ```erlang
 -format(#{paper => 80}).
 ```
+
+You can also achieve the same effect using `@format` in a comment, like this:
+
+```erlang
+% @format #{paper => 80}.
+```
+
+We're very strict with the parsing of comments, tho. You can use multiple `%` signs if you want, but you have to place the `@` sign exactly one space after the last `%` **and** you have to place the whole map with options in a single line (although you can have multiple `@format` comments per file) that **has to end** in period (`.`).
 
 ## Test
 

@@ -71,8 +71,7 @@ action(#{opts := Opts}) ->
 %% @doc We need to use quick_parse_file/1 here because the returned format
 %%      is much more manageable than the one returned by parse_file/1
 apply_per_file_opts(File, Opts) ->
-    {ok, AST} = epp_dodger:quick_parse_file(File),
-    FileOpts = [Opt || {attribute, _, format, Opt} <- AST],
+    FileOpts = attribute_opts(File) ++ comment_opts(File),
     case lists:member(ignore, FileOpts) of
         true ->
             ignore;
@@ -80,3 +79,26 @@ apply_per_file_opts(File, Opts) ->
             MergeF = fun(Map, Acc) -> maps:merge(Acc, Map) end,
             lists:foldl(MergeF, Opts, FileOpts)
     end.
+
+attribute_opts(File) ->
+    {ok, AST} = epp_dodger:quick_parse_file(File),
+    [Opt || {attribute, _, format, Opt} <- AST].
+
+comment_opts(File) ->
+    AllComments =
+        [string:trim(Comment, leading, [$%])
+         || {_, _, _, Comments} <- erl_comment_scan:file(File), Comment <- Comments],
+    lists:filtermap(fun parse_comment/1, AllComments).
+
+parse_comment(" @format " ++ FormatOptsAsString) ->
+    try
+        {ok, Scanned, _} = erl_scan:string(FormatOptsAsString),
+        {ok, Parsed} = erl_parse:parse_exprs(Scanned),
+        {value, Evaluated, []} = erl_eval:exprs(Parsed, orddict:new()),
+        {true, Evaluated}
+    catch
+        error:_ ->
+            false
+    end;
+parse_comment(_) ->
+    false.
