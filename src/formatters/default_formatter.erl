@@ -397,14 +397,14 @@ lay_no_comments(Node, Ctxt) ->
             %% a period. If the arguments is `none', we only output the
             %% attribute name, without following parentheses.
             Ctxt1 = reset_prec(Ctxt),
+            Tag = attribute_name(Node),
 
             %% NOTE: The preceding $- must be part of the name of the attribute.
             %%       That's because we want indentation to start counting from
             %%       that character on, and not from the first character on the
             %%       attribute name.
-            N = erl_syntax:variable([$- | erl_syntax:atom_name(
-                                              erl_syntax:attribute_name(Node))]),
-            D = case {attribute_name(Node), erl_syntax:attribute_arguments(Node)} of
+            N = erl_syntax:variable([$- | atom_to_list(Tag)]),
+            D = case {Tag, erl_syntax:attribute_arguments(Node)} of
                     {Tag, [SpecTuple]} when Tag =:= spec; Tag =:= callback ->
                         [FuncName, FuncTypes] = erl_syntax:tuple_elements(SpecTuple),
                         Name = get_func_node(FuncName),
@@ -865,12 +865,14 @@ lay_no_comments(Node, Ctxt) ->
 
 attribute_name(Node) ->
     N = erl_syntax:attribute_name(Node),
-    try
-        erl_syntax:concrete(N)
-    catch
-        _:_ ->
-            N
-    end.
+    Name =
+        case erl_syntax:type(N) of
+            macro ->
+                erl_syntax:atom([$? | macro_name(N)]);
+            _ ->
+                N
+        end,
+    erl_syntax:concrete(Name).
 
 is_subtype(Name, [Var, _]) ->
     erl_syntax:is_atom(Name, is_subtype) andalso erl_syntax:type(Var) =:= variable;
@@ -901,11 +903,19 @@ unfold_function_name(Tuple) ->
         atom ->
             erl_syntax:arity_qualifier(Name, Arity);
         macro ->
-            MacroName = erl_syntax:macro_name(Name),
-            VarName0 = erl_syntax:variable_name(MacroName),
+            VarName0 = macro_name(Name),
             VarName = list_to_atom("?" ++ atom_to_list(VarName0)),
             Var = erl_syntax:variable(VarName),
             erl_syntax:arity_qualifier(Var, Arity)
+    end.
+
+macro_name(Macro) ->
+    MacroName = erl_syntax:macro_name(Macro),
+    case erl_syntax:type(MacroName) of
+        atom ->
+            erl_syntax:atom_name(MacroName);
+        variable ->
+            erl_syntax:variable_name(MacroName)
     end.
 
 concrete_dodging_macros(Nodes) ->
@@ -918,9 +928,7 @@ dodge_macros(Type) ->
 dodge_macro(T) ->
     case erl_syntax:type(T) of
         macro ->
-            Var = erl_syntax:macro_name(T),
-            VarName = erl_syntax:variable_name(Var),
-            erl_syntax:atom(VarName);
+            erl_syntax:atom(macro_name(T));
         _ ->
             T
     end.
@@ -1021,17 +1029,13 @@ needs_parentheses(Prec, Ctxt) ->
 lay_string(Node, Ctxt) ->
     S0 = erl_syntax:string_literal(Node, Ctxt#ctxt.encoding),
     Txt = get_node_text(Node),
-    S = try {interpret_string(S0), interpret_string(Txt)} of
+    S = case {interpret_string(S0), interpret_string(Txt)} of
             {Same, Same} ->
                 %% They're 'semantically' the same, but syntactically different
                 Txt;
             {_, _} ->
                 %% They're 'semantically' different. We couldn't parse the text
                 %% correctly.
-                S0
-        catch
-            _:_ ->
-                %% Probably malformed node text
                 S0
         end,
     lay_string_lines(string_lines(S), Ctxt).

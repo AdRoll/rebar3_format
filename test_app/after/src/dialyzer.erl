@@ -8,6 +8,7 @@
 -dialyzer(unmatched_returns).
 
 -mixin([{a_module, [new/1, feature/2, log_params/2]}]).
+-mixin([{a_module, except, [new/1, feature/2, log_params/2]}]).
 
 -compile({inline, [something/4]}).
 
