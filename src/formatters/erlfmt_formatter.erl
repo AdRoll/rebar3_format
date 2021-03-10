@@ -32,14 +32,15 @@ format_file(File, nostate, OptionsMap) ->
                         ignore
                 end
         end,
+    Verbosity = maps:get(verbose, OptionsMap, false),
     Options =
         case maps:get(print_width, OptionsMap, undefined) of
             undefined ->
-                [{pragma, Pragma}];
+                [{pragma, Pragma}, {verbose, Verbosity}];
             Width ->
                 [{width, Width}, % support for v0.7.0
                  {print_width, Width},
-                 {pragma, Pragma}]
+                 {pragma, Pragma}, {verbose, Verbosity}]
         end,
 
     {Result, NewCode} =
