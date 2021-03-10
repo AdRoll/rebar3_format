@@ -122,7 +122,7 @@ old_version(_Config) ->
     {ok, _} = rebar3_format_prv:do(Args2).
 
 error(_Config) ->
-    erlfmt:validator(fun(File, _) -> {error, reason} end),
+    erlfmt:validator(fun(_, _) -> {error, reason} end),
     Args1 = rebar_state:command_parsed_args(init(), {[], something}),
     {error, _} = rebar3_format_prv:do(Args1).
 
