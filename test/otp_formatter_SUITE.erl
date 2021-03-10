@@ -1,9 +1,9 @@
 -module(otp_formatter_SUITE).
 
--export([all/0, test_app/1]).
+-export([all/0, test_app/1, error/1, modified_ast/1]).
 
 all() ->
-    [test_app].
+    [test_app, error, modified_ast].
 
 test_app(_Config) ->
     ok = file:set_cwd("../../../../test_app"),
@@ -37,7 +37,30 @@ test_app(_Config) ->
     {ok, _} = format(State2),
     {error, _} = verify(State2),
     ok = file:set_cwd("formatted_as_otp"),
-    {ok, _} = verify(State2).
+    {ok, _} = verify(State2),
+    {ok, _} = rebar3_format_prv:do(State2).
+
+error(_Config) ->
+    ok = file:set_cwd("../../../../test_app"),
+    {ok, State1} =
+        rebar3_format:init(
+            rebar_state:new()),
+    Formatter = {formatter, otp_formatter},
+    State2 = rebar_state:set(State1, format, [Formatter]),
+    %% OTP formatter can't parse some of our files in test_app/src because of macros
+    {error, _} = verify(State2).
+
+%% otp_formatter messes up with some files. We have a mechanism to catch that.
+modified_ast(_Config) ->
+    ok = file:set_cwd("../../../../test_app"),
+    {ok, State1} =
+        rebar3_format:init(
+            rebar_state:new()),
+    Files = {files, ["src/dodge_macros.erl"]},
+    Formatter = {formatter, otp_formatter},
+    State2 = rebar_state:set(State1, format, [Files, Formatter]),
+    {error, Error} = format(State2),
+    {match, _} = re:run(Error, "modified_ast").
 
 verify(State) ->
     rebar3_format_prv:do(

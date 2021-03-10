@@ -14,7 +14,7 @@
 -spec format(file:filename_all(), module(), rebar3_formatter:opts()) ->
                 rebar3_formatter:result().
 format(File, Formatter, Opts) ->
-    AST = get_ast(File, Opts),
+    {ok, AST} = get_ast(File, Opts),
     QuickAST = get_quick_ast(File),
     Comments = get_comments(File),
     {ok, Original} = file:read_file(File),
@@ -42,25 +42,11 @@ get_ast(File, Opts) ->
     DodgerOpts =
         [{scan_opts, [text]}, no_fail, compact_strings]
         ++ [parse_macro_definitions || maps:get(parse_macro_definitions, Opts, true)],
-    case ktn_dodger:parse_file(File, DodgerOpts) of
-        {ok, AST} ->
-            case [Error || {error, Error} <- AST] of
-                [] ->
-                    AST;
-                [Error | _] ->
-                    erlang:error({cant_parse, File, Error})
-            end;
-        {error, OpenError} ->
-            erlang:error({cant_parse, File, OpenError})
-    end.
+    ktn_dodger:parse_file(File, DodgerOpts).
 
 get_quick_ast(File) ->
-    case ktn_dodger:quick_parse_file(File) of
-        {ok, AST} ->
-            remove_line_numbers(AST);
-        {error, OpenError} ->
-            erlang:error({cant_parse, File, OpenError})
-    end.
+    {ok, AST} = ktn_dodger:quick_parse_file(File),
+    remove_line_numbers(AST).
 
 %% @doc Removes line numbers from ASTs to allow for "semantic" comparison
 remove_line_numbers(AST) when is_list(AST) ->
