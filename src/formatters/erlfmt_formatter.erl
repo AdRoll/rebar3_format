@@ -40,7 +40,8 @@ format_file(File, nostate, OptionsMap) ->
             Width ->
                 [{width, Width}, % support for v0.7.0
                  {print_width, Width},
-                 {pragma, Pragma}, {verbose, Verbosity}]
+                 {pragma, Pragma},
+                 {verbose, Verbosity}]
         end,
 
     {Result, NewCode} =
