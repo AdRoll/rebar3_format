@@ -33,7 +33,10 @@ format(File, Formatter, Opts) ->
             case get_quick_ast(NewFile) of
                 QuickAST ->
                     Result;
-                _ ->
+                NewAST ->
+                    catch error_logger:error_report([{modified_ast, File},
+                                                     {removed, QuickAST -- NewAST},
+                                                     {added, NewAST -- QuickAST}]),
                     erlang:error({modified_ast, File, NewFile})
             end
     end.

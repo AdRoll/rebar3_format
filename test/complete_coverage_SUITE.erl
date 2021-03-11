@@ -3,7 +3,8 @@
 
 -export([all/0]).
 -export([comment_with_no_padding/1, very_empty_comment/1, smooth_operators/1,
-         lost_clause/1, markers/1, balanced_parentheses/1, strange_constraint/1, funcy_specs/1]).
+         lost_clause/1, markers/1, balanced_parentheses/1, strange_constraint/1, funcy_specs/1,
+         emtpy_if/1]).
 
 all() ->
     [comment_with_no_padding,
@@ -13,7 +14,8 @@ all() ->
      markers,
      balanced_parentheses,
      strange_constraint,
-     funcy_specs].
+     funcy_specs,
+     emtpy_if].
 
 comment_with_no_padding(_) ->
     Comment = erl_syntax:comment(["no padding"]),
@@ -39,8 +41,15 @@ lost_clause(_) ->
     "() ->\n" = format([erl_syntax:clause([], none, [])]).
 
 markers(_) ->
-    "** err **\n\n%% WARNING: warn\n\n" =
+    "** err **\n
+** Unknown Formatting Error: reason **\n
+** 1: Unknown Formatting Error: reason **\n
+** {2, no, format_error} **\n
+%% WARNING: warn\n\n" =
         format([erl_syntax:error_marker(err),
+                erl_syntax:error_marker({0, rebar3_format_prv, reason}), % uses format_error
+                erl_syntax:error_marker({1, rebar3_format_prv, reason}), % uses format_error
+                erl_syntax:error_marker({2, no, format_error}),
                 erl_syntax:warning_marker(warn),
                 erl_syntax:eof_marker()]).
 
@@ -67,6 +76,10 @@ funcy_specs(_) ->
                     [erl_syntax:tuple([erl_syntax:tuple([erl_syntax:macro(
                                                              erl_syntax:variable("O_o"))]),
                                        erl_syntax:list([])])])]).
+
+emtpy_if(_) ->
+    "if true ->\n       false\nend" =
+        format([erl_syntax:if_expr([erl_syntax:clause([], none, [erl_syntax:atom("false")])])]).
 
 format(Nodes) ->
     format(Nodes, #{}).
