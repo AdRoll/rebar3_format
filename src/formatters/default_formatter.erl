@@ -1553,8 +1553,6 @@ lay_clause_expressions([H | T], Ctxt, Fun) ->
 lay_clause_expressions([], _, _) ->
     empty().
 
-is_last_and_before_empty_line(H, [], #ctxt{empty_lines = EmptyLines}) ->
-    lists:member(get_pos(H) + 1, EmptyLines);
 is_last_and_before_empty_line(H, [H2 | _], #ctxt{empty_lines = EmptyLines}) ->
     H2Pos =
         case erl_syntax:get_precomments(H2) of
