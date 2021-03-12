@@ -116,7 +116,12 @@ format_file(File, nostate, Opts) ->
     rebar3_ast_formatter:format(File, ?MODULE, Opts).
 
 remove_tabs(Formatted) ->
-    binary:replace(Formatted, <<"\t">>, <<"        ">>, [global]).
+    case re:replace(Formatted, <<"\n\t">>, <<"        ">>, [global]) of
+        Formatted ->
+            Formatted;
+        Replaced ->
+            remove_tabs(Replaced)
+    end.
 
 remove_trailing_spaces(Formatted) ->
     re:replace(Formatted, <<" +\n">>, <<"\n">>, [global, {return, list}]).
@@ -1060,7 +1065,23 @@ lay_string_line(S, #ctxt{truncate_strings = true, ribbon = Ribbon}) ->
     %% width is 2/3 of the ribbon width - this seems to work well.
     lay_string(S, length(S), Ribbon * 2 div 3);
 lay_string_line(S, _) ->
-    text(S).
+    %% We need to replace \n\t here as a work around for how remove_tabs/1 works
+    %% It's a hack, but it makes the formatter consistent.
+    %% And it only affect strings that start with tab right after a newline.
+    %% We truly hope that there are not too many of those.
+    text(switch_tabs_after_newline(S)).
+
+switch_tabs_after_newline(String) ->
+    case re:replace(String,
+                    <<$\n, $\t>>,
+                    <<$\n, $\\, $\\, $t>>,
+                    [global, {return, list}, unicode])
+    of
+        String ->
+            String;
+        Replaced ->
+            switch_tabs_after_newline(Replaced)
+    end.
 
 lay_string(S, L, W) when L > W, W > 0 ->
     %% Note that L is the minimum, not the exact, printed length.

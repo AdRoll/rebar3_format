@@ -5,7 +5,7 @@
 -export [these/0, functions/0, shouldnt/0, be/0, inlined/0].
 
 -callback these() -> {elements, shouldnt, be, inlined}.
--callback functions() -> [should | "not" | be | inlined | either].
+-callback functions() -> [should | 'not' | be | inlined | either].
 -callback shouldnt() -> shouldnt.
 -callback be() -> ok.
 -callback inlined(even, If, they, have, arguments) -> If.
