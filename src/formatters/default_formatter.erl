@@ -116,7 +116,8 @@ format_file(File, nostate, Opts) ->
     rebar3_ast_formatter:format(File, ?MODULE, Opts).
 
 remove_tabs(Formatted) ->
-    case re:replace(Formatted, <<"\n\t">>, <<"        ">>, [global]) of
+    case re:replace(Formatted, <<"(\n *)\t">>, <<"\\1        ">>, [global, {return, binary}])
+    of
         Formatted ->
             Formatted;
         Replaced ->
