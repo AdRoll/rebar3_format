@@ -54,10 +54,6 @@ format_error({unformatted_files, Files}) ->
     lists:foldr(fun(File, Acc) -> [Acc, File, $\n] end,
                 "The following files are not properly formatted:\n",
                 Files);
-format_error({erl_parse, File, Error}) ->
-    Msg = "Error while parsing ~s: ~p.\n\tTry running with DEBUG=1 for "
-          "more information",
-    io_lib:format(Msg, [File, Error]);
 format_error(Reason) ->
     io_lib:format("Unknown Formatting Error: ~p", [Reason]).
 
@@ -72,7 +68,7 @@ get_action(Args) ->
 
 -spec get_files(proplists:proplist(), rebar_state:t()) -> [file:filename_all()].
 get_files(Args, State) ->
-    FilesFromArgs = [Value || {Key, Value} <- Args, Key == files],
+    FilesFromArgs = [Value || {files, Value} <- Args],
     Patterns =
         case FilesFromArgs of
             [] ->
@@ -140,9 +136,6 @@ format_files(Files, Formatter) ->
                     {error, {unformatted_files, ChangedFiles}}
             end
     catch
-        _:{cant_parse, File, {Line, erl_parse, Error}} ->
-            rebar_api:warn("Couldn't parse ~s:~p ~s", [File, Line, Error]),
-            {error, {erl_parse, File, Error}};
         _:Error:Stack ->
             rebar_api:warn("Error parsing files: ~p~nStack: ~p", [Error, Stack]),
             {error, Error}

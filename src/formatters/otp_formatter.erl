@@ -1190,12 +1190,6 @@ lay_clause_expressions([H | T], Ctxt) ->
     end;
 lay_clause_expressions([], _) -> empty().
 
-is_last_and_before_empty_line(H, [], #ctxt{empty_lines = EmptyLines}) ->
-    try
-        sets:is_element(erl_syntax:get_pos(H) + 1, EmptyLines)
-    catch
-        error:badarith -> false
-    end;
 is_last_and_before_empty_line(H, [H2 | _], #ctxt{empty_lines = EmptyLines}) ->
     try
         (erl_syntax:get_pos(H2) - erl_syntax:get_pos(H) >= 2)

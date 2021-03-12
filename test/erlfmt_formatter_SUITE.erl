@@ -1,10 +1,11 @@
 -module(erlfmt_formatter_SUITE).
 
 -export([all/0]).
--export([action/1, output_dir/1, pragma/1, print_width/1, old_version/1]).
+-export([action/1, files/1, output_dir/1, pragma/1, print_width/1, old_version/1,
+         error/1]).
 
 all() ->
-    [action, output_dir, pragma, print_width, old_version].
+    [action, files, output_dir, pragma, print_width, old_version, error].
 
 action(_Config) ->
     erlfmt:validator(fun(File, _) ->
@@ -23,6 +24,16 @@ action(_Config) ->
 
     erlfmt:validator(fun(_, _) -> {ok, ["-module minimal.\n"], []} end),
     {error, _} = rebar3_format_prv:do(Args1).
+
+files(_Config) ->
+    erlfmt:validator(fun(File, _) ->
+                        "a_file.erl" = filename:basename(File),
+                        {ok, ["-module(a_file).\n"], []}
+                     end),
+    Args1 =
+        rebar_state:command_parsed_args(init(),
+                                        {[{verify, true}, {files, ["src/a_file.erl"]}], something}),
+    {ok, _} = rebar3_format_prv:do(Args1).
 
 output_dir(_Config) ->
     erlfmt:validator(fun(File, _) ->
@@ -120,6 +131,11 @@ old_version(_Config) ->
                      end),
     Args2 = rebar_state:command_parsed_args(init(#{print_width => 50}), {[], something}),
     {ok, _} = rebar3_format_prv:do(Args2).
+
+error(_Config) ->
+    erlfmt:validator(fun(_, _) -> {error, reason} end),
+    Args1 = rebar_state:command_parsed_args(init(), {[], something}),
+    {error, _} = rebar3_format_prv:do(Args1).
 
 init() ->
     init(#{}).

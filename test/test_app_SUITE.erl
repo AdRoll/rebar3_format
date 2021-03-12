@@ -1,9 +1,9 @@
 -module(test_app_SUITE).
 
--export([all/0, test_app/1]).
+-export([all/0, test_app/1, no_good_files/1]).
 
 all() ->
-    [test_app].
+    [test_app, no_good_files].
 
 test_app(_Config) ->
     ok = file:set_cwd("../../../../test_app"),
@@ -28,6 +28,16 @@ test_app(_Config) ->
     {ok, _} = verify(State2),
     ok = file:set_cwd(".."),
     ok = git_diff().
+
+no_good_files(_Config) ->
+    ok = file:set_cwd("../../../../test_app"),
+    {ok, State1} =
+        rebar3_format:init(
+            rebar_state:new()),
+    Files = {files, ["a.broken.file", "a.non.existent.file"]},
+    State2 = rebar_state:set(State1, format, [Files]),
+    %% Our parsers don't crash on unparseable or non-existent files
+    {ok, _} = verify(State2).
 
 verify(State) ->
     rebar3_format_prv:do(

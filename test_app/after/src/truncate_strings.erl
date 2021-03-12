@@ -40,6 +40,51 @@ too_long() ->
     "a very very very long line that goes over the paper limit the "
     "quick brown fox jumps over the lazy dog, you see".
 
+with_tabs() ->
+    "a\tvery\tvery\tvery\tlong\tline\tthat\tgoes\tover\tthe\tpaper\tlimit\t"
+    "the\tquick\tbrown\tfox\tjumps\tover\tthe\tlazy\tdog,\tyou\tsee".
+
+with_special_chars() ->
+    "a\^Rvery\^Rvery\^Rvery\^Rlong\^Rline\^Rthat\^Rgoes\^Rover\^Rthe\^Rpa"
+    "per\^R\x{1}over\x{59}the\x{59}\x60quick\x6brown\x60fox\x60jumps\x60o"
+    "ver\x60the\x60lazy\x60dog,\x60you\x60see"
+    "something_something_something\123something_something_something\12som"
+    "ething_something_something\123something_something_something\32someth"
+    "ing_something_something".
+
+with_newlines() ->
+    "a\nvery\nvery\nvery\nlong\nline\nthat\ngoes\nover
+
+
+
+
+
+
+
+
+\n"
+    "
+
+
+
+
+
+
+
+
+
+
+
+
+
+    the\npaper\nlimit\nthe\nquick\nbrown\nfox\njumps\n"
+    "    over\nthe\nlazy\ndog,\nyou\nsee".
+
+with_escaped_chars() ->
+    "a \\tvery \\tvery \\tvery \\tlong \\tline \\tthat \\tgoes \\tover "
+    "\\tthe \\tpaper \\tlimit \\tthe \\tquick \\tbrown \\tfox \\tjumps "
+    "\\tover \\tthe \\tlazy \\tdog, \\tyou \\tsee".
+
 bad_indent() ->
     "misguided"
     "indentation".
