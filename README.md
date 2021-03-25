@@ -1,6 +1,6 @@
 # rebar3_format
 
-[![Build Status](https://api.travis-ci.com/AdRoll/rebar3_format.svg?branch=master)](https://travis-ci.com/AdRoll/rebar3_format)
+[![Build Status](https://api.travis-ci.com/AdRoll/rebar3_format.svg?branch=main)](https://travis-ci.com/AdRoll/rebar3_format)
 [![Hex pm](http://img.shields.io/hexpm/v/rebar3_format.svg?style=flat)](https://hex.pm/packages/rebar3_format)
 
 A rebar plugin for code formatting
@@ -198,7 +198,7 @@ The idea is to take advantage of `rebar3` profiles and write the following on yo
 Then whenever you're about to work on something, follow this ritual:
 
 ```bash
-git checkout master
+git checkout main
 git checkout -b my-branch
 rebar3 as brujo format
 # Work on your code...
