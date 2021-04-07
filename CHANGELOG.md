@@ -1,5 +1,27 @@
 # Changelog
 
+## [1.0.0](https://github.com/AdRoll/rebar3_format/tree/1.0.0) (2021-04-07)
+
+[Full Changelog](https://github.com/AdRoll/rebar3_format/compare/0.10.1...1.0.0)
+
+**Fixed bugs:**
+
+- Tabs in strings break the formatter [\#236](https://github.com/AdRoll/rebar3_format/issues/236)
+
+**Closed issues:**
+
+- Support for @format in comments [\#233](https://github.com/AdRoll/rebar3_format/issues/233)
+- We need to reorganize tests [\#197](https://github.com/AdRoll/rebar3_format/issues/197)
+- Add CLI [\#37](https://github.com/AdRoll/rebar3_format/issues/37)
+- Complete Coverage [\#21](https://github.com/AdRoll/rebar3_format/issues/21)
+
+**Merged pull requests:**
+
+- \[\#197\] Fix \#197: Organize Tests [\#238](https://github.com/AdRoll/rebar3_format/pull/238) ([elbrujohalcon](https://github.com/elbrujohalcon))
+- Rename master branch as main [\#237](https://github.com/AdRoll/rebar3_format/pull/237) ([elbrujohalcon](https://github.com/elbrujohalcon))
+- Improve test coverage [\#235](https://github.com/AdRoll/rebar3_format/pull/235) ([elbrujohalcon](https://github.com/elbrujohalcon))
+- \[\#233\] Fix \#233: Allow format options in comment form [\#234](https://github.com/AdRoll/rebar3_format/pull/234) ([elbrujohalcon](https://github.com/elbrujohalcon))
+
 ## [0.10.1](https://github.com/AdRoll/rebar3_format/tree/0.10.1) (2021-02-19)
 
 [Full Changelog](https://github.com/AdRoll/rebar3_format/compare/0.10.0...0.10.1)
