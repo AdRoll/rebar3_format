@@ -2,18 +2,20 @@
 
 -compile(export_all).
 
+%% receive...after...end is never a one-liner
 break_on_receive() ->
     receive
-        {this, will, be, indented} ->
-            but_this:is(short)
+        x ->
+            y
     after 1000 ->
-        this:too(should, go, below)
+        z
     end.
 
+%% try...of...after...end is never a one-liner
 break_on_try() ->
-    try this:short(statement) of
-        {things, cant, be} ->
-            {a, <<"one-liner">>}
+    try w of
+        x ->
+            y
     after
-        this:neither()
+        z
     end.
