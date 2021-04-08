@@ -1046,6 +1046,8 @@ lay_string(Node, Ctxt) ->
         end,
     lay_string_lines(string_lines(S), Ctxt).
 
+interpret_string(undefined) ->
+    undefined;
 interpret_string(S) ->
     {ok, Tokens, _} = erl_scan:string(S),
     erl_parse:parse_exprs(Tokens ++ [{dot, 0}]).

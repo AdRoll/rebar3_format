@@ -4,6 +4,8 @@
 
 -format #{inline_expressions => true}.
 
+-attr({with, "a string"}).
+
 all() ->
     heredoc(), superlong(), repeat(), multiple_calls(), characters().
 
