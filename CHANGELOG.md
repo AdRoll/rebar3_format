@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.0.1](https://github.com/AdRoll/rebar3_format/tree/1.0.1) (2021-04-08)
+
+[Full Changelog](https://github.com/AdRoll/rebar3_format/compare/1.0.0...1.0.1)
+
+**Fixed bugs:**
+
+- Strings in attributes crash the formatter [\#239](https://github.com/AdRoll/rebar3_format/issues/239)
+
+**Merged pull requests:**
+
+- \[\#239\] Fix \#239: Attributes with strings [\#241](https://github.com/AdRoll/rebar3_format/pull/241) ([elbrujohalcon](https://github.com/elbrujohalcon))
+
 ## [1.0.0](https://github.com/AdRoll/rebar3_format/tree/1.0.0) (2021-04-07)
 
 [Full Changelog](https://github.com/AdRoll/rebar3_format/compare/0.10.1...1.0.0)
@@ -17,9 +29,9 @@
 
 **Merged pull requests:**
 
+- Improve test coverage [\#235](https://github.com/AdRoll/rebar3_format/pull/235) ([elbrujohalcon](https://github.com/elbrujohalcon))
 - \[\#197\] Fix \#197: Organize Tests [\#238](https://github.com/AdRoll/rebar3_format/pull/238) ([elbrujohalcon](https://github.com/elbrujohalcon))
 - Rename master branch as main [\#237](https://github.com/AdRoll/rebar3_format/pull/237) ([elbrujohalcon](https://github.com/elbrujohalcon))
-- Improve test coverage [\#235](https://github.com/AdRoll/rebar3_format/pull/235) ([elbrujohalcon](https://github.com/elbrujohalcon))
 - \[\#233\] Fix \#233: Allow format options in comment form [\#234](https://github.com/AdRoll/rebar3_format/pull/234) ([elbrujohalcon](https://github.com/elbrujohalcon))
 
 ## [0.10.1](https://github.com/AdRoll/rebar3_format/tree/0.10.1) (2021-02-19)
