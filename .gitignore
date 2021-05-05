@@ -21,3 +21,4 @@ _build
 test_app/formatted
 test_app/formatted_as_otp
 doc/
+rebar3
