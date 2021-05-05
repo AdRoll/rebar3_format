@@ -470,8 +470,10 @@ lay_no_comments(Node, Ctxt) ->
                         lay_application(N, Args, Ctxt2);
                     {_, none} ->
                         lay(N, Ctxt1);
-                    {_, [Arg]} ->
-                        case erl_syntax:type(Arg) == atom andalso erl_syntax:concrete(Arg) == ignore
+                    {Tag, [Arg]} ->
+                        case Tag /= module
+                             andalso erl_syntax:type(Arg) == atom
+                             andalso erl_syntax:concrete(Arg) == ignore
                         of
                             true ->
                                 % handle stuff like -elvis ignore.

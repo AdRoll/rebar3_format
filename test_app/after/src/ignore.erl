@@ -1,0 +1,2 @@
+% ignore module
+-module(ignore).
