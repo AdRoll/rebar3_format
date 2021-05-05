@@ -2,6 +2,8 @@
 %%%      steamroller from old-reliable's steamroller.
 -module(steamroller).
 
+-hank([{unnecessary_function_arguments, [{opts, 2, 2}]}]).
+
 -export([opts/2, format_file/2, validator/1]).
 
 -spec opts(proplists:proplist(), rebar_state:t()) -> proplists:proplist().
