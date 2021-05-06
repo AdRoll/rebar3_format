@@ -1505,6 +1505,8 @@ number_from_text(Text, Default) ->
 
 lay_fields(Opening, Exprs, Ctxt = #ctxt{spaces_around_fields = false}, Fun) ->
     beside(Opening, beside(lay_fields(Exprs, Ctxt, Fun), lay_text_float("}")));
+lay_fields(Opening, [] = Exprs, Ctxt = #ctxt{spaces_around_fields = true}, Fun) ->
+    lay_fields(Opening, Exprs, Ctxt#ctxt{spaces_around_fields = false}, Fun);
 lay_fields(Opening, Exprs, Ctxt = #ctxt{spaces_around_fields = true}, Fun) ->
     par([par([Opening, lay_fields(Exprs, Ctxt, Fun)], Ctxt#ctxt.break_indent),
          lay_text_float("}")]).
