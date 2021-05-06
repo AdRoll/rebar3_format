@@ -70,7 +70,8 @@
          truncate_strings = false :: boolean(),
          parenthesize_infix_operations = false :: boolean(),
          empty_lines = [] :: [pos_integer()],
-         encoding = epp:default_encoding() :: epp:source_encoding()}).
+         encoding = epp:default_encoding() :: epp:source_encoding(),
+         in = undefined :: atom()}).
 
 set_prec(Ctxt, Prec) ->
     Ctxt#ctxt{prec = Prec}.    % used internally
@@ -489,7 +490,7 @@ lay_no_comments(Node, Ctxt) ->
             beside(D, lay_text_float("."));
         binary ->
             Ctxt1 = reset_prec(Ctxt),
-            Es = lay_items(erl_syntax:binary_fields(Node), Ctxt1, fun lay/2),
+            Es = lay_items(erl_syntax:binary_fields(Node), Ctxt1#ctxt{in = binary}, fun lay/2),
             beside(lay_text_float("<<"), beside(Es, lay_text_float(">>")));
         binary_field ->
             Ctxt1 = set_prec(Ctxt, max_prec()),
@@ -601,7 +602,12 @@ lay_no_comments(Node, Ctxt) ->
                     Args ->
                         lay_application(N, Args, Ctxt1)
                 end,
-            D1 = beside(lay_text_float("?"), D),
+            D1 = case Ctxt1#ctxt.in of
+                    binary ->
+                        beside(lay_text_float("(?"), beside(D, lay_text_float(")")));
+                    _ ->
+                        beside(lay_text_float("?"), D)
+                end,
             maybe_parentheses(D1, 0, Ctxt1);
         parentheses ->
             D = lay(erl_syntax:parentheses_body(Node), reset_prec(Ctxt)),
