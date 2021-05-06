@@ -1,10 +1,15 @@
 -module(records).
 
--record(record, {with_another :: #record{}, in_it}).
+-format #{ spaces_around_fields => true }.
 
--type record() :: #record{in_it :: 1..3}.
+-record(record, {with_another :: #record{}, in_it}).
+-record(rec, {}).
+
+-type record() :: #record{ in_it :: 1..3 }.
+-type rec() :: #rec{}.
 
 f(A) ->
+    _ = #rec{},
     B = C = A#record.with_another#record.with_another#record.in_it,
-    D = A#record{with_another = #record{with_another = #record{in_it = B}, in_it = C}},
+    D = A#record{ with_another = #record{ with_another = #record{ in_it = B }, in_it = C } },
     (normalize(D))#record.with_another#record.in_it.
