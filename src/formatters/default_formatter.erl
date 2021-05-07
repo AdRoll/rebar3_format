@@ -592,7 +592,7 @@ lay_no_comments(Node, Ctxt) ->
                    par([D1, beside(lay_text_float("|| "), beside(D2, lay_text_float(" >>")))]));
         macro ->
             %% This is formatted similar to a normal function call or a variable
-            N = erl_syntax:variable([$? | macro_name(Node)]),
+            N = macro_name(Node, variable),
             case erl_syntax:macro_arguments(Node) of
                 none ->
                     lay(N, Ctxt);
@@ -889,7 +889,7 @@ attribute_name(Node) ->
     Name =
         case erl_syntax:type(N) of
             macro ->
-                erl_syntax:atom([$? | macro_name(N)]);
+                macro_name(N, atom);
             _ ->
                 N
         end,
@@ -924,10 +924,7 @@ unfold_function_name(Tuple) ->
         atom ->
             erl_syntax:arity_qualifier(Name, Arity);
         macro ->
-            VarName0 = macro_name(Name),
-            VarName = list_to_atom([$? | VarName0]),
-            Var = erl_syntax:variable(VarName),
-            erl_syntax:arity_qualifier(Var, Arity)
+            erl_syntax:arity_qualifier(macro_name(Name, variable), Arity)
     end.
 
 macro_name(Macro) ->
@@ -938,6 +935,18 @@ macro_name(Macro) ->
         variable ->
             erl_syntax:variable_literal(MacroName)
     end.
+
+macro_name(Node, Type) ->
+    Source = erl_syntax:macro_name(Node),
+    FullName = [$? | macro_name(Node)],
+    Target =
+        case Type of
+            variable ->
+                erl_syntax:variable(FullName);
+            atom ->
+                erl_syntax:atom(FullName)
+        end,
+    erl_syntax:copy_pos(Source, erl_syntax:copy_comments(Source, Target)).
 
 concrete_dodging_macros(Nodes) ->
     undodge_macros(erl_syntax:concrete(dodge_macros(Nodes))).

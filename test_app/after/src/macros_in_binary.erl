@@ -1,6 +1,6 @@
 -module(macros_in_binary).
 
--export([chunkify/1, p/0]).
+-export([chunkify/1, p/0, comments/1]).
 
 -define(CHUNK_SIZE, 65535 - 1).
 -define(other_chunk, 10).
@@ -21,3 +21,12 @@ p() ->
 
 j(A) ->
     ?A_FUNCTION(A) + ?A_MACRO(A).
+
+comments(X) ->
+    % COMMENT 1
+    % COMMENT 1.1
+    ?CONCAT(% COMMENT 2
+            % COMMENT 2.2
+            "1", % COMMENT 3
+            % COMMENT 3.3
+            "2").
