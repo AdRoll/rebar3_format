@@ -591,20 +591,13 @@ lay_no_comments(Node, Ctxt) ->
             beside(lay_text_float("<< "),
                    par([D1, beside(lay_text_float("|| "), beside(D2, lay_text_float(" >>")))]));
         macro ->
-            %% This is formatted similar to a normal function call, but
-            %% prefixed with a "?".
-            Ctxt1 = reset_prec(Ctxt),
-            N = erl_syntax:macro_name(Node),
+            %% This is formatted similar to a normal function call or a variable
+            N = erl_syntax:variable([$? | macro_name(Node)]),
             case erl_syntax:macro_arguments(Node) of
                 none ->
-                    D = beside(lay_text_float("?"), lay(N, Ctxt1)),
-                    maybe_parentheses(D, 0, Ctxt1);
+                    lay(N, Ctxt);
                 Args ->
-                    D = beside(lay_text_float("?"), lay_application(N, Args, Ctxt1)),
-                    %% NOTE: We use Ctxt here, we reset_prec before to be able to prefix
-                    %%       the macro with ?. Now we need to check if we should add
-                    %%       parentheses.
-                    maybe_parentheses(D, 0, Ctxt)
+                    lay_application(N, Args, Ctxt)
             end;
         parentheses ->
             D = lay(erl_syntax:parentheses_body(Node), reset_prec(Ctxt)),
@@ -915,7 +908,7 @@ unfold_function_name(Tuple) ->
             erl_syntax:arity_qualifier(Name, Arity);
         macro ->
             VarName0 = macro_name(Name),
-            VarName = list_to_atom("?" ++ atom_to_list(VarName0)),
+            VarName = list_to_atom([$? | VarName0]),
             Var = erl_syntax:variable(VarName),
             erl_syntax:arity_qualifier(Var, Arity)
     end.
@@ -926,7 +919,7 @@ macro_name(Macro) ->
         atom ->
             erl_syntax:atom_name(MacroName);
         variable ->
-            erl_syntax:variable_name(MacroName)
+            erl_syntax:variable_literal(MacroName)
     end.
 
 concrete_dodging_macros(Nodes) ->

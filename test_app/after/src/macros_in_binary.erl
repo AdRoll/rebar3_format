@@ -13,10 +13,10 @@ chunkify(<<Binary:?CHUNK_SIZE/binary, Rest/binary>>) ->
 
 p() ->
     <<begin
-          X = (?A_FUNCTION(10)),
-          X + (?A_MACRO(X))
+          X = ?A_FUNCTION(10),
+          X + ?A_MACRO(X)
       end/integer,
       ?NO_PARENS/binary>>.
 
 j(A) ->
-    (?A_FUNCTION(A)) + (?A_MACRO(A)).
+    ?A_FUNCTION(A) + ?A_MACRO(A).
