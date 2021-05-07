@@ -3,13 +3,14 @@
 -export([chunkify/1, p/0]).
 
 -define(CHUNK_SIZE, 65535 - 1).
+-define(other_chunk, 10).
 -define(CONCAT(A, B), <<A/binary, B/binary>>).
 -define(A_MACRO(X), X + 1).
 -define(A_FUNCTION, rand:uniform).
 -define(NO_PARENS, <<"no_parens">>).
 
-chunkify(<<Binary:?CHUNK_SIZE/binary, Rest/binary>>) ->
-    {<<(?CONCAT(Binary, Rest))/binary>>, <<?CONCAT(Binary, Rest)/binary>>}.
+chunkify(<<B1:(?CHUNK_SIZE)/binary, B2:?other_chunk/binary, Rest/binary>>) ->
+    {<<(?CONCAT(B1, Rest))/binary>>, <<?CONCAT(B2, Rest)/binary>>}.
 
 p() ->
     <<begin

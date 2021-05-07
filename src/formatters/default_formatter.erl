@@ -676,8 +676,25 @@ lay_no_comments(Node, Ctxt) ->
         size_qualifier ->
             Ctxt1 = set_prec(Ctxt, max_prec()),
             D1 = lay(erl_syntax:size_qualifier_body(Node), Ctxt1),
+            Arg = erl_syntax:size_qualifier_argument(Node),
             D2 = lay(erl_syntax:size_qualifier_argument(Node), Ctxt1),
-            beside(D1, beside(text(":"), D2));
+            D3 = case erl_syntax:type(Arg) of
+                     macro ->
+                         case erl_syntax:macro_arguments(Arg) of
+                             none ->
+                                 %% Something:(?MACRO) gets converted into
+                                 %% Something:?MACRO since this formatter treats
+                                 %% ?MACRO as a "literal" and sometimes it actually
+                                 %% is not. We'll add parentheses here, just in case.
+                                 lay_parentheses(D2, Ctxt1);
+                             _ ->
+                                 D2
+                         end;
+                     _ ->
+                         D2
+                 end,
+
+            beside(D1, beside(text(":"), D3));
         text ->
             case erl_syntax:get_ann(Node) of
                 [expression_dot] -> % see maybe_append/3
