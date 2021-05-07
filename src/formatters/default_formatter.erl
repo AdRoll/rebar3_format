@@ -595,21 +595,16 @@ lay_no_comments(Node, Ctxt) ->
             %% prefixed with a "?".
             Ctxt1 = reset_prec(Ctxt),
             N = erl_syntax:macro_name(Node),
-            D = case erl_syntax:macro_arguments(Node) of
-                    none ->
-                        lay(N, Ctxt1);
-                    Args ->
-                        lay_application(N, Args, Ctxt1)
-                end,
-            D1 = beside(lay_text_float("?"), D),
-            %% NOTE: We use Ctxt here, we reset_prec before to be able to prefix
-            %%       the macro with ?. Now we need to check if we should add
-            %%       parentheses.
             case erl_syntax:macro_arguments(Node) of
                 none ->
-                    maybe_parentheses(D1, 0, Ctxt1);
-                _ ->
-                    maybe_parentheses(D1, 0, Ctxt)
+                    D = beside(lay_text_float("?"), lay(N, Ctxt1)),
+                    maybe_parentheses(D, 0, Ctxt1);
+                Args ->
+                    D = beside(lay_text_float("?"), lay_application(N, Args, Ctxt1)),
+                    %% NOTE: We use Ctxt here, we reset_prec before to be able to prefix
+                    %%       the macro with ?. Now we need to check if we should add
+                    %%       parentheses.
+                    maybe_parentheses(D, 0, Ctxt)
             end;
         parentheses ->
             D = lay(erl_syntax:parentheses_body(Node), reset_prec(Ctxt)),
