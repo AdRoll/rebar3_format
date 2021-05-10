@@ -11,7 +11,8 @@ test_app(_Config) ->
         rebar3_format:init(
             rebar_state:new()),
     Files =
-        {files, ["*.config", "src/*.app.src", "src/*.sh", "src/*.erl", "src/*/*.erl", "include/*.hrl"]},
+        {files,
+         ["*.config", "src/*.app.src", "src/*.sh", "src/*.erl", "src/*/*.erl", "include/*.hrl"]},
     IgnoredFiles =
         case string:to_integer(
                  erlang:system_info(otp_release))

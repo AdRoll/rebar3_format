@@ -591,18 +591,14 @@ lay_no_comments(Node, Ctxt) ->
             beside(lay_text_float("<< "),
                    par([D1, beside(lay_text_float("|| "), beside(D2, lay_text_float(" >>")))]));
         macro ->
-            %% This is formatted similar to a normal function call, but
-            %% prefixed with a "?".
-            Ctxt1 = reset_prec(Ctxt),
-            N = erl_syntax:macro_name(Node),
-            D = case erl_syntax:macro_arguments(Node) of
-                    none ->
-                        lay(N, Ctxt1);
-                    Args ->
-                        lay_application(N, Args, Ctxt1)
-                end,
-            D1 = beside(lay_text_float("?"), D),
-            maybe_parentheses(D1, 0, Ctxt1);
+            %% This is formatted similar to a normal function call or a variable
+            N = macro_name(Node, variable),
+            case erl_syntax:macro_arguments(Node) of
+                none ->
+                    lay(N, Ctxt);
+                Args ->
+                    lay_application(N, Args, Ctxt)
+            end;
         parentheses ->
             D = lay(erl_syntax:parentheses_body(Node), reset_prec(Ctxt)),
             lay_parentheses(D, Ctxt);
@@ -680,8 +676,25 @@ lay_no_comments(Node, Ctxt) ->
         size_qualifier ->
             Ctxt1 = set_prec(Ctxt, max_prec()),
             D1 = lay(erl_syntax:size_qualifier_body(Node), Ctxt1),
+            Arg = erl_syntax:size_qualifier_argument(Node),
             D2 = lay(erl_syntax:size_qualifier_argument(Node), Ctxt1),
-            beside(D1, beside(text(":"), D2));
+            D3 = case erl_syntax:type(Arg) of
+                     macro ->
+                         case erl_syntax:macro_arguments(Arg) of
+                             none ->
+                                 %% Something:(?MACRO) gets converted into
+                                 %% Something:?MACRO since this formatter treats
+                                 %% ?MACRO as a "literal" and sometimes it actually
+                                 %% is not. We'll add parentheses here, just in case.
+                                 lay_parentheses(D2, Ctxt1);
+                             _ ->
+                                 D2
+                         end;
+                     _ ->
+                         D2
+                 end,
+
+            beside(D1, beside(text(":"), D3));
         text ->
             case erl_syntax:get_ann(Node) of
                 [expression_dot] -> % see maybe_append/3
@@ -876,7 +889,7 @@ attribute_name(Node) ->
     Name =
         case erl_syntax:type(N) of
             macro ->
-                erl_syntax:atom([$? | macro_name(N)]);
+                macro_name(N, atom);
             _ ->
                 N
         end,
@@ -911,10 +924,7 @@ unfold_function_name(Tuple) ->
         atom ->
             erl_syntax:arity_qualifier(Name, Arity);
         macro ->
-            VarName0 = macro_name(Name),
-            VarName = list_to_atom("?" ++ atom_to_list(VarName0)),
-            Var = erl_syntax:variable(VarName),
-            erl_syntax:arity_qualifier(Var, Arity)
+            erl_syntax:arity_qualifier(macro_name(Name, variable), Arity)
     end.
 
 macro_name(Macro) ->
@@ -923,8 +933,20 @@ macro_name(Macro) ->
         atom ->
             erl_syntax:atom_name(MacroName);
         variable ->
-            erl_syntax:variable_name(MacroName)
+            erl_syntax:variable_literal(MacroName)
     end.
+
+macro_name(Node, Type) ->
+    Source = erl_syntax:macro_name(Node),
+    FullName = [$? | macro_name(Node)],
+    Target =
+        case Type of
+            variable ->
+                erl_syntax:variable(FullName);
+            atom ->
+                erl_syntax:atom(FullName)
+        end,
+    erl_syntax:copy_pos(Source, erl_syntax:copy_comments(Source, Target)).
 
 concrete_dodging_macros(Nodes) ->
     undodge_macros(erl_syntax:concrete(dodge_macros(Nodes))).
