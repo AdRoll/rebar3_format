@@ -81,7 +81,7 @@ get_files(Args, State) ->
                          "src/**/*.app.src",
                          "test/**/*.[he]rl",
                          "test/**/*.app.src",
-                         "*.config"];
+                         "{rebar,elvis,sys}.config"];
                     Wildcards ->
                         Wildcards
                 end;
