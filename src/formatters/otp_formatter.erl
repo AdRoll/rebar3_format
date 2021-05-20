@@ -9,6 +9,13 @@
 %% the module `erl_syntax'.
 -module(otp_formatter).
 
+-elvis([{elvis_style, atom_naming_convention, #{regex => "^([a-zA-Z][a-z0-9]*_?)*$"}},
+        {elvis_style,
+         dont_repeat_yourself,
+         #{min_complexity => 20}}]).    %% Allow erl_syntax:syntaxTree/0 type spec
+
+    %% Allow us to preserve original OTP code
+
 -format #{inline_clause_bodies => true}.
 
 -behaviour(rebar3_formatter).
