@@ -7,6 +7,9 @@
 -behaviour(rebar3_formatter).
 -behaviour(rebar3_ast_formatter).
 
+%% Allow erl_syntax:syntaxTree/0 type spec
+-elvis([{elvis_style, atom_naming_convention, #{regex => "^([a-zA-Z][a-z0-9]*_?)*$"}}]).
+
 -export([init/2, format_file/3, format/3]).
 
 -import(prettypr,
