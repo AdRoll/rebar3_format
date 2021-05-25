@@ -1,6 +1,8 @@
 %% @doc Examples that can't really be covered with files in test_app
 -module(complete_coverage_SUITE).
 
+-behaviour(ct_suite).
+
 -export([all/0]).
 -export([comment_with_no_padding/1, very_empty_comment/1, smooth_operators/1,
          lost_clause/1, markers/1, balanced_parentheses/1, strange_constraint/1, funcy_specs/1,

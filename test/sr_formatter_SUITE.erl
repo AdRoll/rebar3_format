@@ -1,5 +1,7 @@
 -module(sr_formatter_SUITE).
 
+-behaviour(ct_suite).
+
 -export([all/0]).
 -export([action/1, output_dir/1, options/1, complete_coverage/1]).
 

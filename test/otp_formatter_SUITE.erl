@@ -1,5 +1,7 @@
 -module(otp_formatter_SUITE).
 
+-behaviour(ct_suite).
+
 -export([all/0, test_app/1, error/1, modified_ast/1]).
 
 all() ->

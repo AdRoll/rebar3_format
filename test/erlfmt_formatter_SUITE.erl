@@ -1,5 +1,7 @@
 -module(erlfmt_formatter_SUITE).
 
+-behaviour(ct_suite).
+
 -export([all/0]).
 -export([action/1, files/1, output_dir/1, pragma/1, print_width/1, old_version/1,
          error/1]).

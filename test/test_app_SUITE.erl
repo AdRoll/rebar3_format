@@ -1,5 +1,7 @@
 -module(test_app_SUITE).
 
+-behaviour(ct_suite).
+
 -export([all/0, test_app/1, no_good_files/1]).
 
 all() ->
