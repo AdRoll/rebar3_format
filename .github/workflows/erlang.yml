@@ -18,8 +18,6 @@ jobs:
       with:
         otp-version: ${{matrix.otp}}
         rebar3-version: '3.16.1'
-    - name: Check rebar3 version
-      run: rebar3 --version
     - name: Compile
       run: rebar3 compile
     - name: Generate dialyzer PLT
