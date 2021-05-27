@@ -11,8 +11,6 @@ jobs:
     strategy:
       matrix:
         otp: [21.3, 22.3, 23.3]
-    container:
-      image: erlang:${{matrix.otp}}-alpine
 
     steps:
     - uses: actions/checkout@v2
