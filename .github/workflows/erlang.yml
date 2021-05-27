@@ -1,0 +1,24 @@
+name: Erlang CI
+
+on: [push, pull_request]
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        otp: [21.3, 22.3, 23.0.4, 23.2.7.0, 24.0]
+    container:
+      image: erlang:${{ matrix.otp }}-alpine
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Check rebar3 version
+      run: rebar3 --version
+    - name: Compile
+      run: rebar3 compile
+    - name: Run tests and verifications
+      run: rebar3 dialyzer || rebar3 test
