@@ -10,7 +10,7 @@ jobs:
 
     strategy:
       matrix:
-        otp: [21.3, 22.3, 23.0.4, 23.2.7.0, 24.0]
+        otp: [21.3, 22.3, 23.3]
     container:
       image: erlang:${{ matrix.otp }}-alpine
 
