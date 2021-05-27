@@ -12,13 +12,13 @@ jobs:
       matrix:
         otp: [21.3, 22.3, 23.3]
     container:
-      image: erlang:${{ matrix.otp }}-alpine
+      image: erlang:${{matrix.otp}}-alpine
 
     steps:
     - uses: actions/checkout@v2
     - uses: erlef/setup-beam@v1
       with:
-        otp-version: ${{matrix.otp_vsn}}
+        otp-version: ${{matrix.otp}}
         rebar3-version: '3.16.1'
     - name: Check rebar3 version
       run: rebar3 --version
