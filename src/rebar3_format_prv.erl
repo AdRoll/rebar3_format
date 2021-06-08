@@ -100,16 +100,16 @@ get_files(Args, State, Dirs) ->
                           "test/**/*.[he]rl",
                           "test/**/*.app.src",
                           "{rebar,elvis,sys}.config"],
-                         lists:usort(["" | Dirs])};
+                         Dirs};
                     Wildcards ->
-                        {Wildcards, [""]}
+                        {Wildcards, []}
                 end;
             Files ->
-                {Files, [""]}
+                {Files, []}
         end,
     %% Special handling needed for "" (current directory)
     %% so that ignore-lists work in an expected way.
-    [File || lists:member("", Dirs1), Pattern <- Patterns, File <- filelib:wildcard(Pattern)]
+    [File || Pattern <- Patterns, File <- filelib:wildcard(Pattern)]
     ++ [filename:join(Dir, File)
         || Dir <- Dirs1, Dir =/= "", Pattern <- Patterns, File <- filelib:wildcard(Pattern, Dir)].
 
