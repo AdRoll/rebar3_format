@@ -150,7 +150,8 @@ init(Opts) ->
     {ok, State1} =
         rebar3_format:init(
             rebar_state:new()),
+    {ok, State2} = rebar3_prv_app_discovery:do(State1),
     Files = {files, ["src/minimal.erl"]},
     Formatter = {formatter, erlfmt_formatter},
     Out = {options, Opts},
-    rebar_state:set(State1, format, [Files, Formatter, Out]).
+    rebar_state:set(State2, format, [Files, Formatter, Out]).

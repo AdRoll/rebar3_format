@@ -77,9 +77,10 @@ init(Options) ->
         file:set_cwd(
             filename:join(
                 code:priv_dir(rebar3_format), "../test_app")),
-    {ok, State1} =
-        rebar3_format:init(
+    {ok, State0} =
+        rebar_prv_app_discovery:do(
             rebar_state:new()),
+    {ok, State1} = rebar3_format:init(State0),
     Files = {files, ["src/brackets.erl"]},
     Formatter = {formatter, sr_formatter},
     Opts = {options, Options},
