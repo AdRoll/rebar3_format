@@ -100,7 +100,7 @@ get_files(Args, State, Dirs) ->
                           "test/**/*.[he]rl",
                           "test/**/*.app.src",
                           "{rebar,elvis,sys}.config"],
-                         Dirs};
+                         lists:usort(["" | Dirs])};
                     Wildcards ->
                         {Wildcards, [""]}
                 end;
