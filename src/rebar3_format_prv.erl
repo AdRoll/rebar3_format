@@ -87,30 +87,31 @@ get_action(Args) ->
                    [file:filename_all()].
 get_files(Args, State, Dirs) ->
     FilesFromArgs = [Value || {files, Value} <- Args],
-    Patterns =
+    {Patterns, Dirs1} =
         case FilesFromArgs of
             [] ->
                 FormatConfig = rebar_state:get(State, format, []),
                 case proplists:get_value(files, FormatConfig, undefined) of
                     undefined ->
-                        ["include/**/*.[he]rl",
-                         "include/**/*.app.src",
-                         "src/**/*.[he]rl",
-                         "src/**/*.app.src",
-                         "test/**/*.[he]rl",
-                         "test/**/*.app.src",
-                         "{rebar,elvis,sys}.config"];
+                        {["include/**/*.[he]rl",
+                          "include/**/*.app.src",
+                          "src/**/*.[he]rl",
+                          "src/**/*.app.src",
+                          "test/**/*.[he]rl",
+                          "test/**/*.app.src",
+                          "{rebar,elvis,sys}.config"],
+                         Dirs};
                     Wildcards ->
-                        Wildcards
+                        {Wildcards, [""]}
                 end;
             Files ->
-                Files
+                {Files, [""]}
         end,
     %% Special handling needed for "" (current directory)
     %% so that ignore-lists work in an expected way.
-    [File || lists:member("", Dirs), Pattern <- Patterns, File <- filelib:wildcard(Pattern)]
+    [File || lists:member("", Dirs1), Pattern <- Patterns, File <- filelib:wildcard(Pattern)]
     ++ [filename:join(Dir, File)
-        || Dir <- Dirs, Dir =/= "", Pattern <- Patterns, File <- filelib:wildcard(Pattern, Dir)].
+        || Dir <- Dirs1, Dir =/= "", Pattern <- Patterns, File <- filelib:wildcard(Pattern, Dir)].
 
 -spec get_ignored_files(rebar_state:t()) -> [file:filename_all()].
 get_ignored_files(State) ->
