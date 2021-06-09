@@ -32,13 +32,22 @@ init(State) ->
 -spec do(rebar_state:t()) -> {ok, rebar_state:t()} | {error, iodata()}.
 do(State) ->
     {Args, _} = rebar_state:command_parsed_args(State),
+    Apps =
+        case rebar_state:current_app(State) of
+            undefined ->
+                rebar_state:project_apps(State);
+            AppInfo ->
+                [AppInfo]
+        end,
+    Cwd = rebar_state:dir(State),
+    Dirs = [dir_for_app(AppInfo, Cwd) || AppInfo <- Apps],
     Action = get_action(Args),
     OutputDirOpt = get_output_dir(Action, Args),
     Opts = maps:put(action, Action, maps:put(output_dir, OutputDirOpt, get_opts(State))),
     rebar_api:debug("Formatter options: ~p", [Opts]),
     Formatter = get_formatter(State, Opts),
     IgnoredFiles = get_ignored_files(State),
-    Files = get_files(Args, State) -- IgnoredFiles,
+    Files = get_files(Args, State, Dirs) -- IgnoredFiles,
     rebar_api:debug("Found ~p files: ~p", [length(Files), Files]),
     case format_files(Files, Formatter) of
         ok ->
@@ -47,6 +56,14 @@ do(State) ->
         {error, Error} ->
             {error, format_error(Error)}
     end.
+
+%% @private
+-spec dir_for_app(rebar_app_info:t(), file:filename_all()) -> file:filename_all() | [].
+dir_for_app(AppInfo, Cwd) ->
+    {ok, Dir} =
+        rebar_file_utils:path_from_ancestor(
+            rebar_app_info:dir(AppInfo), Cwd),
+    Dir.
 
 %% @private
 -spec format_error(any()) -> string().
@@ -66,29 +83,35 @@ get_action(Args) ->
             format
     end.
 
--spec get_files(proplists:proplist(), rebar_state:t()) -> [file:filename_all()].
-get_files(Args, State) ->
+-spec get_files(proplists:proplist(), rebar_state:t(), [file:filename_all() | []]) ->
+                   [file:filename_all()].
+get_files(Args, State, Dirs) ->
     FilesFromArgs = [Value || {files, Value} <- Args],
-    Patterns =
+    {Patterns, Dirs1} =
         case FilesFromArgs of
             [] ->
                 FormatConfig = rebar_state:get(State, format, []),
                 case proplists:get_value(files, FormatConfig, undefined) of
                     undefined ->
-                        ["include/**/*.[he]rl",
-                         "include/**/*.app.src",
-                         "src/**/*.[he]rl",
-                         "src/**/*.app.src",
-                         "test/**/*.[he]rl",
-                         "test/**/*.app.src",
-                         "{rebar,elvis,sys}.config"];
+                        {["include/**/*.[he]rl",
+                          "include/**/*.app.src",
+                          "src/**/*.[he]rl",
+                          "src/**/*.app.src",
+                          "test/**/*.[he]rl",
+                          "test/**/*.app.src",
+                          "{rebar,elvis,sys}.config"],
+                         Dirs};
                     Wildcards ->
-                        Wildcards
+                        {Wildcards, []}
                 end;
             Files ->
-                Files
+                {Files, []}
         end,
-    [File || Pattern <- Patterns, File <- filelib:wildcard(Pattern)].
+    %% Special handling needed for "" (current directory)
+    %% so that ignore-lists work in an expected way.
+    [File || Pattern <- Patterns, File <- filelib:wildcard(Pattern)]
+    ++ [filename:join(Dir, File)
+        || Dir <- Dirs1, Dir =/= "", Pattern <- Patterns, File <- filelib:wildcard(Pattern, Dir)].
 
 -spec get_ignored_files(rebar_state:t()) -> [file:filename_all()].
 get_ignored_files(State) ->

@@ -21,7 +21,7 @@ Then just call your plugin directly in an existing application:
 
     $ rebar3 format
 
-This will format every Erlang file (including `hrl`s, `erl`s and `app.src`s) under `src`, `include` and `test` by default, together with every `.config` file in your root directory. You can specify the directory/file to format as following:
+By default, this will format every Erlang file (including `hrl`s, `erl`s and `app.src`s) under `src`, `include` and `test`, together with every `.config` file, in your root directory and any nested Erlang apps' directories within your project. You can specify the directory/file to format as following:
 
     $ rebar3 format --files 'src/my_subdir/*.erl'
     $ rebar3 format --files src/other_subdir/my_file.erl
