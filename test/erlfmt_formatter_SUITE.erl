@@ -145,13 +145,9 @@ init() ->
 init(Opts) ->
     ok =
         file:set_cwd(
-            filename:join(
-                code:priv_dir(rebar3_format), "../test_app")),
-    {ok, State1} =
-        rebar3_format:init(
-            rebar_state:new()),
-    {ok, State2} = rebar_prv_app_discovery:do(State1),
+            test_util:get_app_dir()),
+    {ok, State1} = test_util:init(),
     Files = {files, ["src/minimal.erl"]},
     Formatter = {formatter, erlfmt_formatter},
     Out = {options, Opts},
-    rebar_state:set(State2, format, [Files, Formatter, Out]).
+    rebar_state:set(State1, format, [Files, Formatter, Out]).
