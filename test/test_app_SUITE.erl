@@ -56,7 +56,7 @@ init_test_app() ->
     rebar_state:set(State1, format, [Files, IgnoredFiles]).
 
 git_diff() ->
-    case os:cmd("git -c core.autocrlf=input --no-pager diff --no-index -- after formatted") of
+    case os:cmd("git -c core.autocrlf=input -c core.safecrlf=false --no-pager diff --no-index -- after formatted") of
         "" ->
             ok;
         Diff ->
