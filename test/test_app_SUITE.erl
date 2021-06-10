@@ -58,11 +58,13 @@ init_test_app() ->
     rebar_state:set(State1, format, [Files, IgnoredFiles]).
 
 git_diff() ->
-    case os:cmd("git --no-pager diff --no-index -- after formatted") of
+    case os:cmd("git -c core.autocrlf=input diff --no-index --name-only -- after formatted")
+    of
         "" ->
             ok;
-        Diff ->
-            Unicode = unicode:characters_to_binary(Diff),
-            ct:pal("Differences:~n~s", [Unicode]),
-            ct:fail(Unicode)
+        ModifiedFiles ->
+            Diff =
+                os:cmd("git -c core.autocrlf=input --no-pager diff --no-index -- after formatted"),
+            ct:pal("Differences:~n~ts", [Diff]),
+            ct:fail({modified_files, string:tokens(ModifiedFiles, [$\n])})
     end.
