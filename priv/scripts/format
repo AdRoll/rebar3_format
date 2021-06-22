@@ -15,5 +15,5 @@ main([]) ->
                     rebar3_formatter:format_file(File, rebar3_formatter:new(default_formatter, Opts, undefined))
                 end, Files);
         _ ->
-            io:format("Not formatting the formatter. We're not on the regular compiling cycle~n")
+            ok
     end.
