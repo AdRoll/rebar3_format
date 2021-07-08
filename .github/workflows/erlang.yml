@@ -4,7 +4,7 @@ on: [push, pull_request]
 
 jobs:
 
-  build:
+  ubuntu:
 
     runs-on: ubuntu-latest
 
@@ -25,23 +25,19 @@ jobs:
     - name: Run tests
       run: rebar3 test
 
-  test_windows:
+  windows:
 
     runs-on: windows-latest
 
     strategy:
       matrix:
-        otp: [21.3]
+        otp: [21, 22, 23, 24]
 
     steps:
       - uses: actions/checkout@v2
-      - uses: gleam-lang/setup-erlang@v1.1.2
+      - uses: erlef/setup-beam@v1
         with:
           otp-version: ${{matrix.otp}}
-        id: install_erlang
-      - name: Fetch rebar3
-        run: wget https://github.com/erlang/rebar3/releases/download/3.15.2/rebar3 -OutFile rebar3
-        shell: powershell
+          rebar3-version: '3.15.2'
       - name: Run tests
-        run: |
-          & "${{steps.install_erlang.outputs.erlpath}}\bin\escript.exe" rebar3 do ct,cover
+        run: rebar3 do "ct,cover"
