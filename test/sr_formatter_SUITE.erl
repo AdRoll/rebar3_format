@@ -48,7 +48,12 @@ output_dir(_Config) ->
 
     % When there is an expected output, steamroller should run on the input file
     steamroller:validator(fun(File, _) ->
-                             <<"/tmp/src/brackets.erl">> = File,
+                             case filename:split(File) of
+                                 [<<"tmp">>, <<"src">>, <<"brackets.erl">>] ->
+                                     ok;
+                                 [_, <<"tmp">>, <<"src">>, <<"brackets.erl">>] ->
+                                     ok
+                             end,
                              file:write_file(File, <<>>),
                              ok
                           end),
@@ -75,12 +80,8 @@ init() ->
 init(Options) ->
     ok =
         file:set_cwd(
-            filename:join(
-                code:priv_dir(rebar3_format), "../test_app")),
-    {ok, State0} =
-        rebar_prv_app_discovery:do(
-            rebar_state:new()),
-    {ok, State1} = rebar3_format:init(State0),
+            test_util:get_app_dir()),
+    {ok, State1} = test_util:init(),
     Files = {files, ["src/brackets.erl"]},
     Formatter = {formatter, sr_formatter},
     Opts = {options, Options},
