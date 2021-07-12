@@ -604,7 +604,7 @@ lay_no_comments(Node, Ctxt) ->
             end;
         parentheses ->
             D = lay(erl_syntax:parentheses_body(Node), reset_prec(Ctxt)),
-            lay_parentheses(D, Ctxt);
+            lay_parentheses(D);
         receive_expr ->
             Ctxt1 = reset_prec(Ctxt),
             case {erl_syntax:receive_expr_clauses(Node), erl_syntax:receive_expr_timeout(Node)} of
@@ -689,7 +689,7 @@ lay_no_comments(Node, Ctxt) ->
                                  %% Something:?MACRO since this formatter treats
                                  %% ?MACRO as a "literal" and sometimes it actually
                                  %% is not. We'll add parentheses here, just in case.
-                                 lay_parentheses(D2, Ctxt1);
+                                 lay_parentheses(D2);
                              _ ->
                                  D2
                          end;
@@ -1025,7 +1025,7 @@ lay_nested_infix_expr(Node, Ctxt = #ctxt{parenthesize_infix_operations = true}) 
                 true ->
                     D1;
                 false ->
-                    lay_parentheses(D1, Ctxt)
+                    lay_parentheses(D1)
             end;
         _ ->
             D1
@@ -1045,13 +1045,13 @@ lay_expr_argument(Arg, D, Ctxt) ->
     D1 = beside(lay(Arg, set_prec(Ctxt, PrecL)), D),
     maybe_parentheses(D1, Prec, Ctxt).
 
-lay_parentheses(D, _Ctxt) ->
+lay_parentheses(D) ->
     beside(lay_text_float("("), beside(D, lay_text_float(")"))).
 
 maybe_parentheses(D, Prec, Ctxt) ->
     case needs_parentheses(Prec, Ctxt) of
         true ->
-            lay_parentheses(D, Ctxt);
+            lay_parentheses(D);
         false ->
             D
     end.
@@ -1196,7 +1196,7 @@ lay_clauses(Cs, Type, Ctxt) ->
 %% can be `none', which has different interpretations in different
 %% contexts.
 make_simple_fun_clause(P, G, B, Ctxt) ->
-    D = make_fun_clause_head(none, P, Ctxt),
+    D = make_fun_clause_head(none, P),
 
     % Since this anonymous fun has a single clause, we don't need to indent its
     % body _that_ much
@@ -1211,13 +1211,13 @@ make_fun_clause(P, G, B, Ctxt) ->
     make_fun_clause(none, P, G, B, Ctxt).
 
 make_fun_clause(N, P, G, B, Ctxt) ->
-    D = make_fun_clause_head(N, P, Ctxt),
+    D = make_fun_clause_head(N, P),
     make_case_clause(D, G, B, Ctxt).
 
-make_fun_clause_head(N, P, Ctxt) when N =:= none ->
-    lay_parentheses(P, Ctxt);
-make_fun_clause_head(N, P, Ctxt) ->
-    beside(N, lay_parentheses(P, Ctxt)).
+make_fun_clause_head(none, P) ->
+    lay_parentheses(P);
+make_fun_clause_head(N, P) ->
+    beside(N, lay_parentheses(P)).
 
 make_case_clause(P, G, B, Ctxt) ->
     append_clause_body(B, append_guard(G, P, Ctxt), Ctxt).
