@@ -503,7 +503,7 @@ lay_no_comments(Node, Ctxt) ->
             case Ctxt#ctxt.clause of
                 fun_expr -> make_fun_clause(D1, D2, D3, Ctxt);
                 {function, N} -> make_fun_clause(N, D1, D2, D3, Ctxt);
-                if_expr -> make_if_clause(D1, D2, D3, Ctxt);
+                if_expr -> make_if_clause(D2, D3, Ctxt);
                 case_expr -> make_case_clause(D1, D2, D3, Ctxt);
                 receive_expr -> make_case_clause(D1, D2, D3, Ctxt);
                 try_expr -> make_case_clause(D1, D2, D3, Ctxt);
@@ -700,7 +700,7 @@ lay_no_comments(Node, Ctxt) ->
                               Ctxt);    % must be conservative!
         parentheses ->
             D = lay(erl_syntax:parentheses_body(Node), reset_prec(Ctxt)),
-            lay_parentheses(D, Ctxt);
+            lay_parentheses(D);
         receive_expr ->
             Ctxt1 = reset_prec(Ctxt),
             D1 = lay_clauses(erl_syntax:receive_expr_clauses(Node), receive_expr, Ctxt1),
@@ -997,11 +997,11 @@ lay_expr_argument(Arg, D, Ctxt) ->
     D1 = beside(lay(Arg, set_prec(Ctxt, PrecL)), D),
     maybe_parentheses(D1, Prec, Ctxt).
 
-lay_parentheses(D, _Ctxt) -> beside(lay_text_float("("), beside(D, lay_text_float(")"))).
+lay_parentheses(D) -> beside(lay_text_float("("), beside(D, lay_text_float(")"))).
 
 maybe_parentheses(D, Prec, Ctxt) ->
     case Ctxt#ctxt.prec of
-        P when P > Prec -> lay_parentheses(D, Ctxt);
+        P when P > Prec -> lay_parentheses(D);
         _ -> D
     end.
 
@@ -1075,15 +1075,15 @@ lay_clauses(Cs, Type, Ctxt) ->
 make_fun_clause(P, G, B, Ctxt) -> make_fun_clause(none, P, G, B, Ctxt).
 
 make_fun_clause(N, P, G, B, Ctxt) ->
-    D = make_fun_clause_head(N, P, Ctxt),
+    D = make_fun_clause_head(N, P),
     make_case_clause(D, G, B, Ctxt).
 
-make_fun_clause_head(N, P, Ctxt) when N =:= none -> lay_parentheses(P, Ctxt);
-make_fun_clause_head(N, P, Ctxt) -> beside(N, lay_parentheses(P, Ctxt)).
+make_fun_clause_head(none, P) -> lay_parentheses(P);
+make_fun_clause_head(N, P) -> beside(N, lay_parentheses(P)).
 
 make_case_clause(P, G, B, Ctxt) -> append_clause_body(B, append_guard(G, P, Ctxt), Ctxt).
 
-make_if_clause(_P, G, B, Ctxt) ->
+make_if_clause(G, B, Ctxt) ->
     %% We ignore the patterns; they should be empty anyway.
     G1 = case G of
              none -> text("true");
