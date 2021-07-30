@@ -10,14 +10,14 @@ jobs:
 
     strategy:
       matrix:
-        otp: [22, 23, 24]
+        otp: [21.3, 22.3, 23.3]
 
     steps:
     - uses: actions/checkout@v2
     - uses: erlef/setup-beam@v1
       with:
         otp-version: ${{matrix.otp}}
-        rebar3-version: '3.16'
+        rebar3-version: '3.15.2'
     - name: Restore _build
       uses: actions/cache@v2
       with:
