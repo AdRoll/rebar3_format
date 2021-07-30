@@ -1164,20 +1164,16 @@ tidy_float(Node) ->
 %%      The goal is to preserve things like 16#FADE or -1e-1 instead of turning
 %%      them into integers or "pretty printed" floats.
 tidy_number(Node, Default) ->
-    case erl_syntax:get_pos(Node) of
-        L when is_list(L) ->
-            case proplists:get_value(text, L, undefined) of
-                undefined -> Default;
-                Text -> number_from_text(Text, Default)
-            end;
-        _ -> Default
-    end.
+    number_from_text(erl_anno:text(
+                         erl_syntax:get_pos(Node)),
+                     Default).
 
 %% @doc This function covers the corner case when erl_parse:parse_form/1
 %%      (used by ktn_dodger) screws up the text for things like fun x/1 or
 %%      -vsn(1) and therefore that text, that was actually captured,
 %%      can not be used.
 %% NOTE: floats work as "integers" according to string:to_integer/1
+number_from_text(undefined, Default) -> Default;
 number_from_text(Text, Default) ->
     case string:to_integer(Text) of
         {error, no_integer} -> Default;

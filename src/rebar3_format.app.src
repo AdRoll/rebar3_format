@@ -3,7 +3,7 @@
  [{description, "A rebar plugin for code formatting"},
   {vsn, "1.0.1"},
   {registered, []},
-  {applications, [kernel, stdlib, katana_code]},
+  {applications, [kernel, stdlib, katana_code, runtime_tools, syntax_tools]},
   {env, []},
   {modules, []},
   {licenses, ["MIT"]},

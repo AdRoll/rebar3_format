@@ -1617,20 +1617,12 @@ is_last_and_before_empty_line(H, [H2 | _], #ctxt{empty_lines = EmptyLines}) ->
     H2Pos - get_pos(H) >= 2 andalso lists:member(H2Pos - 1, EmptyLines).
 
 get_pos(Node) ->
-    case erl_syntax:get_pos(Node) of
-        I when is_integer(I) ->
-            I;
-        L when is_list(L) ->
-            proplists:get_value(location, L, 0)
-    end.
+    erl_anno:line(
+        erl_syntax:get_pos(Node)).
 
 get_node_text(Node) ->
-    case erl_syntax:get_pos(Node) of
-        L when is_list(L) ->
-            proplists:get_value(text, L, undefined);
-        _ ->
-            undefined
-    end.
+    erl_anno:text(
+        erl_syntax:get_pos(Node)).
 
 lay_double_colon(D1, D2, Ctxt) ->
     par([beside(D1, lay_text_float(" ::")), D2], Ctxt#ctxt.break_indent).
