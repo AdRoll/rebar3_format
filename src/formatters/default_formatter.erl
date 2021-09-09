@@ -1099,7 +1099,7 @@ lay_string_line(S, _) ->
 
 %% @doc We need to replace \n\t here as a work around for how remove_tabs/1 works
 %%      It's a hack, but it makes the formatter consistent.
-%%      And it only affect strings that start with tab right after a newline.
+%%      And it only affects strings that start with tab right after a newline.
 %%      We truly hope that there are not too many of those.
 %%      We also need to convert the rightmost space to \s to prevent
 %%      remove_trailing_spaces/1 from removing it. Again another workaround.
