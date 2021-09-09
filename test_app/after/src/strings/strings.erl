@@ -7,7 +7,7 @@
 -attr({with, "a string"}).
 
 all() ->
-    heredoc(), superlong(), repeat(), multiple_calls(), characters().
+    heredoc(), superlong(), repeat(), multiple_calls(), characters(), multiline_with_spaces().
 
 superlong() ->
     "This is a super super super super super super super super super super super super super super super super super super super super super super super super super super super super super long string!"
@@ -60,3 +60,8 @@ multiple_calls_more() ->
 characters() ->
     {"\x63haracters with strange representations are preserved" ++ " in small strings",
      "\x65v\x65n in multiblock strings"}.
+
+multiline_with_spaces() ->
+    "This is a multiline string and this line ends with two spaces \s
+     and this one ends with two tabs		
+    The spaces should not be removed by the formatter.".

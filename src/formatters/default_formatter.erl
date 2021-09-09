@@ -1095,11 +1095,19 @@ lay_string_line(S, #ctxt{truncate_strings = true, ribbon = Ribbon}) ->
     %% width is 2/3 of the ribbon width - this seems to work well.
     lay_string(S, length(S), Ribbon * 2 div 3);
 lay_string_line(S, _) ->
-    %% We need to replace \n\t here as a work around for how remove_tabs/1 works
-    %% It's a hack, but it makes the formatter consistent.
-    %% And it only affect strings that start with tab right after a newline.
-    %% We truly hope that there are not too many of those.
-    text(switch_tabs_after_newline(S)).
+    text(prepare_string_line(S)).
+
+%% @doc We need to replace \n\t here as a work around for how remove_tabs/1 works
+%%      It's a hack, but it makes the formatter consistent.
+%%      And it only affects strings that start with tab right after a newline.
+%%      We truly hope that there are not too many of those.
+%%      We also need to convert the rightmost space to \s to prevent
+%%      remove_trailing_spaces/1 from removing it. Again another workaround.
+prepare_string_line(S) ->
+    switch_tabs_after_newline(switch_trailing_spaces(S)).
+
+switch_trailing_spaces(String) ->
+    re:replace(String, "\s\n", "\\\\s\n", [global, {return, list}, unicode]).
 
 switch_tabs_after_newline(String) ->
     case re:replace(String,
