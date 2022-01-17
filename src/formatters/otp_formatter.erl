@@ -79,7 +79,7 @@
 %% The following functions examine and modify contexts:
 
 %% @spec (context()) -> integer()
-%% @doc Returns the operator precedence field of the prettyprinter
+%% @doc Returns the operator precedence field of the pretty-printer
 %% context.
 %%
 %% @see set_ctxt_precedence/2
@@ -89,7 +89,7 @@ get_ctxt_precedence(Ctxt) -> Ctxt#ctxt.prec.
 
 %% @spec (context(), integer()) -> context()
 %%
-%% @doc Updates the operator precedence field of the prettyprinter
+%% @doc Updates the operator precedence field of the pretty-printer
 %% context. See the {@link //stdlib/erl_parse} module for operator precedences.
 %%
 %% @see //stdlib/erl_parse
@@ -105,7 +105,7 @@ reset_prec(Ctxt) ->
     set_prec(Ctxt, 0).    % used internally
 
 %% @spec (context()) -> integer()
-%% @doc Returns the paper widh field of the prettyprinter context.
+%% @doc Returns the paper width field of the pretty-printer context.
 %% @see set_ctxt_paperwidth/2
 
 -spec get_ctxt_paperwidth(context()) -> integer().
@@ -113,7 +113,7 @@ get_ctxt_paperwidth(Ctxt) -> Ctxt#ctxt.paper.
 
 %% @spec (context(), integer()) -> context()
 %%
-%% @doc Updates the paper widh field of the prettyprinter context.
+%% @doc Updates the paper width field of the pretty-printer context.
 %%
 %% Note: changing this value (and passing the resulting context to a
 %% continuation function) does not affect the normal formatting, but may
@@ -125,7 +125,7 @@ get_ctxt_paperwidth(Ctxt) -> Ctxt#ctxt.paper.
 set_ctxt_paperwidth(Ctxt, W) -> Ctxt#ctxt{paper = W}.
 
 %% @spec (context()) -> integer()
-%% @doc Returns the line widh field of the prettyprinter context.
+%% @doc Returns the line width field of the pretty-printer context.
 %% @see set_ctxt_linewidth/2
 
 -spec get_ctxt_linewidth(context()) -> integer().
@@ -133,7 +133,7 @@ get_ctxt_linewidth(Ctxt) -> Ctxt#ctxt.ribbon.
 
 %% @spec (context(), integer()) -> context()
 %%
-%% @doc Updates the line widh field of the prettyprinter context.
+%% @doc Updates the line width field of the pretty-printer context.
 %%
 %% Note: changing this value (and passing the resulting context to a
 %% continuation function) does not affect the normal formatting, but may
@@ -145,28 +145,28 @@ get_ctxt_linewidth(Ctxt) -> Ctxt#ctxt.ribbon.
 set_ctxt_linewidth(Ctxt, W) -> Ctxt#ctxt{ribbon = W}.
 
 %% @spec (context()) -> hook()
-%% @doc Returns the hook function field of the prettyprinter context.
+%% @doc Returns the hook function field of the pretty-printer context.
 %% @see set_ctxt_hook/2
 
 -spec get_ctxt_hook(context()) -> hook().
 get_ctxt_hook(Ctxt) -> Ctxt#ctxt.hook.
 
 %% @spec (context(), hook()) -> context()
-%% @doc Updates the hook function field of the prettyprinter context.
+%% @doc Updates the hook function field of the pretty-printer context.
 %% @see get_ctxt_hook/1
 
 -spec set_ctxt_hook(context(), hook()) -> context().
 set_ctxt_hook(Ctxt, Hook) -> Ctxt#ctxt{hook = Hook}.
 
 %% @spec (context()) -> term()
-%% @doc Returns the user data field of the prettyprinter context.
+%% @doc Returns the user data field of the pretty-printer context.
 %% @see set_ctxt_user/2
 
 -spec get_ctxt_user(context()) -> term().
 get_ctxt_user(Ctxt) -> Ctxt#ctxt.user.
 
 %% @spec (context(), term()) -> context()
-%% @doc Updates the user data field of the prettyprinter context.
+%% @doc Updates the user data field of the pretty-printer context.
 %% @see get_ctxt_user/1
 
 -spec set_ctxt_user(context(), term()) -> context().
@@ -213,7 +213,7 @@ format(Node) -> format(Node, [], #{}).
 %% @type context(). A representation of the current context of the
 %% pretty-printer. Can be accessed in hook functions.
 %%
-%% @doc Prettyprint-formats an abstract Erlang syntax tree as text. For
+%% @doc Pretty-prints/formats an abstract Erlang syntax tree as text. For
 %% example, if you have a `.beam' file that has been compiled with
 %% `debug_info', the following should print the source code for the
 %% module (as it looks in the debug info representation):

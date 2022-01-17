@@ -82,7 +82,7 @@ reset_prec(Ctxt) ->
     set_prec(Ctxt, 0).    % used internally
 
 %% =====================================================================
-%% @doc Prettyprint/formats an abstract Erlang syntax tree as text in the style of NextRoll.
+%% @doc Pretty-prints/formats an abstract Erlang syntax tree as text in the style of NextRoll.
 %%
 %% @see erl_syntax
 %% @see format/1
@@ -467,7 +467,7 @@ lay_no_comments(Node, Ctxt) ->
                              Tag =:= mixin;
                              Tag =:= ignore_xref;
                              Tag =:= compile ->
-                        %% We need to convert 2-tuples to arity qualifiers here
+                        %% We need to convert tuples with 2 elements to arity qualifiers here
                         %% because the parser doesn't recognize them as such.
                         Ctxt2 = Ctxt1#ctxt{force_arity_qualifiers = true},
                         lay_application(N, Args, Ctxt2);
@@ -1181,7 +1181,7 @@ split_string_next([], N, L, As) ->
 %% @doc Produces the layout for a spec/callback with a single clause that has a
 %%      when... Which is a scenario that's common enough to deserve its own
 %%      implementation. That allows us to place the when, if indented, closer to
-%%      the margin and not floating below the params of the function in question
+%%      the margin and not floating below the parameters of the function in question
 lay_simple_spec(NameDoc, Node, Ctxt) ->
     case erl_syntax:type(Node) of
         constrained_function_type ->
@@ -1207,7 +1207,7 @@ make_simple_fun_clause(P, G, B, Ctxt) ->
     D = make_fun_clause_head(none, P),
 
     % Since this anonymous fun has a single clause, we don't need to indent its
-    % body _that_ much
+    % body that much
     append_clause_body(B,
                        append_guard(G, D, Ctxt),
                        Ctxt#ctxt{inline_clause_bodies =

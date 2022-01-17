@@ -63,6 +63,6 @@ git_diff() ->
             ok;
         Diff ->
             Unicode = unicode:characters_to_binary(Diff),
-            ct:pal("Differences:~n~s", [Unicode]),
+            ct:pal("Differences: ~n~s", [Unicode]),
             ct:fail(Unicode)
     end.
