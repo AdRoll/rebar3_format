@@ -1,4 +1,4 @@
-%% @doc Default formatter for modules that use the AST to prettyprint code
+%% @doc Default formatter for modules that use the AST to pretty-print code
 -module(rebar3_ast_formatter).
 
 -include_lib("kernel/include/file.hrl").

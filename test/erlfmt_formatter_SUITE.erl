@@ -54,7 +54,7 @@ output_dir(_Config) ->
     {ok, <<"-module(minimal).\n">>} = file:read_file("/tmp/src/minimal.erl").
 
 pragma(_Config) ->
-    % When there is no defined require_pragma nor insert_prgama, Pragma should be ignore
+    % When there is no defined require_pragma nor insert_pragma, Pragma should be ignore
     erlfmt:validator(fun(File, Opts) ->
                         "src/minimal.erl" = File,
                         ignore = proplists:get_value(pragma, Opts),
