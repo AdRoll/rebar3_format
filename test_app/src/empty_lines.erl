@@ -54,7 +54,6 @@ a_fun(With, Some, Arguments) ->
     %%
     %% ^ an empty line that is preserved
     an:expression(that,
-
                   has,
                   Some,
 

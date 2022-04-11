@@ -3,7 +3,7 @@
 [![Build Status](https://github.com/AdRoll/rebar3_format/actions/workflows/erlang.yml/badge.svg)](https://github.com/AdRoll/rebar3_format)
 [![Hex pm](http://img.shields.io/hexpm/v/rebar3_format.svg?style=flat)](https://hex.pm/packages/rebar3_format)
 
-A rebar plugin for code formatting
+A rebar plugin for code formatting.
 
 ## Build
 

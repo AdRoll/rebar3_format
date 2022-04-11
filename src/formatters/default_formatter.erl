@@ -509,10 +509,10 @@ lay_no_comments(Node, Ctxt) ->
             Es = lay_clause_expressions(erl_syntax:block_expr_body(Node), Ctxt1, fun lay/2),
             sep([text("begin"), nest(Ctxt1#ctxt.break_indent, Es), text("end")]);
         catch_expr ->
-            {Prec, PrecR} = preop_prec('catch'),
+            {_, PrecR} = preop_prec('catch'),
             D = lay(erl_syntax:catch_expr_body(Node), set_prec(Ctxt, PrecR)),
             D1 = follow(text("catch"), D, Ctxt#ctxt.break_indent),
-            maybe_parentheses(D1, Prec, Ctxt);
+            maybe_parentheses(D1, 0, Ctxt);
         class_qualifier ->
             Ctxt1 = set_prec(Ctxt, max_prec()),
             D1 = lay(erl_syntax:class_qualifier_argument(Node), Ctxt1),
