@@ -23,7 +23,8 @@ test_app(_Config) ->
                   "src/comments.erl",
                   "src/ignored_file_config.erl",
                   "src/dodge_macros.erl",
-                  "src/macros_in_specs.erl"]};
+                  "src/macros_in_specs.erl",
+                  "src/receive_after.erl"]};
             _ ->
                 {ignore,
                  ["src/*_ignore.erl",
