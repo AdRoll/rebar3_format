@@ -39,9 +39,8 @@
 -ifdef(macro_def1).
 
 -define(macro_cond1, yep).
-
--else.
-
+%% @todo Revert this to -else. once https://github.com/inaka/katana-code/issues/72 is fixed
+%-else.
 -define(macro_cond1, nope).
 
 -endif.
@@ -49,9 +48,8 @@
 -ifndef(macro_def2).
 
 -define(macro_cond2, nope).
-
--else.
-
+%% @todo Revert this to -else. once https://github.com/inaka/katana-code/issues/72 is fixed
+%-else.
 -define(macro_cond2, yep).
 
 -endif.

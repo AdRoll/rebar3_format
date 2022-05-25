@@ -30,6 +30,7 @@ insert_pragma
 lay_clauses
 lay_items
 old-reliable
+otp25
 paragraph-format
 per-file
 plugin
