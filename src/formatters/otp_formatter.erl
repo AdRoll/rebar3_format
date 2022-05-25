@@ -13,7 +13,10 @@
 -elvis([{elvis_style, atom_naming_convention, #{regex => "^([a-zA-Z][a-z0-9]*_?)*$"}},
         {elvis_style, dont_repeat_yourself, #{min_complexity => 20}}]).
 
--format #{inline_clause_bodies => true}.
+-format #{inline_clause_bodies => true, unquote_atoms => false}.
+
+%% erl_syntax functions that only appear in OTP25
+-dialyzer([no_missing_calls]).
 
 -behaviour(rebar3_formatter).
 -behaviour(rebar3_ast_formatter).
@@ -56,6 +59,7 @@
     case_expr |
     fun_expr |
     if_expr |
+    maybe_expr |
     receive_expr |
     try_expr |
     {function, prettypr:document()} |
@@ -78,7 +82,6 @@
 %% =====================================================================
 %% The following functions examine and modify contexts:
 
-%% @spec (context()) -> integer()
 %% @doc Returns the operator precedence field of the pretty-printer
 %% context.
 %%
@@ -87,7 +90,6 @@
 -spec get_ctxt_precedence(context()) -> integer().
 get_ctxt_precedence(Ctxt) -> Ctxt#ctxt.prec.
 
-%% @spec (context(), integer()) -> context()
 %%
 %% @doc Updates the operator precedence field of the pretty-printer
 %% context. See the {@link //stdlib/erl_parse} module for operator precedences.
@@ -104,14 +106,12 @@ set_prec(Ctxt, Prec) ->
 reset_prec(Ctxt) ->
     set_prec(Ctxt, 0).    % used internally
 
-%% @spec (context()) -> integer()
 %% @doc Returns the paper width field of the pretty-printer context.
 %% @see set_ctxt_paperwidth/2
 
 -spec get_ctxt_paperwidth(context()) -> integer().
 get_ctxt_paperwidth(Ctxt) -> Ctxt#ctxt.paper.
 
-%% @spec (context(), integer()) -> context()
 %%
 %% @doc Updates the paper width field of the pretty-printer context.
 %%
@@ -124,14 +124,12 @@ get_ctxt_paperwidth(Ctxt) -> Ctxt#ctxt.paper.
 -spec set_ctxt_paperwidth(context(), integer()) -> context().
 set_ctxt_paperwidth(Ctxt, W) -> Ctxt#ctxt{paper = W}.
 
-%% @spec (context()) -> integer()
 %% @doc Returns the line width field of the pretty-printer context.
 %% @see set_ctxt_linewidth/2
 
 -spec get_ctxt_linewidth(context()) -> integer().
 get_ctxt_linewidth(Ctxt) -> Ctxt#ctxt.ribbon.
 
-%% @spec (context(), integer()) -> context()
 %%
 %% @doc Updates the line width field of the pretty-printer context.
 %%
@@ -144,28 +142,24 @@ get_ctxt_linewidth(Ctxt) -> Ctxt#ctxt.ribbon.
 -spec set_ctxt_linewidth(context(), integer()) -> context().
 set_ctxt_linewidth(Ctxt, W) -> Ctxt#ctxt{ribbon = W}.
 
-%% @spec (context()) -> hook()
 %% @doc Returns the hook function field of the pretty-printer context.
 %% @see set_ctxt_hook/2
 
 -spec get_ctxt_hook(context()) -> hook().
 get_ctxt_hook(Ctxt) -> Ctxt#ctxt.hook.
 
-%% @spec (context(), hook()) -> context()
 %% @doc Updates the hook function field of the pretty-printer context.
 %% @see get_ctxt_hook/1
 
 -spec set_ctxt_hook(context(), hook()) -> context().
 set_ctxt_hook(Ctxt, Hook) -> Ctxt#ctxt{hook = Hook}.
 
-%% @spec (context()) -> term()
 %% @doc Returns the user data field of the pretty-printer context.
 %% @see set_ctxt_user/2
 
 -spec get_ctxt_user(context()) -> term().
 get_ctxt_user(Ctxt) -> Ctxt#ctxt.user.
 
-%% @spec (context(), term()) -> context()
 %% @doc Updates the user data field of the pretty-printer context.
 %% @see get_ctxt_user/1
 
@@ -188,30 +182,12 @@ init(_, _) -> nostate.
 format_file(File, nostate, Opts) -> rebar3_ast_formatter:format(File, ?MODULE, Opts).
 
 %% =====================================================================
-%% @spec format(Tree::syntaxTree()) -> string()
 %% @equiv format(Tree, [])
 
 -spec format(erl_syntax:syntaxTree()) -> string().
 format(Node) -> format(Node, [], #{}).
 
 %% =====================================================================
-%% @spec format(Tree::syntaxTree(), [pos_integer()], Options::rebar3_formatter:opts()) -> string()
-%%
-%% @type syntaxTree() = erl_syntax:syntaxTree().
-%%
-%% An abstract syntax tree. See the {@link erl_syntax} module for
-%% details.
-%%
-%% @type hook() = (syntaxTree(), context(), Continuation) ->
-%%                            prettypr:document()
-%%            Continuation = (syntaxTree(), context()) ->
-%%                            prettypr:document().
-%%
-%% A call-back function for user-controlled formatting. See {@link
-%% format/2}.
-%%
-%% @type context(). A representation of the current context of the
-%% pretty-printer. Can be accessed in hook functions.
 %%
 %% @doc Pretty-prints/formats an abstract Erlang syntax tree as text. For
 %% example, if you have a `.beam' file that has been compiled with
@@ -286,14 +262,12 @@ format(Node, EmptyLines, Options) ->
     binary_to_list(unicode:characters_to_binary(PreFormatted, E)).
 
 %% =====================================================================
-%% @spec best(Tree::syntaxTree()) -> empty | prettypr:document()
 %% @equiv best(Tree, [])
 
 -spec best(erl_syntax:syntaxTree()) -> empty | prettypr:document().
 best(Node) -> best(Node, []).
 
 %% =====================================================================
-%% @spec best(Tree::syntaxTree(), Options::[term()]) ->
 %%           empty | prettypr:document()
 %%
 %% @doc Creates a fixed "best" abstract layout for a syntax tree. This
@@ -314,14 +288,12 @@ best(Node, Options) ->
     prettypr:best(layout(Node, Options), W, L).
 
 %% =====================================================================
-%% @spec layout(Tree::syntaxTree()) -> prettypr:document()
 %% @equiv layout(Tree, [])
 
 -spec layout(erl_syntax:syntaxTree()) -> prettypr:document().
 layout(Node) -> layout(Node, []).
 
 %% =====================================================================
-%% @spec layout(Tree::syntaxTree(), Options::[term()]) -> prettypr:document()
 %%
 %% @doc Creates an abstract document layout for a syntax tree. The
 %% result represents a set of possible layouts (cf. module `prettypr').
@@ -505,6 +477,7 @@ lay_no_comments(Node, Ctxt) ->
                 {function, N} -> make_fun_clause(N, D1, D2, D3, Ctxt);
                 if_expr -> make_if_clause(D2, D3, Ctxt);
                 case_expr -> make_case_clause(D1, D2, D3, Ctxt);
+                maybe_expr -> make_case_clause(D1, D2, D3, Ctxt);
                 receive_expr -> make_case_clause(D1, D2, D3, Ctxt);
                 try_expr -> make_case_clause(D1, D2, D3, Ctxt);
                 undefined ->
@@ -545,6 +518,27 @@ lay_no_comments(Node, Ctxt) ->
             D1 = lay(erl_syntax:module_qualifier_argument(Node), set_prec(Ctxt, PrecL)),
             D2 = lay(erl_syntax:module_qualifier_body(Node), set_prec(Ctxt, PrecR)),
             beside(D1, beside(text(":"), D2));
+        maybe_expr ->
+            Ctxt1 = reset_prec(Ctxt),
+            D1 = vertical(seq(erl_syntax:maybe_expr_body(Node),
+                              floating(text(",")),
+                              Ctxt1,
+                              fun lay/2)),
+            Es0 = [text("end")],
+            Es1 = case erl_syntax:maybe_expr_else(Node) of
+                      none -> Es0;
+                      ElseNode ->
+                          ElseCs = erl_syntax:else_expr_clauses(ElseNode),
+                          D3 = lay_clauses(ElseCs, maybe_expr, Ctxt1),
+                          [text("else"), nest(Ctxt1#ctxt.break_indent, D3) | Es0]
+                  end,
+            sep([par([text("maybe"), nest(Ctxt1#ctxt.break_indent, D1), hd(Es1)]) | tl(Es1)]);
+        maybe_match_expr ->
+            {PrecL, Prec, PrecR} = inop_prec('='),
+            D1 = lay(erl_syntax:maybe_match_expr_pattern(Node), set_prec(Ctxt, PrecL)),
+            D2 = lay(erl_syntax:maybe_match_expr_body(Node), set_prec(Ctxt, PrecR)),
+            D3 = follow(beside(D1, floating(text(" ?="))), D2, Ctxt#ctxt.break_indent),
+            maybe_parentheses(D3, Prec, Ctxt);
         %%
         %% The rest is in alphabetical order (except map and types)
         %%
@@ -614,7 +608,7 @@ lay_no_comments(Node, Ctxt) ->
             Ctxt1 = reset_prec(Ctxt),
             Es = seq(erl_syntax:block_expr_body(Node), lay_text_float(","), Ctxt1, fun lay/2),
             sep([text("begin"), nest(Ctxt1#ctxt.break_indent, sep(Es)), text("end")]);
-        catch_expr ->
+        'catch_expr' ->
             {Prec, PrecR} = preop_prec('catch'),
             D = lay(erl_syntax:catch_expr_body(Node), set_prec(Ctxt, PrecR)),
             D1 = follow(text("catch"), D, Ctxt#ctxt.break_indent),

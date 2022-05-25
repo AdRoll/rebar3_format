@@ -17,7 +17,7 @@ test_app(_Config) ->
         case string:to_integer(
                  erlang:system_info(otp_release))
         of
-            {N, _} when N >= 23 ->
+            {N, _} when N >= 25 ->
                 {ignore,
                  ["src/*_ignore.erl",
                   "src/comments.erl",
@@ -33,7 +33,7 @@ test_app(_Config) ->
                   "src/dodge_macros.erl",
                   "src/macros_in_specs.erl",
                   "src/receive_after.erl",
-                  "src/otp23.erl"]}
+                  "src/otp25.erl"]}
         end,
     State2 = rebar_state:set(State1, format, [Files, Formatter, IgnoredFiles]),
     {error, _} = verify(State2),

@@ -10,6 +10,12 @@
 %% Allow erl_syntax:syntaxTree/0 type spec
 -elvis([{elvis_style, atom_naming_convention, #{regex => "^([a-zA-Z][a-z0-9]*_?)*$"}}]).
 
+%% 'maybe' and 'else', among others
+-format #{unquote_atoms => false}.
+
+%% erl_syntax functions that only appear in OTP25
+-dialyzer([no_missing_calls]).
+
 -export([init/2, format_file/3, format/3]).
 
 -import(prettypr,
@@ -44,6 +50,7 @@
     simple_fun_expr |
     fun_expr |
     if_expr |
+    maybe_expr |
     receive_expr |
     try_expr |
     {function, prettypr:document()} |
@@ -308,16 +315,7 @@ lay_no_comments(Node, Ctxt) ->
             Pattern = erl_syntax:match_expr_pattern(Node),
             D1 = lay(Pattern, set_prec(Ctxt, PrecL)),
             D2 = lay(erl_syntax:match_expr_body(Node), set_prec(Ctxt, PrecR)),
-            D3 = case erl_syntax:type(Pattern) == underscore
-                      orelse erl_syntax:type(Pattern) == variable
-                             andalso length(erl_syntax:variable_literal(Pattern))
-                                     < Ctxt#ctxt.break_indent
-                 of
-                     true -> %% Single short variable on the left, don't nest
-                         follow(beside(D1, lay_text_float(" =")), D2, Ctxt#ctxt.break_indent);
-                     false -> %% Large pattern, nesting makes sense
-                         sep([beside(D1, lay_text_float(" =")), nest(Ctxt#ctxt.break_indent, D2)])
-                 end,
+            D3 = lay_match_expression(" =", Pattern, D1, D2, Ctxt),
             maybe_parentheses(D3, Prec, Ctxt);
         underscore ->
             text("_");
@@ -342,6 +340,8 @@ lay_no_comments(Node, Ctxt) ->
                 if_expr ->
                     make_if_clause(D2, D3, Ctxt);
                 case_expr ->
+                    make_case_clause(D1, D2, D3, Ctxt);
+                maybe_expr ->
                     make_case_clause(D1, D2, D3, Ctxt);
                 receive_expr ->
                     make_case_clause(D1, D2, D3, Ctxt);
@@ -605,6 +605,25 @@ lay_no_comments(Node, Ctxt) ->
         parentheses ->
             D = lay(erl_syntax:parentheses_body(Node), reset_prec(Ctxt)),
             lay_parentheses(D);
+        maybe_expr ->
+            Ctxt1 = reset_prec(Ctxt),
+            D0 = lay_clause_expressions(erl_syntax:maybe_expr_body(Node), Ctxt1, fun lay/2),
+            D1 = vertical([text("maybe"), nest(Ctxt1#ctxt.break_indent, D0)]),
+            case erl_syntax:maybe_expr_else(Node) of
+                none ->
+                    par([D1, text("end")]);
+                ElseNode ->
+                    ElseCs = erl_syntax:else_expr_clauses(ElseNode),
+                    D3 = lay_clauses(ElseCs, maybe_expr, Ctxt1),
+                    sep([par([D1, text("else")]), nest(Ctxt1#ctxt.break_indent, D3), text("end")])
+            end;
+        maybe_match_expr ->
+            {PrecL, Prec, PrecR} = inop_prec('='),
+            Pattern = erl_syntax:maybe_match_expr_pattern(Node),
+            D1 = lay(Pattern, set_prec(Ctxt, PrecL)),
+            D2 = lay(erl_syntax:maybe_match_expr_body(Node), set_prec(Ctxt, PrecR)),
+            D3 = lay_match_expression(" ?=", Pattern, D1, D2, Ctxt),
+            maybe_parentheses(D3, Prec, Ctxt);
         receive_expr ->
             Ctxt1 = reset_prec(Ctxt),
             case {erl_syntax:receive_expr_clauses(Node), erl_syntax:receive_expr_timeout(Node)} of
@@ -1634,3 +1653,14 @@ get_node_text(Node) ->
 
 lay_double_colon(D1, D2, Ctxt) ->
     par([beside(D1, lay_text_float(" ::")), D2], Ctxt#ctxt.break_indent).
+
+lay_match_expression(Op, Pattern, D1, D2, Ctxt) ->
+    case erl_syntax:type(Pattern) == underscore
+         orelse erl_syntax:type(Pattern) == variable
+                andalso length(erl_syntax:variable_literal(Pattern)) < Ctxt#ctxt.break_indent
+    of
+        true -> %% Single short variable on the left, don't nest
+            follow(beside(D1, lay_text_float(Op)), D2, Ctxt#ctxt.break_indent);
+        false -> %% Large pattern, nesting makes sense
+            sep([beside(D1, lay_text_float(Op)), nest(Ctxt#ctxt.break_indent, D2)])
+    end.
