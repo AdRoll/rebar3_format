@@ -1278,7 +1278,7 @@ lay_bit_types([T | Ts], Ctxt) ->
     beside(lay(T, Ctxt), beside(lay_text_float("-"), lay_bit_types(Ts, Ctxt))).
 
 lay_error_info({L, M, T} = T0, Ctxt) when is_integer(L), is_atom(M) ->
-    case catch apply(M, format_error, [T]) of
+    try apply(M, format_error, [T]) of
         S when is_list(S) ->
             case L > 0 of
                 true ->
@@ -1287,6 +1287,9 @@ lay_error_info({L, M, T} = T0, Ctxt) when is_integer(L), is_atom(M) ->
                     text(S)
             end;
         _ ->
+            lay_concrete(T0, Ctxt)
+    catch
+        _:_ ->
             lay_concrete(T0, Ctxt)
     end;
 lay_error_info(T, Ctxt) ->

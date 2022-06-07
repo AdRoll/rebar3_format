@@ -34,9 +34,9 @@ format(File, Formatter, Opts) ->
                 QuickAST ->
                     Result;
                 NewAST ->
-                    catch error_logger:error_report([{modified_ast, File},
-                                                     {removed, QuickAST -- NewAST},
-                                                     {added, NewAST -- QuickAST}]),
+                    logger:error(#{modified_ast => File,
+                                   removed => QuickAST -- NewAST,
+                                   added => NewAST -- QuickAST}),
                     erlang:error({modified_ast, File, NewFile})
             end
     end.
