@@ -12,13 +12,13 @@ A rebar plugin for code formatting.
 ## Use
 
 ### Note About OTP25+
-As [#314](issues/314) and [#315](issues/315) show, if you use OTP25 or newer, you need to enable all features in your Erlang VM when you're running the formatter.
-This is because `rebar3_format` uses `katana_code` and, to be able to parse code containing new features, `katana_code` **is compiled** with those features enabled. So, even if you don't use the new features yourself, you need them enabled when running the formatter on your code.
-To achieve that, you can set this variable on your development/CI environment:
-
-```bash
-ERL_AFLAGS="-enable-feature all"
-```
+> As [#314](issues/314) and [#315](issues/315) show, if you use OTP25 or newer, you need to enable all features in your Erlang VM when you're running the formatter.
+> This is because `rebar3_format` uses `katana_code` and, to be able to parse code containing new features, `katana_code` **is compiled** with those features enabled. So, even if you don't use the new features yourself, you need them enabled when running the formatter on your code.
+> To achieve that, you can set this variable on your development/CI environment:
+>
+> ```bash
+> ERL_AFLAGS="-enable-feature all"
+> ```
 
 Add the plugin to your rebar config:
 
