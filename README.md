@@ -20,6 +20,8 @@ A rebar plugin for code formatting.
 > ERL_AFLAGS="-enable-feature all"
 > ```
 
+### Format your Code
+
 Add the plugin to your rebar config:
 
 ```erlang
