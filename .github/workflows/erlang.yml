@@ -11,7 +11,7 @@ jobs:
     strategy:
       matrix:
         otp: ['23.3', '24.3', '25.0']
-        rebar: ['3.19.0']
+        rebar: ['3.20.0']
 
     steps:
     - uses: actions/checkout@v2
