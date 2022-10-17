@@ -1,8 +1,8 @@
--module(sort_exported_funcs).
+-module(sort_function_exports).
 
 %% order of the function bodies is not relevant, what the format is the
 %% export list
--format #{sort_exported_funcs => alphabetically}.
+-format #{sort_function_exports => alphabetically}.
 
 -export([abc_first_function/1, second_function/2, second_function/3]).
 

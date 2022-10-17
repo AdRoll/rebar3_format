@@ -76,7 +76,7 @@
          inline_expressions = false :: boolean(),
          spaces_around_arguments = false :: boolean(),
          spaces_around_fields = false :: boolean(),
-         sort_exported_funcs = false :: alphabetically | false,
+         sort_function_exports = false :: alphabetically | false,
          unquote_atoms = true :: boolean(),
          truncate_strings = false :: boolean(),
          parenthesize_infix_operations = false :: boolean(),
@@ -176,7 +176,7 @@ layout(Node, EmptyLines, Options) ->
               truncate_strings = maps:get(truncate_strings, Options, false),
               spaces_around_arguments = maps:get(spaces_around_arguments, Options, false),
               spaces_around_fields = maps:get(spaces_around_fields, Options, false),
-              sort_exported_funcs = maps:get(sort_exported_funcs, Options, false),
+              sort_function_exports = maps:get(sort_function_exports, Options, false),
               empty_lines = EmptyLines,
               encoding = maps:get(encoding, Options, epp:default_encoding())}).
 
@@ -1324,10 +1324,10 @@ lay_application(Name, Arguments, SpacesWithinParentheses, Ctxt) ->
         _ ->
             {PrecL, Prec} = func_prec(),
             MaybeSortedArgs =
-                case Ctxt#ctxt.sort_exported_funcs of
+                case Ctxt#ctxt.sort_function_exports of
                     alphabetically ->
-                        SortFun = fun sort_exported_funcs_alphabetically/2,
-                        sort_exported_funcs(Arguments, SortFun);
+                        SortFun = fun sort_function_exports_alphabetically/2,
+                        sort_function_exports(Arguments, SortFun);
                     false ->
                         Arguments
                 end,
@@ -1353,10 +1353,10 @@ lay_application(Name, Arguments, SpacesWithinParentheses, Ctxt) ->
     end.
 
 %% @doc Might produce a new AST on which the functions in the export list
-%%      are sorted depending on what 'sort_exported_funcs' was set to:
+%%      are sorted depending on what 'sort_function_exports' was set to:
 %%          - alphabetically, if set to 'alphabetically'
 %%          - left as it is, if set to 'false'
-sort_exported_funcs([{tree, list, Attrs, {list, Funcs0, none}}] = Arguments, SortFun) ->
+sort_function_exports([{tree, list, Attrs, {list, Funcs0, none}}] = Arguments, SortFun) ->
     case Attrs of
         %% If the attribute is indeed a export list, and the rule was enabled,
         %% we sort the functions; otherwise, we ignore the attribute.
@@ -1366,12 +1366,12 @@ sort_exported_funcs([{tree, list, Attrs, {list, Funcs0, none}}] = Arguments, Sor
         _ ->
             Arguments
     end;
-sort_exported_funcs(Arguments, _SortFun) ->
+sort_function_exports(Arguments, _SortFun) ->
     Arguments.
 
 %% @doc Returns an altered AST with the exported function list
 %%      sorted first by name and then by arity.
-sort_exported_funcs_alphabetically(FuncInfoA, FuncInfoB) ->
+sort_function_exports_alphabetically(FuncInfoA, FuncInfoB) ->
     %% We unwrap the relevant function info from the AST, namely its name and arity
     {FuncNameA, FuncArityA} = func_name_and_arity_from_ast(FuncInfoA),
     {FuncNameB, FuncArityB} = func_name_and_arity_from_ast(FuncInfoB),
