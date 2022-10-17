@@ -1,6 +1,6 @@
 -module(sort_function_exports).
 
-%% order of the function bodies is not relevant, what the format is the
+%% order of the function bodies is not relevant; what is formatted is the
 %% export list
 -format #{sort_function_exports => alphabetically}.
 
