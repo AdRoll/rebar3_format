@@ -132,7 +132,7 @@ The plugin supports the following configuration options in the `format` section 
             * The default value is `true`.
             * The idea is for users to turn it to `false` only for the module that contain macros that would be broken otherwise.
         + `sort_exported_funcs` (`alphabetically` | `false`)
-            * Specifies if the export list should have be sorted alphabetically (note, that if two functions share the name, they will be sorted by arity).
+            * Specifies if the export list should be sorted alphabetically (note that if two functions share the name, they will be sorted by arity).
             * The default value is `false`.
 * `files` (`[file:filename_all()]`):
     - List of wildcard patterns representing the files that will be formatted by default (i.e. when not using `--files` on command line).
