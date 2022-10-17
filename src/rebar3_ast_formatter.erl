@@ -41,7 +41,7 @@ format(File, Formatter, Opts) ->
 
 %% @doc The 'sort_exported_funcs' option can produce altered AST if the
 %%      export list was sorted. This function checks whether the option was
-%%      present in the option list, and if so, expects ONLY the AST corresponding
+%%      present in the options list, and if so, expects ONLY the AST corresponding to
 %%      the export list to have changed. Thankfully, sorting the export list of both
 %%      the old and new AST will result in the same export list, so we check that too
 %%      before raising an error.
