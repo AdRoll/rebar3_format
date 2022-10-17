@@ -2,19 +2,16 @@
 
 -format #{sort_function_exports => alphabetically}.
 
--export([second_function/3, abc_first_function/1, second_function/2]).
--export([z_definitively_second_function/0, a_is_first_function/0]).
+-export [x/1, x/10, x/5].
+-export([a_is_first_function/0, z_definitively_second_function/0]).
 
-abc_first_function(_) ->
+x(_) ->
     ok.
 
-second_function(_, _, _) ->
-    second_function().
+x(A, B, C, D, E) ->
+    x(A, B, C, D, E, 1, 2, 3, 4, 5).
 
-second_function() ->
-    ok.
-
-second_function(_, _) ->
+x(_, _, _, _, _, _, _, _, _, _) ->
     ok.
 
 z_definitively_second_function() ->
