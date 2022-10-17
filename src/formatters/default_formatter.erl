@@ -1378,12 +1378,7 @@ sort_exported_funcs_alphabetically(FuncInfoA, FuncInfoB) ->
 
     %% If we are comparing two functions with the same name,
     %% they should be ordered by their arity instead.
-    case FuncNameA == FuncNameB of
-        true ->
-            FuncArityA < FuncArityB;
-        false ->
-            FuncNameA < FuncNameB
-    end.
+    {FuncNameA, FuncArityA} < {FuncNameB, FuncArityB}.
 
 func_name_and_arity_from_ast(FuncInfo) ->
     {tree, arity_qualifier, _, InnerFuncInfo} = FuncInfo,
