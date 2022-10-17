@@ -1356,15 +1356,23 @@ lay_application(Name, Arguments, SpacesWithinParentheses, Ctxt) ->
 %%      are sorted depending on what 'sort_function_exports' was set to:
 %%          - alphabetically, if set to 'alphabetically'
 %%          - left as it is, if set to 'false'
-sort_function_exports([{tree, list, Attrs, {list, Funcs0, none}}] = Arguments, SortFun) ->
-    case Attrs of
+sort_function_exports([Arguments0], SortFun) ->
+    Attrs = erl_syntax:get_pos(Arguments0),
+    case erl_anno:text(Attrs) of
         %% If the attribute is indeed a export list, and the rule was enabled,
         %% we sort the functions; otherwise, we ignore the attribute.
-        {attr, [{text, "export"}, {location, _Loc}], [], none} ->
-            Funcs1 = lists:sort(SortFun, Funcs0),
-            [{tree, list, Attrs, {list, Funcs1, none}}];
+        "export" ->
+            case erl_syntax:subtrees(Arguments0) of
+                [] ->
+                    %% node was a leaf node, skip
+                    [Arguments0];
+                [SubTrees0] ->
+                    SubTrees1 = lists:sort(SortFun, SubTrees0),
+                    Arguments1 = erl_syntax:update_tree(Arguments0, [SubTrees1]),
+                    [Arguments1]
+            end;
         _ ->
-            Arguments
+            [Arguments0]
     end;
 sort_function_exports(Arguments, _SortFun) ->
     Arguments.
@@ -1372,7 +1380,7 @@ sort_function_exports(Arguments, _SortFun) ->
 %% @doc Returns an altered AST with the exported function list
 %%      sorted first by name and then by arity.
 sort_function_exports_alphabetically(FuncInfoA, FuncInfoB) ->
-    %% We unwrap the relevant function info from the AST, namely its name and arity
+    %% We get the relevant function info from the AST, namely its name and arity
     {FuncNameA, FuncArityA} = func_name_and_arity_from_ast(FuncInfoA),
     {FuncNameB, FuncArityB} = func_name_and_arity_from_ast(FuncInfoB),
 
@@ -1380,10 +1388,13 @@ sort_function_exports_alphabetically(FuncInfoA, FuncInfoB) ->
     %% they should be ordered by their arity instead.
     {FuncNameA, FuncArityA} < {FuncNameB, FuncArityB}.
 
-func_name_and_arity_from_ast(FuncInfo) ->
-    {tree, arity_qualifier, _, InnerFuncInfo} = FuncInfo,
-    {arity_qualifier, {tree, atom, _, FuncName}, {tree, integer, _, FuncArity}} =
-        InnerFuncInfo,
+func_name_and_arity_from_ast(FuncSubTree) ->
+    FuncName =
+        erl_syntax:data(
+            erl_syntax:arity_qualifier_body(FuncSubTree)),
+    FuncArity =
+        erl_syntax:data(
+            erl_syntax:arity_qualifier_argument(FuncSubTree)),
     {FuncName, FuncArity}.
 
 %% @doc Recursive function that groups nested applications of the same infix

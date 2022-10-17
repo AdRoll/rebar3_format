@@ -55,8 +55,14 @@ compare_asts_if_sort_function_exports(QuickAST, NewAST, File, NewFile, Opts) ->
                            added => AddedAST}),
             erlang:error({modified_ast, File, NewFile});
         alphabetically ->
-            case {RemovedAST, AddedAST} of
-                {[{attribute, no, export, RemovedFuns}], [{attribute, no, export, AddedFuns}]} ->
+            SearchFun =
+                fun ({attribute, no, export, Funs}) when is_list(Funs) ->
+                        true;
+                    (_) ->
+                        false
+                end,
+            case {lists:filter(SearchFun, RemovedAST), lists:filter(SearchFun, AddedAST)} of
+                {[_ | _] = RemovedFuns, [_ | _] = AddedFuns} ->
                     lists:sort(RemovedFuns) =:= lists:sort(AddedFuns);
                 _ ->
                     logger:error(#{modified_ast => File,
