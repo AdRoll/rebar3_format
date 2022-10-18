@@ -76,7 +76,8 @@
          inline_expressions = false :: boolean(),
          spaces_around_arguments = false :: boolean(),
          spaces_around_fields = false :: boolean(),
-         sort_function_exports = false :: alphabetically | false,
+         sort_function_exports = false :: boolean(),
+         sort_function_exports_match = false :: boolean(),
          unquote_atoms = true :: boolean(),
          truncate_strings = false :: boolean(),
          parenthesize_infix_operations = false :: boolean(),
@@ -462,6 +463,7 @@ lay_no_comments(Node, Ctxt) ->
                         %% format the lists within these attributes
                         Ctxt2 =
                             Ctxt1#ctxt{force_indentation = true,
+                                       sort_function_exports_match = true,
                                        inline_items = Ctxt1#ctxt.inline_attributes},
                         lay_application(N, Args, Ctxt2);
                     {Tag, Args}
@@ -1324,8 +1326,9 @@ lay_application(Name, Arguments, SpacesWithinParentheses, Ctxt) ->
         _ ->
             {PrecL, Prec} = func_prec(),
             MaybeSortedArgs =
-                case Ctxt#ctxt.sort_function_exports of
-                    alphabetically ->
+                case Ctxt#ctxt.sort_function_exports_match andalso Ctxt#ctxt.sort_function_exports
+                of
+                    true ->
                         SortFun = fun sort_function_exports_alphabetically/2,
                         sort_function_exports(Arguments, SortFun);
                     false ->
@@ -1353,26 +1356,16 @@ lay_application(Name, Arguments, SpacesWithinParentheses, Ctxt) ->
     end.
 
 %% @doc Might produce a new AST on which the functions in the export list
-%%      are sorted depending on what 'sort_function_exports' was set to:
-%%          - alphabetically, if set to 'alphabetically'
-%%          - left as it is, if set to 'false'
+%%      are sorted alphabetically if 'sort_function_exports' was set to 'true'
 sort_function_exports([Arguments0], SortFun) ->
-    Attrs = erl_syntax:get_pos(Arguments0),
-    case erl_anno:text(Attrs) of
-        %% If the attribute is indeed a export list, and the rule was enabled,
-        %% we sort the functions; otherwise, we ignore the attribute.
-        "export" ->
-            case erl_syntax:subtrees(Arguments0) of
-                [] ->
-                    %% node was a leaf node, skip
-                    [Arguments0];
-                [SubTrees0] ->
-                    SubTrees1 = lists:sort(SortFun, SubTrees0),
-                    Arguments1 = erl_syntax:update_tree(Arguments0, [SubTrees1]),
-                    [Arguments1]
-            end;
-        _ ->
-            [Arguments0]
+    case erl_syntax:subtrees(Arguments0) of
+        [] ->
+            %% node was a leaf node, skip
+            [Arguments0];
+        [SubTrees0] ->
+            SubTrees1 = lists:sort(SortFun, SubTrees0),
+            Arguments1 = erl_syntax:update_tree(Arguments0, [SubTrees1]),
+            [Arguments1]
     end;
 sort_function_exports(Arguments, _SortFun) ->
     Arguments.

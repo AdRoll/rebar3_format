@@ -1,6 +1,6 @@
 -module(sort_function_exports_uppercase_names).
 
--format #{sort_function_exports => alphabetically}.
+-format #{sort_function_exports => true}.
 
 -export(['SECOND_FUNCTION'/3, 'ABC_FIRST_FUNCTION'/1, 'SECOND_FUNCTION'/2, lowercase_function/0]).
 

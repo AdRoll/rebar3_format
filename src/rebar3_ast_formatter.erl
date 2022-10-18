@@ -54,7 +54,7 @@ compare_asts_if_sort_function_exports(QuickAST, NewAST, File, NewFile, Opts) ->
                            removed => RemovedAST,
                            added => AddedAST}),
             erlang:error({modified_ast, File, NewFile});
-        alphabetically ->
+        true ->
             SearchFun =
                 fun ({attribute, no, export, Funs}) when is_list(Funs) ->
                         true;

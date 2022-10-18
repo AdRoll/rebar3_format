@@ -1,6 +1,6 @@
 -module(sort_function_exports_multiple_export_lists).
 
--format #{sort_function_exports => alphabetically}.
+-format #{sort_function_exports => true}.
 
 -export [x/1, x/10, x/5].
 -export([a_is_first_function/0, z_definitively_second_function/0]).
