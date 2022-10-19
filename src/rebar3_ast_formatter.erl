@@ -34,9 +34,40 @@ format(File, Formatter, Opts) ->
                 QuickAST ->
                     Result;
                 NewAST ->
+                    compare_asts_if_sort_function_exports(QuickAST, NewAST, File, NewFile, Opts),
+                    Result
+            end
+    end.
+
+%% @doc The 'sort_function_exports' option can produce altered AST if the
+%%      export list was sorted. This function checks whether the option was
+%%      present in the options list, and if so, expects ONLY the AST corresponding to
+%%      the export list to have changed. Thankfully, sorting the export list of both
+%%      the old and new AST will result in the same export list, so we check that too
+%%      before raising an error.
+compare_asts_if_sort_function_exports(QuickAST, NewAST, File, NewFile, Opts) ->
+    RemovedAST = QuickAST -- NewAST,
+    AddedAST = NewAST -- QuickAST,
+    case maps:get(sort_function_exports, Opts, false) of
+        false ->
+            logger:error(#{modified_ast => File,
+                           removed => RemovedAST,
+                           added => AddedAST}),
+            erlang:error({modified_ast, File, NewFile});
+        true ->
+            SearchFun =
+                fun ({attribute, no, export, Funs}) when is_list(Funs) ->
+                        true;
+                    (_) ->
+                        false
+                end,
+            case {lists:filter(SearchFun, RemovedAST), lists:filter(SearchFun, AddedAST)} of
+                {[_ | _] = RemovedFuns, [_ | _] = AddedFuns} ->
+                    lists:sort(RemovedFuns) =:= lists:sort(AddedFuns);
+                _ ->
                     logger:error(#{modified_ast => File,
-                                   removed => QuickAST -- NewAST,
-                                   added => NewAST -- QuickAST}),
+                                   removed => RemovedAST,
+                                   added => AddedAST}),
                     erlang:error({modified_ast, File, NewFile})
             end
     end.

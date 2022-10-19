@@ -76,6 +76,8 @@
          inline_expressions = false :: boolean(),
          spaces_around_arguments = false :: boolean(),
          spaces_around_fields = false :: boolean(),
+         sort_function_exports = false :: boolean(),
+         sort_function_exports_match = false :: boolean(),
          unquote_atoms = true :: boolean(),
          truncate_strings = false :: boolean(),
          parenthesize_infix_operations = false :: boolean(),
@@ -175,6 +177,7 @@ layout(Node, EmptyLines, Options) ->
               truncate_strings = maps:get(truncate_strings, Options, false),
               spaces_around_arguments = maps:get(spaces_around_arguments, Options, false),
               spaces_around_fields = maps:get(spaces_around_fields, Options, false),
+              sort_function_exports = maps:get(sort_function_exports, Options, false),
               empty_lines = EmptyLines,
               encoding = maps:get(encoding, Options, epp:default_encoding())}).
 
@@ -460,6 +463,7 @@ lay_no_comments(Node, Ctxt) ->
                         %% format the lists within these attributes
                         Ctxt2 =
                             Ctxt1#ctxt{force_indentation = true,
+                                       sort_function_exports_match = true,
                                        inline_items = Ctxt1#ctxt.inline_attributes},
                         lay_application(N, Args, Ctxt2);
                     {Tag, Args}
@@ -1321,7 +1325,16 @@ lay_application(Name, Arguments, SpacesWithinParentheses, Ctxt) ->
             lay_application(MacroVar, Args, SpacesWithinParentheses, Ctxt);
         _ ->
             {PrecL, Prec} = func_prec(),
-            {CommentedName, CommentedArgs} = move_comments(Name, Arguments),
+            MaybeSortedArgs =
+                case Ctxt#ctxt.sort_function_exports_match andalso Ctxt#ctxt.sort_function_exports
+                of
+                    true ->
+                        SortFun = fun sort_function_exports_alphabetically/2,
+                        sort_function_exports(Arguments, SortFun);
+                    false ->
+                        Arguments
+                end,
+            {CommentedName, CommentedArgs} = move_comments(Name, MaybeSortedArgs),
             DName = beside(lay(CommentedName, set_prec(Ctxt, PrecL)), text("(")),
             DArgs = lay_items(CommentedArgs, reset_prec(Ctxt), fun lay/2),
             DClosingParen = lay_text_float(")"),
@@ -1341,6 +1354,41 @@ lay_application(Name, Arguments, SpacesWithinParentheses, Ctxt) ->
                 end,
             maybe_parentheses(D, Prec, Ctxt)
     end.
+
+%% @doc Might produce a new AST on which the functions in the export list
+%%      are sorted alphabetically if 'sort_function_exports' was set to 'true'
+sort_function_exports([Arguments0], SortFun) ->
+    case erl_syntax:subtrees(Arguments0) of
+        [] ->
+            %% node was a leaf node, skip
+            [Arguments0];
+        [SubTrees0] ->
+            SubTrees1 = lists:sort(SortFun, SubTrees0),
+            Arguments1 = erl_syntax:update_tree(Arguments0, [SubTrees1]),
+            [Arguments1]
+    end;
+sort_function_exports(Arguments, _SortFun) ->
+    Arguments.
+
+%% @doc Returns an altered AST with the exported function list
+%%      sorted first by name and then by arity.
+sort_function_exports_alphabetically(FuncInfoA, FuncInfoB) ->
+    %% We get the relevant function info from the AST, namely its name and arity
+    {FuncNameA, FuncArityA} = func_name_and_arity_from_ast(FuncInfoA),
+    {FuncNameB, FuncArityB} = func_name_and_arity_from_ast(FuncInfoB),
+
+    %% If we are comparing two functions with the same name,
+    %% they should be ordered by their arity instead.
+    {FuncNameA, FuncArityA} < {FuncNameB, FuncArityB}.
+
+func_name_and_arity_from_ast(FuncSubTree) ->
+    FuncName =
+        erl_syntax:data(
+            erl_syntax:arity_qualifier_body(FuncSubTree)),
+    FuncArity =
+        erl_syntax:data(
+            erl_syntax:arity_qualifier_argument(FuncSubTree)),
+    {FuncName, FuncArity}.
 
 %% @doc Recursive function that groups nested applications of the same infix
 %%      expression as a single list of docs.
