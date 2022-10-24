@@ -50,7 +50,7 @@ rebar3
 rebar3_formatter
 require_pragma
 standalone
-sort_function_exports
+sort_arity_qualifiers
 todo
 unparseable
 user-defined

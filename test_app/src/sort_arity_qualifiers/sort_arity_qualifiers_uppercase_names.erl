@@ -1,6 +1,6 @@
--module(sort_function_exports_uppercase_names).
+-module(sort_arity_qualifiers_uppercase_names).
 
--format #{sort_function_exports => true}.
+-format #{sort_arity_qualifiers => true}.
 
 -export(['SECOND_FUNCTION'/3, 'ABC_FIRST_FUNCTION'/1, 'SECOND_FUNCTION'/2, lowercase_function/0]).
 

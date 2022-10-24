@@ -76,8 +76,8 @@
          inline_expressions = false :: boolean(),
          spaces_around_arguments = false :: boolean(),
          spaces_around_fields = false :: boolean(),
-         sort_function_exports = false :: boolean(),
-         sort_function_exports_match = false :: boolean(),
+         sort_arity_qualifiers = false :: boolean(),
+         sort_arity_qualifiers_match = false :: boolean(),
          unquote_atoms = true :: boolean(),
          truncate_strings = false :: boolean(),
          parenthesize_infix_operations = false :: boolean(),
@@ -177,7 +177,7 @@ layout(Node, EmptyLines, Options) ->
               truncate_strings = maps:get(truncate_strings, Options, false),
               spaces_around_arguments = maps:get(spaces_around_arguments, Options, false),
               spaces_around_fields = maps:get(spaces_around_fields, Options, false),
-              sort_function_exports = maps:get(sort_function_exports, Options, false),
+              sort_arity_qualifiers = maps:get(sort_arity_qualifiers, Options, false),
               empty_lines = EmptyLines,
               encoding = maps:get(encoding, Options, epp:default_encoding())}).
 
@@ -442,15 +442,17 @@ lay_no_comments(Node, Ctxt) ->
                         D2 = lay(concrete_dodging_macros(Type), Ctxt1),
                         lay_double_colon(D1, D2, Ctxt1);
                     {Tag, [FuncNames]} when Tag =:= export_type; Tag =:= optional_callbacks ->
-                        As = unfold_function_names(FuncNames),
+                        As0 = unfold_function_names(FuncNames),
+                        Ctxt2 = Ctxt1#ctxt{sort_arity_qualifiers_match = true},
+                        As = maybe_sort_arity_qualifiers(As0, Tag, Ctxt2),
 
                         %% We force inlining of list items and use inline_attributes to
                         %% format the list of functions
-                        Ctxt2 =
-                            Ctxt1#ctxt{force_indentation = true,
+                        Ctxt3 =
+                            Ctxt2#ctxt{force_indentation = true,
                                        inline_items = Ctxt1#ctxt.inline_attributes},
-                        beside(lay(N, Ctxt1),
-                               beside(text("("), beside(lay(As, Ctxt2), lay_text_float(")"))));
+                        beside(lay(N, Ctxt2),
+                               beside(text("("), beside(lay(As, Ctxt3), lay_text_float(")"))));
                     {on_load, [FuncName]} ->
                         As = unfold_function_name(FuncName),
                         beside(lay(N, Ctxt1), beside(lay_text_float(" "), lay(As, Ctxt1)));
@@ -463,7 +465,7 @@ lay_no_comments(Node, Ctxt) ->
                         %% format the lists within these attributes
                         Ctxt2 =
                             Ctxt1#ctxt{force_indentation = true,
-                                       sort_function_exports_match = true,
+                                       sort_arity_qualifiers_match = true,
                                        inline_items = Ctxt1#ctxt.inline_attributes},
                         lay_application(N, Args, Ctxt2);
                     {Tag, Args}
@@ -1325,15 +1327,7 @@ lay_application(Name, Arguments, SpacesWithinParentheses, Ctxt) ->
             lay_application(MacroVar, Args, SpacesWithinParentheses, Ctxt);
         _ ->
             {PrecL, Prec} = func_prec(),
-            MaybeSortedArgs =
-                case Ctxt#ctxt.sort_function_exports_match andalso Ctxt#ctxt.sort_function_exports
-                of
-                    true ->
-                        SortFun = fun sort_function_exports_alphabetically/2,
-                        sort_function_exports(Arguments, SortFun);
-                    false ->
-                        Arguments
-                end,
+            MaybeSortedArgs = maybe_sort_arity_qualifiers(Arguments, export, Ctxt),
             {CommentedName, CommentedArgs} = move_comments(Name, MaybeSortedArgs),
             DName = beside(lay(CommentedName, set_prec(Ctxt, PrecL)), text("(")),
             DArgs = lay_items(CommentedArgs, reset_prec(Ctxt), fun lay/2),
@@ -1355,9 +1349,41 @@ lay_application(Name, Arguments, SpacesWithinParentheses, Ctxt) ->
             maybe_parentheses(D, Prec, Ctxt)
     end.
 
-%% @doc Might produce a new AST on which the functions in the export list
-%%      are sorted alphabetically if 'sort_function_exports' was set to 'true'
-sort_function_exports([Arguments0], SortFun) ->
+%% @doc Might produce a new AST node if the following criteria is met:
+%%        1. we know that the AST node is ONLY a list of arity qualifiers
+%%           (e.g.: [name/0]), and nothing else (no other kind of AST nodes
+%%           in the list)
+%%        2. the 'sort_arity_qualifiers' option was set to true
+%%      In short, we only will sort arity qualifiers present in the '-export',
+%%      '-export_type', and '-optional_callbacks' attributes.
+maybe_sort_arity_qualifiers(AST, export, Ctxt) ->
+    case Ctxt#ctxt.sort_arity_qualifiers_match andalso Ctxt#ctxt.sort_arity_qualifiers of
+        true ->
+            SortFun = fun sort_arity_qualifiers_alphabetically/2,
+            sort_arity_qualifiers(AST, export, SortFun);
+        false ->
+            AST
+    end;
+maybe_sort_arity_qualifiers(OriginalAST, Tag, Ctxt)
+    when Tag =:= export_type; Tag =:= optional_callbacks ->
+    ArityQualifiers = erl_syntax:list_elements(OriginalAST),
+    case Ctxt#ctxt.sort_arity_qualifiers_match andalso Ctxt#ctxt.sort_arity_qualifiers of
+        true ->
+            SortFun = fun sort_arity_qualifiers_alphabetically/2,
+            SortedArityQualifiers = sort_arity_qualifiers(ArityQualifiers, Tag, SortFun),
+            erl_syntax:update_tree(OriginalAST, [SortedArityQualifiers]);
+        false ->
+            OriginalAST
+    end;
+maybe_sort_arity_qualifiers(AST, _, _Ctxt) ->
+    AST.
+
+%% @doc Might produce a new AST on which the arity qualifiers are sorted
+%%      alphabetically if 'sort_arity_qualifiers' was set to 'true'.
+%%      These arity qualifiers are the items in the export lists, export_type lists,
+%%      and other module attributes that contain function references in the form of
+%%      '[fun1/0, fun2/1]'.
+sort_arity_qualifiers([Arguments0], export, SortFun) ->
     case erl_syntax:subtrees(Arguments0) of
         [] ->
             %% node was a leaf node, skip
@@ -1367,12 +1393,19 @@ sort_function_exports([Arguments0], SortFun) ->
             Arguments1 = erl_syntax:update_tree(Arguments0, [SubTrees1]),
             [Arguments1]
     end;
-sort_function_exports(Arguments, _SortFun) ->
-    Arguments.
+sort_arity_qualifiers(Arguments, Tag, SortFun)
+    when Tag =:= export_type; Tag =:= optional_callbacks ->
+    %% The 'Arguments' variable is a list AST node for export lists,
+    %% and a list of tree AST nodes for export_type lists. To reuse the code
+    %% for both cases, we have to wrap the export_type AST in a list AST node,
+    %% sort it, and then unwrap it.
+    [SortedExportTypesListNode] =
+        sort_arity_qualifiers([erl_syntax:list(Arguments)], export, SortFun),
+    erl_syntax:list_elements(SortedExportTypesListNode).
 
-%% @doc Returns an altered AST with the exported function list
+%% @doc Returns an altered AST with the arity qualifiers list
 %%      sorted first by name and then by arity.
-sort_function_exports_alphabetically(FuncInfoA, FuncInfoB) ->
+sort_arity_qualifiers_alphabetically(FuncInfoA, FuncInfoB) ->
     %% We get the relevant function info from the AST, namely its name and arity
     {FuncNameA, FuncArityA} = func_name_and_arity_from_ast(FuncInfoA),
     {FuncNameB, FuncArityB} = func_name_and_arity_from_ast(FuncInfoB),
