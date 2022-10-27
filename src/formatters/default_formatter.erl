@@ -1379,20 +1379,17 @@ maybe_sort_arity_qualifiers(OriginalAST, Ctxt) ->
 %%      These arity qualifiers are the items in the export lists, export_type lists,
 %%      and other module attributes that contain function references in the form of
 %%      '[fun1/0, fun2/1]'.
+do_sort_arity_qualifiers(Arguments0) when is_list(Arguments0) ->
+    [Sorted] = do_sort_arity_qualifiers(erl_syntax:list(Arguments0)),
+    erl_syntax:list_elements(Sorted);
 do_sort_arity_qualifiers(Arguments0) ->
-    case is_list(Arguments0) of
-        true ->
-            [Sorted] = do_sort_arity_qualifiers(erl_syntax:list(Arguments0)),
-            erl_syntax:list_elements(Sorted);
-        false ->
-            case erl_syntax:subtrees(Arguments0) of
-                [] ->
-                    %% node was a leaf node, skip
-                    [Arguments0];
-                [SubTrees0] ->
-                    SubTrees1 = lists:sort(fun sort_arity_qualifiers_alphabetically/2, SubTrees0),
-                    [erl_syntax:update_tree(Arguments0, [SubTrees1])]
-            end
+    case erl_syntax:subtrees(Arguments0) of
+        [] ->
+            %% node was a leaf node, skip
+            [Arguments0];
+        [SubTrees0] ->
+            SubTrees1 = lists:sort(fun sort_arity_qualifiers_alphabetically/2, SubTrees0),
+            [erl_syntax:update_tree(Arguments0, [SubTrees1])]
     end.
 
 %% @doc Returns an altered AST with the arity qualifiers list
