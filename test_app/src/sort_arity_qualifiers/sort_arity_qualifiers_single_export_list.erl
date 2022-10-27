@@ -1,10 +1,10 @@
--module(sort_function_exports).
+-module(sort_arity_qualifiers_single_export_list).
 
 %% order of the function bodies is not relevant; what is formatted is the
 %% export list
--format #{sort_function_exports => true}.
+-format #{sort_arity_qualifiers => true}.
 
--export([abc_first_function/1, second_function/2, second_function/3]).
+-export([second_function/3, abc_first_function/1, second_function/2]).
 
 abc_first_function(_) ->
     ok.

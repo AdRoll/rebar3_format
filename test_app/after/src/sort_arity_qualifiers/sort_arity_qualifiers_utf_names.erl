@@ -1,6 +1,6 @@
--module(sort_function_exports_utf_names).
+-module(sort_arity_qualifiers_utf_names).
 
--format #{sort_function_exports => true}.
+-format #{sort_arity_qualifiers => true}.
 
 -export([abc/0, '👁👄👁'/0, '😎'/0]).
 

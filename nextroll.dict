@@ -4,6 +4,9 @@
 --no-index
 --no-pager
 -elvis
+-export
+-export_type
+-optional_callbacks
 -format
 .beam
 arity
@@ -18,6 +21,7 @@ erl_syntax
 erlang
 erlfmt
 escripts
+export_type
 fully-qualified
 fun-expression
 github
@@ -50,7 +54,7 @@ rebar3
 rebar3_formatter
 require_pragma
 standalone
-sort_function_exports
+sort_arity_qualifiers
 todo
 unparseable
 user-defined

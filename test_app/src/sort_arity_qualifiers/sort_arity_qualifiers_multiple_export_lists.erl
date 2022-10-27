@@ -1,8 +1,8 @@
--module(sort_function_exports_multiple_export_lists).
+-module(sort_arity_qualifiers_multiple_export_lists).
 
--format #{sort_function_exports => true}.
+-format #{sort_arity_qualifiers => true}.
 
--export([x/1, x/5, x/10]).
+-export [x/1, x/10, x/5].
 -export([a_is_first_function/0, z_definitively_second_function/0]).
 
 x(_) ->
