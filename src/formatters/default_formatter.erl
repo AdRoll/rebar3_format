@@ -444,7 +444,7 @@ lay_no_comments(Node, Ctxt) ->
                     {Tag, [FuncNames]} when Tag =:= export_type; Tag =:= optional_callbacks ->
                         As0 = unfold_function_names(FuncNames),
                         Ctxt2 = Ctxt1#ctxt{sort_arity_qualifiers_match = true},
-                        As = maybe_sort_arity_qualifiers(As0, Tag, Ctxt2),
+                        As = maybe_sort_arity_qualifiers(As0, Ctxt2),
 
                         %% We force inlining of list items and use inline_attributes to
                         %% format the list of functions
@@ -1327,7 +1327,7 @@ lay_application(Name, Arguments, SpacesWithinParentheses, Ctxt) ->
             lay_application(MacroVar, Args, SpacesWithinParentheses, Ctxt);
         _ ->
             {PrecL, Prec} = func_prec(),
-            MaybeSortedArgs = maybe_sort_arity_qualifiers(Arguments, export, Ctxt),
+            MaybeSortedArgs = maybe_sort_arity_qualifiers(Arguments, Ctxt),
             {CommentedName, CommentedArgs} = move_comments(Name, MaybeSortedArgs),
             DName = beside(lay(CommentedName, set_prec(Ctxt, PrecL)), text("(")),
             DArgs = lay_items(CommentedArgs, reset_prec(Ctxt), fun lay/2),
@@ -1356,52 +1356,44 @@ lay_application(Name, Arguments, SpacesWithinParentheses, Ctxt) ->
 %%        2. the 'sort_arity_qualifiers' option was set to true
 %%      In short, we only will sort arity qualifiers present in the '-export',
 %%      '-export_type', and '-optional_callbacks' attributes.
-maybe_sort_arity_qualifiers(AST, export, Ctxt) ->
+maybe_sort_arity_qualifiers(OriginalAST, Ctxt) ->
+    %% The 'OriginalAST' variable is a #list{} AST node for export lists,
+    %% and a list of #tree{} AST nodes for both export_type and optional_callbacks
+    %% lists. In order to unify the code handling the sorting for any of the cases,
+    %% we have to wrap the list of #tree{} AST nodes in a #list{} AST node, sort it,
+    %% and then unwrap it.
     case Ctxt#ctxt.sort_arity_qualifiers_match andalso Ctxt#ctxt.sort_arity_qualifiers of
-        true ->
-            SortFun = fun sort_arity_qualifiers_alphabetically/2,
-            sort_arity_qualifiers(AST, export, SortFun);
         false ->
-            AST
-    end;
-maybe_sort_arity_qualifiers(OriginalAST, Tag, Ctxt)
-    when Tag =:= export_type; Tag =:= optional_callbacks ->
-    ArityQualifiers = erl_syntax:list_elements(OriginalAST),
-    case Ctxt#ctxt.sort_arity_qualifiers_match andalso Ctxt#ctxt.sort_arity_qualifiers of
+            OriginalAST;
+        true when is_list(OriginalAST) ->
+            [UnwrappedAST] = OriginalAST,
+            do_sort_arity_qualifiers(UnwrappedAST);
         true ->
-            SortFun = fun sort_arity_qualifiers_alphabetically/2,
-            SortedArityQualifiers = sort_arity_qualifiers(ArityQualifiers, Tag, SortFun),
-            erl_syntax:update_tree(OriginalAST, [SortedArityQualifiers]);
-        false ->
-            OriginalAST
-    end;
-maybe_sort_arity_qualifiers(AST, _, _Ctxt) ->
-    AST.
+            ArityQualifiers = erl_syntax:list_elements(OriginalAST),
+            SortedArityQualifiers = do_sort_arity_qualifiers(ArityQualifiers),
+            erl_syntax:update_tree(OriginalAST, [SortedArityQualifiers])
+    end.
 
 %% @doc Might produce a new AST on which the arity qualifiers are sorted
 %%      alphabetically if 'sort_arity_qualifiers' was set to 'true'.
 %%      These arity qualifiers are the items in the export lists, export_type lists,
 %%      and other module attributes that contain function references in the form of
 %%      '[fun1/0, fun2/1]'.
-sort_arity_qualifiers([Arguments0], export, SortFun) ->
-    case erl_syntax:subtrees(Arguments0) of
-        [] ->
-            %% node was a leaf node, skip
-            [Arguments0];
-        [SubTrees0] ->
-            SubTrees1 = lists:sort(SortFun, SubTrees0),
-            Arguments1 = erl_syntax:update_tree(Arguments0, [SubTrees1]),
-            [Arguments1]
-    end;
-sort_arity_qualifiers(Arguments, Tag, SortFun)
-    when Tag =:= export_type; Tag =:= optional_callbacks ->
-    %% The 'Arguments' variable is a list AST node for export lists,
-    %% and a list of tree AST nodes for export_type lists. To reuse the code
-    %% for both cases, we have to wrap the export_type AST in a list AST node,
-    %% sort it, and then unwrap it.
-    [SortedExportTypesListNode] =
-        sort_arity_qualifiers([erl_syntax:list(Arguments)], export, SortFun),
-    erl_syntax:list_elements(SortedExportTypesListNode).
+do_sort_arity_qualifiers(Arguments0) ->
+    case is_list(Arguments0) of
+        true ->
+            [Sorted] = do_sort_arity_qualifiers(erl_syntax:list(Arguments0)),
+            erl_syntax:list_elements(Sorted);
+        false ->
+            case erl_syntax:subtrees(Arguments0) of
+                [] ->
+                    %% node was a leaf node, skip
+                    [Arguments0];
+                [SubTrees0] ->
+                    SubTrees1 = lists:sort(fun sort_arity_qualifiers_alphabetically/2, SubTrees0),
+                    [erl_syntax:update_tree(Arguments0, [SubTrees1])]
+            end
+    end.
 
 %% @doc Returns an altered AST with the arity qualifiers list
 %%      sorted first by name and then by arity.
