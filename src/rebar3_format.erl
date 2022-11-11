@@ -1,9 +1,9 @@
 %%% @doc Main entry point for the rebar3 format plugin
 -module(rebar3_format).
 
--elvis({elvis_style, no_call, disable}).
+-elvis([{elvis_style, no_debug_call, disable}]).
 
--hank({unnecessary_function_argument, [{main, 1, 1}]}).
+-hank([{unnecessary_function_arguments, [{main, 1, 1}]}]).
 
 -export([init/1, main/1]).
 
