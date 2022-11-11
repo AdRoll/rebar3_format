@@ -14,3 +14,4 @@ modified_ast
 o_o
 otp_formatter
 test_app
+rebar3_format
