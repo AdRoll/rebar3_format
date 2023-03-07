@@ -12,7 +12,9 @@
 %% Allow erl_syntax:syntaxTree/0 type spec and allow us to preserve original OTP code
 -elvis([{elvis_style, atom_naming_convention, #{regex => "^([a-zA-Z][a-z0-9]*_?)*$"}},
         {elvis_style, dont_repeat_yourself, #{min_complexity => 20}},
-        {elvis_style, no_catch_expressions, disable}]).
+        {elvis_style, no_catch_expressions, disable},
+        {elvis_style, no_import, disable},
+        {elvis_style, export_used_types, disable}]).
 
 -format #{inline_clause_bodies => true, unquote_atoms => false}.
 

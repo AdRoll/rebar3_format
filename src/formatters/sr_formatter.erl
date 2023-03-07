@@ -2,6 +2,9 @@
 %%%      <a target="_blank" href="https://github.com/old-reliable/steamroller">steamroller</a>.
 -module(sr_formatter).
 
+%% @todo Remove once https://github.com/inaka/elvis_core/issues/308 is dealt with
+-elvis([{elvis_style, export_used_types, disable}]).
+
 -behaviour(rebar3_formatter).
 
 -export([init/2, format_file/3]).
