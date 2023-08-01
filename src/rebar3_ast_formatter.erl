@@ -58,6 +58,10 @@ compare_asts_if_sort_arity_qualifiers(QuickAST, NewAST, File, NewFile, Opts) ->
             SearchFun =
                 fun ({attribute, no, export, Funs}) when is_list(Funs) ->
                         true;
+                    ({attribute, no, export_type, Funs}) when is_list(Funs) ->
+                        true;
+                    ({attribute, no, optional_callbacks, Funs}) when is_list(Funs) ->
+                        true;
                     (_) ->
                         false
                 end,
