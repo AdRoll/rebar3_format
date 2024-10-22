@@ -664,6 +664,11 @@ lay_no_comments(Node, Ctxt) ->
             D1 = lay(erl_syntax:binary_generator_pattern(Node), Ctxt1),
             D2 = lay(erl_syntax:binary_generator_body(Node), Ctxt1),
             par([D1, beside(text("<= "), D2)], Ctxt1#ctxt.break_indent);
+        map_generator ->
+            Ctxt1 = reset_prec(Ctxt),
+            D1 = lay(erl_syntax:map_generator_pattern(Node), Ctxt1),
+            D2 = lay(erl_syntax:map_generator_body(Node), Ctxt1),
+            par([D1, beside(text("<- "), D2)], Ctxt1#ctxt.break_indent);
         implicit_fun ->
             D = lay(erl_syntax:implicit_fun_name(Node), reset_prec(Ctxt)),
             beside(lay_text_float("fun "), D);
@@ -679,6 +684,12 @@ lay_no_comments(Node, Ctxt) ->
             D2 = par(seq(erl_syntax:binary_comp_body(Node), lay_text_float(","), Ctxt1, fun lay/2)),
             beside(lay_text_float("<< "),
                    par([D1, beside(lay_text_float(" || "), beside(D2, lay_text_float(" >>")))]));
+        map_comp ->
+            Ctxt1 = set_prec(Ctxt, max_prec()),
+            D1 = lay(erl_syntax:map_comp_template(Node), Ctxt1),
+            D2 = par(seq(erl_syntax:map_comp_body(Node), lay_text_float(","), Ctxt1, fun lay/2)),
+            beside(lay_text_float("#{"),
+                   par([D1, beside(lay_text_float("|| "), beside(D2, lay_text_float("}")))]));
         macro ->
             %% This is formatted similar to a normal function call, but
             %% prefixed with a "?".
