@@ -1,9 +1,9 @@
 -module(indent_18).
 
--format #{break_indent => 1,
-          inline_clause_bodies => true,
+-format #{sub_indent => 8,
+          break_indent => 1,
           paper => 50,
-          sub_indent => 8}.
+          inline_clause_bodies => true}.
 
 -record(record,
         {fields =

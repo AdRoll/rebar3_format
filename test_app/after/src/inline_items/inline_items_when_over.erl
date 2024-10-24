@@ -3,7 +3,7 @@
 %%      per line if they're larger than 5 elements.
 -module(inline_items_when_over).
 
--format #{inline_items => {when_over, 5}, paper => 80}.
+-format #{paper => 80, inline_items => {when_over, 5}}.
 
 -export([short_tuple/0, short_list/0, short_fun/0]).
 -export([short_bin/0, short_guard/1, short_lc/0]).
