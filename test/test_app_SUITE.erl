@@ -50,7 +50,10 @@ init_test_app() ->
         case string:to_integer(
                  erlang:system_info(otp_release))
         of
-            {N, []} when N >= 25 ->
+            {N, _} when N >= 26 ->
+                %% newlines in strings are treated differently since OTP26
+                {ignore, ["src/strings/non_heredoc.erl", "src/*_ignore.erl", "src/ignored_file_config.erl"]};
+            {25, _} ->
                 {ignore, ["src/*_ignore.erl", "src/ignored_file_config.erl"]};
             _ ->
                 {ignore, ["src/*_ignore.erl", "src/ignored_file_config.erl", "src/otp25.erl"]}

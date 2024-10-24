@@ -594,18 +594,17 @@ lay_no_comments(Node, Ctxt) ->
             Ctxt1 = reset_prec(Ctxt),
             D1 = lay(erl_syntax:generator_pattern(Node), Ctxt1),
             D2 = lay(erl_syntax:generator_body(Node), Ctxt1),
-            prettypr:par([D1,
-                          prettypr:beside(
-                              prettypr:text("<- "), D2)],
-                         Ctxt1#ctxt.break_indent);
+            lay_generator(D1, D2, "<- ", Ctxt1);
         binary_generator ->
             Ctxt1 = reset_prec(Ctxt),
             D1 = lay(erl_syntax:binary_generator_pattern(Node), Ctxt1),
             D2 = lay(erl_syntax:binary_generator_body(Node), Ctxt1),
-            prettypr:par([D1,
-                          prettypr:beside(
-                              prettypr:text("<= "), D2)],
-                         Ctxt1#ctxt.break_indent);
+            lay_generator(D1, D2, "<= ", Ctxt1);
+        map_generator ->
+            Ctxt1 = reset_prec(Ctxt),
+            D1 = lay(erl_syntax:map_generator_pattern(Node), Ctxt1),
+            D2 = lay(erl_syntax:map_generator_body(Node), Ctxt1),
+            lay_generator(D1, D2, "<- ", Ctxt1);
         implicit_fun ->
             D = lay(erl_syntax:implicit_fun_name(Node), reset_prec(Ctxt)),
             prettypr:beside(lay_text_float("fun "), D);
@@ -621,6 +620,12 @@ lay_no_comments(Node, Ctxt) ->
             D2 = lay_items(erl_syntax:binary_comp_body(Node), Ctxt1, fun lay/2),
             D3 = prettypr:beside(lay_text_float("|| "), prettypr:beside(D2, lay_text_float(" >>"))),
             prettypr:beside(lay_text_float("<< "), prettypr:par([D1, D3]));
+        map_comp ->
+            Ctxt1 = reset_prec(Ctxt),
+            D1 = lay(erl_syntax:map_comp_template(Node), Ctxt1),
+            D2 = lay_items(erl_syntax:map_comp_body(Node), Ctxt1, fun lay/2),
+            D3 = prettypr:beside(lay_text_float("|| "), prettypr:beside(D2, lay_text_float("}"))),
+            prettypr:beside(lay_text_float("#{"), prettypr:par([D1, D3]));
         macro ->
             %% This is formatted similar to a normal function call or a variable
             N = macro_name(Node, variable),
@@ -1083,6 +1088,12 @@ maybe_convert_to_qualifier(Node, #ctxt{force_arity_qualifiers = true}) ->
         _ ->
             Node
     end.
+
+lay_generator(D1, D2, Connector, Ctxt) ->
+    prettypr:par([D1,
+                  prettypr:beside(
+                      prettypr:text(Connector), D2)],
+                 Ctxt#ctxt.break_indent).
 
 lay_nested_infix_expr(Node, #ctxt{parenthesize_infix_operations = false} = Ctxt) ->
     lay(Node, Ctxt);

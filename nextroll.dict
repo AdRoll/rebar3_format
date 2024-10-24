@@ -35,6 +35,8 @@ lay_clauses
 lay_items
 old-reliable
 otp25
+otp26
+otp27
 paragraph-format
 per-file
 plugin

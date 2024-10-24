@@ -7,7 +7,6 @@
 -attr({with, "a string"}).
 
 all() ->
-  heredoc(),
   superlong(),
   repeat(),
   multiple_calls(),
@@ -18,14 +17,6 @@ all() ->
 superlong() ->
   "This is a super super super super super super super super super super super super super super super super super super super super super super super super super super super super super long string!"
   "Shouldn't be truncated since truncate_strings => false by default".
-
-heredoc() ->
-{ok, """
-This is
-a multiline
-heredoc but there are
-no multiline heredocs in Erlang :'(
-"""}.
 
 repeat() ->
   ["hello", "there",

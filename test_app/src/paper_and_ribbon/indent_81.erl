@@ -1,6 +1,8 @@
 -module(indent_81).
 
--format(#{break_indent => 8, sub_indent => 1, paper => 50}).
+-format(#{break_indent => 8}).
+-format(#{paper => 50}).
+-format(#{sub_indent => 1}).
 -format(#{inline_clause_bodies => true}).
 
 -record(
