@@ -1,7 +1,8 @@
 %% This module should not be formatted since it's in the list of ignored modules
 -module(brackets_ignore).
 
--format(#{paper => 50, inline_items => all}).
+-format(#{paper => 50}).
+-format(#{inline_items => all}).
 
 -compile(export_all).
 

@@ -3,7 +3,8 @@
 %%      per line if they're larger than 5 elements.
 -module inline_items_when_over.
 
--format #{paper => 80, inline_items => {when_over, 5}}.
+-format #{paper => 80}.
+-format #{inline_items => {when_over, 5}}.
 
 -export [short_tuple/0, short_list/0, short_fun/0].
 -export [short_bin/0, short_guard/1, short_lc/0].
@@ -106,4 +107,3 @@ exact() ->
 
 long() ->
     [these, items, should, be, inlined, they, are, more, than, 25, $., 'We', can, be, sure, about, that, because, we, added, a, very, long, number, 'of', items, to, this, list].
-

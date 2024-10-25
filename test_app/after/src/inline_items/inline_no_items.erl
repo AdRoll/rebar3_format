@@ -3,7 +3,8 @@
 %%      per line if they're large.
 -module(inline_no_items).
 
--format #{inline_items => none, paper => 80}.
+-format #{inline_items => none}.
+-format #{paper => 80}.
 
 -export([short_tuple/0, short_list/0, short_fun/0]).
 -export([short_bin/0, short_guard/1, short_lc/0]).
