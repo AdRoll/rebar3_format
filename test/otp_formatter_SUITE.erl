@@ -17,14 +17,24 @@ test_app(_Config) ->
         case string:to_integer(
                  erlang:system_info(otp_release))
         of
-            {N, _} when N >= 25 ->
+            {N, _} when N >= 26 ->
+                {ignore,
+                 ["src/strings/non_heredoc.erl", %% newlines in strings are treated differently since OTP26
+                  "src/*_ignore.erl",
+                  "src/comments.erl",
+                  "src/ignored_file_config.erl",
+                  "src/dodge_macros.erl",
+                  "src/macros_in_specs.erl",
+                  "src/receive_after.erl"]};
+            {25, _} ->
                 {ignore,
                  ["src/*_ignore.erl",
                   "src/comments.erl",
                   "src/ignored_file_config.erl",
                   "src/dodge_macros.erl",
                   "src/macros_in_specs.erl",
-                  "src/receive_after.erl"]};
+                  "src/receive_after.erl",
+                  "src/otp26.erl"]};
             _ ->
                 {ignore,
                  ["src/*_ignore.erl",
@@ -33,6 +43,7 @@ test_app(_Config) ->
                   "src/dodge_macros.erl",
                   "src/macros_in_specs.erl",
                   "src/receive_after.erl",
+                  "src/otp26.erl",
                   "src/otp25.erl"]}
         end,
     State2 = rebar_state:set(State1, format, [Files, Formatter, IgnoredFiles]),
