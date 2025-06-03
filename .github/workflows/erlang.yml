@@ -35,3 +35,24 @@ jobs:
         key: rebar3-cache-for-os-${{runner.os}}-otp-${{steps.setup-beam.outputs.otp-version}}-rebar3-${{steps.setup-beam.outputs.rebar3-version}}-hash-${{hashFiles('rebar.lock')}}
     - name: Run tests and verifications
       run: rebar3 test
+
+  test_windows:
+
+    runs-on: windows-latest
+
+    strategy:
+      matrix:
+        otp: [21.3]
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: gleam-lang/setup-erlang@v1.1.2
+        with:
+          otp-version: ${{matrix.otp}}
+        id: install_erlang
+      - name: Fetch rebar3
+        run: wget https://github.com/erlang/rebar3/releases/download/3.15.2/rebar3 -OutFile rebar3
+        shell: powershell
+      - name: Run tests
+        run: |
+          & "${{steps.install_erlang.outputs.erlpath}}\bin\escript.exe" rebar3 do ct,cover

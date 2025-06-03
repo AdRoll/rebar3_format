@@ -8,7 +8,9 @@ all() ->
     [test_app, no_good_files].
 
 test_app(_Config) ->
-    ok = file:set_cwd("../../../../test_app"),
+    ok =
+        file:set_cwd(
+            test_util:get_app_dir()),
     State2 = init_test_app(),
     {error, _} = verify(State2),
     {ok, _} = format(State2),
@@ -20,8 +22,10 @@ test_app(_Config) ->
     ok = git_diff().
 
 no_good_files(_Config) ->
-    ok = file:set_cwd("../../../../test_app"),
-    {ok, State1} = init(),
+    ok =
+        file:set_cwd(
+            test_util:get_app_dir()),
+    {ok, State1} = test_util:init(),
     Files = {files, ["a.broken.file", "a.non.existent.file"]},
     State2 = rebar_state:set(State1, format, [Files]),
     %% Our parsers don't crash on unparseable or non-existent files
@@ -35,14 +39,8 @@ format(State) ->
     rebar3_format_prv:do(
         rebar_state:command_parsed_args(State, {[{output, "formatted"}], something})).
 
-init() ->
-    {ok, State} =
-        rebar_prv_app_discovery:do(
-            rebar_state:new()),
-    rebar3_format:init(State).
-
 init_test_app() ->
-    {ok, State1} = init(),
+    {ok, State1} = test_util:init(),
     Files =
         {files,
          ["*.config", "src/*.app.src", "src/*.sh", "src/*.erl", "src/*/*.erl", "include/*.hrl"]},
@@ -68,7 +66,9 @@ init_test_app() ->
     rebar_state:set(State1, format, [Files, IgnoredFiles]).
 
 git_diff() ->
-    case os:cmd("git --no-pager diff --no-index -- after formatted") of
+    case
+        os:cmd("git -c core.autocrlf=true -c core.safecrlf=false --no-pager diff --no-index --ignore-cr-at-eol -- after formatted")
+    of
         "" ->
             ok;
         Diff ->
